@@ -1,65 +1,119 @@
-import Image from "next/image";
+'use client';
+
+import { useState } from 'react';
+import BookingSummary from '@/components/BookingSummary';
+import { Waves } from 'lucide-react';
 
 export default function Home() {
+  const [formData, setFormData] = useState({
+    guestName: '',
+    phoneNumber: '',
+    checkInDate: '',
+  });
+  const [showSummary, setShowSummary] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setShowSummary(true);
+  };
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main className="min-h-screen bg-coastal-beige text-slate-800 font-sans">
+      {/* Decorative Wave Header */}
+      <div className="bg-coastal-white py-12 px-6 shadow-sm border-b border-coastal-beige">
+        <div className="max-w-7xl mx-auto flex flex-col items-center text-center">
+          <Waves className="w-12 h-12 text-coastal-seafoam mb-4" />
+          <h1 className="font-playfair text-5xl md:text-6xl text-slate-900 mb-2">Azure Sands</h1>
+          <p className="text-slate-500 font-light tracking-[0.2em] uppercase text-sm">Coastal Minimalism</p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+      </div>
+
+      <div className="max-w-5xl mx-auto px-6 py-20 flex flex-col lg:flex-row gap-16 items-start">
+        {/* Left: Introduction */}
+        <div className="flex-1 space-y-8">
+          <div className="space-y-4">
+            <h2 className="font-playfair text-4xl text-slate-800">Your retreat awaits.</h2>
+            <p className="text-lg text-slate-600 font-light leading-relaxed">
+              Experience the harmony of sea and shore. Our minimalist sanctuaries are designed 
+              to bring you closer to nature, providing a peaceful escape from the everyday.
+            </p>
+          </div>
+          
+          <div className="aspect-[4/5] rounded-[3rem] overflow-hidden shadow-2xl shadow-slate-200/50">
+            <img 
+              src="https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&q=80&w=800" 
+              alt="Beach House Interior" 
+              className="w-full h-full object-cover"
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+          </div>
         </div>
-      </main>
-    </div>
+
+        {/* Right: Booking Interaction */}
+        <div className="flex-1 w-full max-w-md">
+          {!showSummary ? (
+            <div className="bg-coastal-white p-10 rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-coastal-beige/30">
+              <h3 className="font-playfair text-2xl mb-8">Plan your stay</h3>
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="space-y-2">
+                  <label className="text-xs uppercase tracking-widest text-slate-400 font-semibold ml-1">Full Name</label>
+                  <input 
+                    required
+                    type="text" 
+                    placeholder="Jane Cooper"
+                    value={formData.guestName}
+                    onChange={(e) => setFormData({...formData, guestName: e.target.value})}
+                    className="w-full bg-slate-50/50 border-0 rounded-2xl py-4 px-6 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all placeholder:text-slate-300"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs uppercase tracking-widest text-slate-400 font-semibold ml-1">WhatsApp Number</label>
+                  <input 
+                    required
+                    type="tel" 
+                    placeholder="+1 (555) 000-0000"
+                    value={formData.phoneNumber}
+                    onChange={(e) => setFormData({...formData, phoneNumber: e.target.value})}
+                    className="w-full bg-slate-50/50 border-0 rounded-2xl py-4 px-6 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all placeholder:text-slate-300"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs uppercase tracking-widest text-slate-400 font-semibold ml-1">Check-in Date</label>
+                  <input 
+                    required
+                    type="date" 
+                    value={formData.checkInDate}
+                    onChange={(e) => setFormData({...formData, checkInDate: e.target.value})}
+                    className="w-full bg-slate-50/50 border-0 rounded-2xl py-4 px-6 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all text-slate-600"
+                  />
+                </div>
+                
+                <button 
+                  type="submit"
+                  className="w-full bg-slate-900 text-white font-medium py-5 rounded-2xl transition-all hover:bg-slate-800 shadow-xl shadow-slate-900/10 mt-4"
+                >
+                  Continue to Summary
+                </button>
+              </form>
+            </div>
+          ) : (
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+              <BookingSummary 
+                hotelName="Azure Sands"
+                guestName={formData.guestName}
+                phoneNumber={formData.phoneNumber}
+                checkInDate={formData.checkInDate}
+              />
+              <button 
+                onClick={() => setShowSummary(false)}
+                className="w-full text-slate-400 text-sm mt-6 hover:text-slate-600 transition-colors"
+              >
+                ← Back to edit details
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
+    </main>
   );
 }
