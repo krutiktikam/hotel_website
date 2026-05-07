@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Playfair_Display } from "next/font/google";
 import "./globals.css";
-import Header from "@/components/Header";
-import ShoreClub from "@/components/ShoreClub";
+import PublicLayoutWrapper from "@/components/PublicLayoutWrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,14 +34,9 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-coastal-beige">
-        <Header />
-        <main className="flex-grow">
+        <PublicLayoutWrapper>
           {children}
-        </main>
-        <ShoreClub />
-        <footer className="bg-white py-12 text-center border-t border-coastal-beige">
-          <p className="text-slate-400 text-sm font-light tracking-widest uppercase italic">Escape to the shore.</p>
-        </footer>
+        </PublicLayoutWrapper>
       </body>
     </html>
   );

@@ -20,12 +20,28 @@ const Header = () => {
   return (
     <header 
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        isScrolled ? 'bg-coastal-white/90 backdrop-blur-md py-4 shadow-sm' : 'bg-transparent py-6'
+        isScrolled ? 'bg-coastal-white/90 backdrop-blur-md py-4 shadow-sm' : 'bg-transparent py-0'
       }`}
     >
+      {/* Direct Booking Incentive Banner */}
+      {!isScrolled && (
+        <div className="bg-slate-900 text-white py-2.5 px-6">
+          <div className="max-w-7xl mx-auto flex justify-between items-center text-[10px] uppercase tracking-[0.2em] font-medium">
+            <div className="flex items-center gap-4">
+              <span className="text-coastal-seafoam">•</span>
+              <span>Book Direct for Complimentary Seafront Breakfast</span>
+              <span className="text-coastal-seafoam">•</span>
+            </div>
+            <div className="hidden sm:block">
+              Best Rate Guaranteed
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="max-w-7xl mx-auto px-6">
         {/* Top Utility Bar - Hidden on scroll */}
-        <div className={`transition-all duration-500 overflow-hidden ${isScrolled ? 'max-h-0 opacity-0 mb-0' : 'max-h-10 opacity-100 mb-6'}`}>
+        <div className={`transition-all duration-500 overflow-hidden ${isScrolled ? 'max-h-0 opacity-0 mb-0' : 'max-h-10 opacity-100 mt-6 mb-6'}`}>
           <div className="flex justify-between items-center">
             <CoastalPulse />
             <div className="hidden lg:block text-[10px] uppercase tracking-[0.2em] text-slate-400 font-medium">

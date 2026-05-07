@@ -1,43 +1,43 @@
 'use client';
 
-import React from 'react';
-import { Compass, Sunrise, Palmtree, Anchor, ArrowRight } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Sunrise, Palmtree, Anchor, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
-const experiences = [
-  {
-    id: 'sunrise-yoga',
-    title: 'Sunrise Shore Yoga',
-    category: 'Wellness',
-    description: 'Begin your day in harmony with the tides. Our guided yoga sessions take place on the private north beach as the sun breaks the horizon.',
-    duration: '90 Minutes',
-    price: '45',
-    image: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&q=80&w=1000',
-    icon: Sunrise
-  },
-  {
-    id: 'beach-picnic',
-    title: 'Minimalist Beach Picnic',
-    category: 'Dining',
-    description: 'A curated basket of local, organic delicacies served on linen blankets. Includes chilled sparkling water and a selection of coastal fruits.',
-    duration: 'Flexible',
-    price: '120',
-    image: 'https://images.unsplash.com/photo-1590377033320-911075d97039?auto=format&fit=crop&q=80&w=1000',
-    icon: Palmtree
-  },
-  {
-    id: 'sunset-sail',
-    title: 'Private Azure Sail',
-    category: 'Adventure',
-    description: 'A serene journey across the coastline on our custom-built wooden skiff. Witness the sky transform from seafoam to deep indigo.',
-    duration: '3 Hours',
-    price: '350',
-    image: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&q=80&w=1000',
-    icon: Anchor
-  }
-];
+const iconMap: Record<string, any> = {
+  'Sunrise': Sunrise,
+  'Palmtree': Palmtree,
+  'Anchor': Anchor
+};
 
 const ExperiencesPage = () => {
+  const [experiences, setExperiences] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadExperiences() {
+      try {
+        const response = await fetch('http://localhost:8000/api/v1/experiences');
+        if (response.ok) {
+          const data = await response.json();
+          setExperiences(data);
+        }
+      } catch (err) {
+        console.error('Failed to load experiences:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadExperiences();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-coastal-beige">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-coastal-seafoam"></div>
+      </div>
+    );
+  }
   return (
     <main className="pt-32 pb-20 bg-coastal-beige">
       <div className="max-w-7xl mx-auto px-6">
@@ -61,7 +61,7 @@ const ExperiencesPage = () => {
               <div className="flex-1 w-full group">
                 <div className="relative aspect-[16/10] rounded-[3rem] overflow-hidden shadow-2xl shadow-slate-200/50 transition-all duration-700 hover:shadow-coastal-seafoam/10">
                   <img 
-                    src={exp.image} 
+                    src={exp.image_url} 
                     alt={exp.title} 
                     className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
                   />
@@ -73,7 +73,10 @@ const ExperiencesPage = () => {
               <div className="flex-1 space-y-8 max-w-xl">
                 <div className="space-y-4">
                   <div className="flex items-center gap-3 text-coastal-seafoam">
-                    <exp.icon className="w-5 h-5" />
+                    {(() => {
+                      const Icon = iconMap[exp.icon_name] || Compass;
+                      return <Icon className="w-5 h-5" />;
+                    })()}
                     <span className="text-xs uppercase tracking-widest font-bold">{exp.category}</span>
                   </div>
                   <h2 className="font-playfair text-4xl md:text-5xl text-slate-900 leading-tight">

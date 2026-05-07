@@ -168,7 +168,11 @@ const RoomDetails = () => {
               </div>
 
               <Link 
-                href="/"
+                href={`/?room=${
+                  slug === 'ocean-suite' ? 'LUXURY' : 
+                  slug === 'garden-villa' ? 'SUITE' : 
+                  slug === 'dune-studio' ? 'DELUXE' : 'DELUXE'
+                }`}
                 className="block w-full bg-slate-900 text-white text-center py-5 rounded-2xl font-medium hover:bg-slate-800 transition-all shadow-xl shadow-slate-900/10 mb-4"
               >
                 Reserve Your Stay

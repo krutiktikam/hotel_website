@@ -1,37 +1,38 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight, Star, Wind, Droplets } from 'lucide-react';
 
-const rooms = [
-  {
-    id: 'ocean-suite',
-    name: 'Ocean Front Suite',
-    description: 'Panoramic views of the Atlantic with a private terrace.',
-    price: 450,
-    image: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&q=80&w=800',
-    features: ['Sea View', 'Private Balcony', 'King Bed']
-  },
-  {
-    id: 'garden-villa',
-    name: 'Coastal Garden Villa',
-    description: 'Secluded villa surrounded by native flora and salt air.',
-    price: 380,
-    image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&q=80&w=800',
-    features: ['Garden View', 'Outdoor Shower', 'Queen Bed']
-  },
-  {
-    id: 'dune-studio',
-    name: 'Sand Dune Studio',
-    description: 'Minimalist studio perfect for solo retreats or couples.',
-    price: 290,
-    image: 'https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&q=80&w=800',
-    features: ['Dune View', 'Work Space', 'Queen Bed']
-  }
-];
+export default function RoomsPage() {
+  const [rooms, setRooms] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-const RoomsPage = () => {
+  useEffect(() => {
+    async function loadRooms() {
+      try {
+        const response = await fetch('http://localhost:8000/api/v1/rooms');
+        if (response.ok) {
+          const data = await response.json();
+          setRooms(data);
+        }
+      } catch (err) {
+        console.error('Failed to load rooms:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadRooms();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-coastal-white">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-coastal-seafoam"></div>
+      </div>
+    );
+  }
+
   return (
     <main className="pt-32 pb-20 px-6">
       <div className="max-w-7xl mx-auto">
@@ -47,27 +48,35 @@ const RoomsPage = () => {
             <div key={room.id} className="group flex flex-col bg-coastal-white rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 border border-coastal-beige/30">
               <div className="relative aspect-[4/5] overflow-hidden">
                 <img 
-                  src={room.image} 
+                  src={room.image_url} 
                   alt={room.name} 
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
                 <div className="absolute top-6 left-6 bg-coastal-white/90 backdrop-blur-sm px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase text-slate-800">
                   From ${room.price}
                 </div>
+                {/* Randomly simulate scarcity if not in DB yet */}
+                <div className="absolute bottom-6 left-6 bg-red-500/90 backdrop-blur-sm px-4 py-1.5 rounded-full text-[10px] font-bold tracking-widest uppercase text-white animate-pulse">
+                  {room.id === 1 ? 'Only 1 Sanctuary Left' : 'High Demand'}
+                </div>
               </div>
               
               <div className="p-8 flex-1 flex flex-col">
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="w-1.5 h-1.5 rounded-full bg-coastal-seafoam animate-pulse" />
+                  <span className="text-[10px] uppercase tracking-widest text-slate-400 font-medium">{10 + room.id} people viewing now</span>
+                </div>
                 <h2 className="font-playfair text-2xl text-slate-900 mb-3">{room.name}</h2>
                 <p className="text-slate-500 font-light text-sm mb-6 flex-1">{room.description}</p>
                 
                 <div className="flex flex-wrap gap-2 mb-8">
-                  {room.features.map(f => (
+                  {room.features.map((f: string) => (
                     <span key={f} className="text-[10px] uppercase tracking-widest text-slate-400 bg-slate-50 px-2.5 py-1 rounded-md border border-slate-100">{f}</span>
                   ))}
                 </div>
 
                 <Link 
-                  href={`/rooms/${room.id}`}
+                  href={`/rooms/${room.slug}`}
                   className="inline-flex items-center justify-between w-full text-slate-800 font-medium group/btn"
                 >
                   Explore Details 
@@ -82,6 +91,4 @@ const RoomsPage = () => {
       </div>
     </main>
   );
-};
-
-export default RoomsPage;
+}
