@@ -1,16 +1,12 @@
 from datetime import datetime
 from typing import List
 import json
-from .models import Booking
+from .models import Booking, Room
 from .schemas import BookingCreate
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 
-ROOM_TYPES = {
-    "LUXURY": {"name": "Luxury", "price": 300},
-    "SUITE": {"name": "Suite", "price": 200},
-    "DELUXE": {"name": "Deluxe", "price": 150},
-}
-
+# Keep these for now as fallback/metadata but prefer database for pricing
 ADDONS = {
     "BREAKFAST": {"name": "Breakfast", "price": 25, "per_night": True},
     "SPA": {"name": "Spa Package", "price": 50, "per_night": False},
@@ -30,13 +26,18 @@ PACKAGES = {
     "Wellness": {"name": "Wellness Retreat", "price": 200},
 }
 
-def calculate_total_price(booking: BookingCreate) -> float:
+def calculate_total_price(db: Session, booking: BookingCreate) -> float:
     check_in = datetime.fromisoformat(booking.check_in)
     check_out = datetime.fromisoformat(booking.check_out)
     nights = max(1, (check_out - check_in).days)
 
-    # Base room price
-    room_price = ROOM_TYPES.get(booking.room_type, ROOM_TYPES["DELUXE"])["price"]
+    # Base room price from database (case-insensitive)
+    db_room = db.query(Room).filter(func.lower(Room.name) == func.lower(booking.room_type)).first()
+    if not db_room:
+        # Fallback to slug if name doesn't match
+        db_room = db.query(Room).filter(func.lower(Room.slug) == func.lower(booking.room_type)).first()
+    
+    room_price = db_room.price if db_room else 150.0 # Default if not found
     total = room_price * nights
 
     # Meal plan price
@@ -59,12 +60,27 @@ def calculate_total_price(booking: BookingCreate) -> float:
     return float(total)
 
 def check_availability(db: Session, room_type: str, check_in_str: str, check_out_str: str) -> bool:
-    # Always return True for testing/demo purposes
-    return True
+    """
+    Checks if a room type is available for the given dates.
+    Logic: A room is unavailable if there's a booking for that room type where:
+    (existing_check_in < requested_check_out) AND (existing_check_out > requested_check_in)
+    """
+    # Check for overlapping bookings
+    # We only count 'confirmed' or 'pending' bookings
+    overlapping_bookings = db.query(Booking).filter(
+        Booking.room_type == room_type,
+        Booking.status != "cancelled",
+        Booking.check_in < check_out_str,
+        Booking.check_out > check_in_str
+    ).count()
+
+    # For now, we assume 1 room per type exists (as per simple seed)
+    # In a more advanced system, we'd compare against 'Room.count'
+    return overlapping_bookings == 0
 
 def get_options():
     return {
-        "room_types": [{"name": k, "price": v["price"]} for k, v in ROOM_TYPES.items()],
+        "room_types": [], # Frontend should fetch these from /api/v1/rooms now
         "meal_plans": [{"name": k, "price": v["price"]} for k, v in MEAL_PLANS.items()],
         "packages": [{"name": k, "price": v["price"]} for k, v in PACKAGES.items()],
         "addons": [{"name": k, "price": v["price"]} for k, v in ADDONS.items()],

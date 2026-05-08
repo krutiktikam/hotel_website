@@ -20,21 +20,21 @@ async def send_whatsapp_confirmation(booking: Booking):
     """
     whatsapp_token = os.getenv("WHATSAPP_ACCESS_TOKEN")
     phone_number_id = os.getenv("WHATSAPP_PHONE_NUMBER_ID")
+    
+    deposit_amount = booking.total_price * 0.10
 
-    print(f"DEBUG: WhatsApp Token Found: {bool(whatsapp_token)}")
-    print(f"DEBUG: Phone Number ID Found: {bool(phone_number_id)}")
+    # Always print a summary to the console for easier debugging/verification
+    print(f"--- BOOKING NOTIFICATION SUMMARY ---")
+    print(f"To: {booking.customer_phone}")
+    print(f"Guest: {booking.customer_name}")
+    print(f"Room: {booking.room_type}")
+    print(f"Dates: {booking.check_in} to {booking.check_out}")
+    print(f"Total Price: ${booking.total_price:.2f}")
+    print(f"Required 10% Deposit: ${deposit_amount:.2f}")
+    print(f"------------------------------------")
 
     if not whatsapp_token or not phone_number_id:
-        logger.warning("WhatsApp credentials not found. Skipping notification.")
-        print(f"--- WHATSAPP MOCK NOTIFICATION ---")
-        print(f"To: {booking.customer_phone}")
-        print(f"Guest: {booking.customer_name}")
-        print(f"Room: {booking.room_type}")
-        print(f"Dates: {booking.check_in} to {booking.check_out}")
-        print(f"Meal Plan: {booking.meal_plan}")
-        print(f"Package: {booking.package_type}")
-        print(f"Total: ${booking.total_price}")
-        print(f"----------------------------------")
+        logger.warning("WhatsApp credentials not found. Using console mock only.")
         return {"status": "mocked"}
 
     url = f"https://graph.facebook.com/{WHATSAPP_VERSION}/{phone_number_id}/messages"
@@ -65,7 +65,7 @@ async def send_whatsapp_confirmation(booking: Booking):
                         {"type": "text", "text": str(booking.room_type)},
                         {"type": "text", "text": str(booking.check_in)},
                         {"type": "text", "text": str(booking.check_out)},
-                        {"type": "text", "text": f"{booking.total_price:.2f}"}
+                        {"type": "text", "text": f"Total: ${booking.total_price:.2f} | 10% Deposit: ${deposit_amount:.2f}"}
                     ]
                 }
             ]

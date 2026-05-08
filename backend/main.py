@@ -17,8 +17,9 @@ from .database import engine, get_db
 # Load environment variables
 load_dotenv()
 
-# Create uploads directory
-UPLOAD_DIR = "uploads"
+# Create uploads directory relative to this file
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+UPLOAD_DIR = os.path.join(BASE_DIR, "uploads")
 if not os.path.exists(UPLOAD_DIR):
     os.makedirs(UPLOAD_DIR)
 
@@ -130,7 +131,7 @@ def check_room_availability(room_type: str, check_in: str, check_out: str, db: S
 async def create_booking(booking: schemas.BookingCreate, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
     if not services.check_availability(db, booking.room_type, booking.check_in, booking.check_out):
         raise HTTPException(status_code=409, detail="Room not available for selected dates")
-    total_price = services.calculate_total_price(booking)
+    total_price = services.calculate_total_price(db, booking)
     db_booking = models.Booking(
         customer_name=booking.customer_name,
         customer_phone=booking.customer_phone,
