@@ -1,37 +1,28 @@
-'use client';
-
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+import { Metadata } from 'next';
+import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight, Star, Wind, Droplets } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
+import { API_BASE_URL } from '@/lib/api';
 
-export default function RoomsPage() {
-  const [rooms, setRooms] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function loadRooms() {
-      try {
-        const response = await fetch('http://localhost:8000/api/v1/rooms');
-        if (response.ok) {
-          const data = await response.json();
-          setRooms(data);
-        }
-      } catch (err) {
-        console.error('Failed to load rooms:', err);
-      } finally {
-        setLoading(false);
-      }
-    }
-    loadRooms();
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-coastal-white">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-coastal-seafoam"></div>
-      </div>
-    );
+export const metadata: Metadata = {
+  title: 'Our Sanctuaries | Namita Beach House',
+  description: 'Explore our minimalist, coastal-inspired suites and villas in Tarkarli. Each room is a canvas of calm designed for the minimalist soul.',
+  openGraph: {
+    title: 'Our Sanctuaries | Namita Beach House',
+    description: 'Minimalist luxury rooms in Tarkarli.',
+    images: ['/images/resort/Hotel/WhatsApp Image 2026-05-08 at 8.43.20 PM.jpeg'],
   }
+};
+
+async function getRooms() {
+  const response = await fetch(`${API_BASE_URL}/rooms`, { cache: 'no-store' });
+  if (!response.ok) return [];
+  return response.json();
+}
+
+export default async function RoomsPage() {
+  const rooms = await getRooms();
 
   return (
     <main className="pt-32 pb-20 px-6">
@@ -44,13 +35,15 @@ export default function RoomsPage() {
         </header>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-          {rooms.map((room) => (
+          {rooms.map((room: any) => (
             <div key={room.id} className="group flex flex-col bg-coastal-white rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 border border-coastal-beige/30">
               <div className="relative aspect-[4/5] overflow-hidden">
-                <img 
+                <Image 
                   src={room.image_url} 
                   alt={room.name} 
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                  className="object-cover transition-transform duration-700 group-hover:scale-110"
                 />
                 <div className="absolute top-6 left-6 bg-coastal-white/90 backdrop-blur-sm px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase text-slate-800">
                   From ${room.price}

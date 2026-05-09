@@ -1,7 +1,6 @@
-'use client';
-
 import React from 'react';
-import { useParams } from 'next/navigation';
+import { Metadata } from 'next';
+import Image from 'next/image';
 import { 
   Wifi, 
   Coffee, 
@@ -14,7 +13,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 
-// Mock data for rooms
+// Mock data for rooms (In real app, fetch this from API)
 const roomsData: Record<string, any> = {
   'ocean-suite': {
     name: 'Ocean Front Suite',
@@ -23,9 +22,9 @@ const roomsData: Record<string, any> = {
     guests: '2 Adults',
     description: 'Our premier suite offers an unobstructed view of the horizon. Designed with floor-to-ceiling windows and a private teak-wood terrace, it invites the rhythm of the ocean into your living space.',
     images: [
-      'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&q=80&w=1200',
-      'https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?auto=format&fit=crop&q=80&w=800',
-      'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&q=80&w=800'
+      '/images/resort/Hotel/WhatsApp Image 2026-05-08 at 8.43.20 PM.jpeg',
+      '/images/resort/Hotel/WhatsApp Image 2026-05-08 at 8.43.20 PM (1).jpeg',
+      '/images/resort/Hotel/WhatsApp Image 2026-05-08 at 8.43.34 PM.jpeg'
     ],
     amenities: [
       { icon: Wifi, name: 'Complimentary High-speed WiFi' },
@@ -42,9 +41,9 @@ const roomsData: Record<string, any> = {
     guests: '2-4 Adults',
     description: 'A sanctuary of privacy. This villa is nestled within our salt-resistant gardens, featuring an outdoor rain shower and a curated selection of organic bath rituals.',
     images: [
-      'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&q=80&w=1200',
-      'https://images.unsplash.com/photo-1590490359683-658d3d23f972?auto=format&fit=crop&q=80&w=800',
-      'https://images.unsplash.com/photo-1512918766674-ed62b9a19c65?auto=format&fit=crop&q=80&w=800'
+      '/images/resort/Hotel/WhatsApp Image 2026-05-08 at 8.43.22 PM.jpeg',
+      '/images/resort/Hotel/WhatsApp Image 2026-05-08 at 8.43.25 PM.jpeg',
+      '/images/resort/Hotel/WhatsApp Image 2026-05-08 at 8.43.30 PM.jpeg'
     ],
     amenities: [
       { icon: Wifi, name: 'Complimentary High-speed WiFi' },
@@ -61,9 +60,9 @@ const roomsData: Record<string, any> = {
     guests: '2 Adults',
     description: 'Simplicity refined. The studio captures the essence of coastal minimalism with neutral tones, linen textiles, and a focused workspace looking out onto the dunes.',
     images: [
-      'https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&q=80&w=1200',
-      'https://images.unsplash.com/photo-1598928506311-c55ded91a20c?auto=format&fit=crop&q=80&w=800',
-      'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&q=80&w=800'
+      '/images/resort/Hotel/WhatsApp Image 2026-05-08 at 8.43.23 PM.jpeg',
+      '/images/resort/Hotel/WhatsApp Image 2026-05-08 at 8.43.24 PM.jpeg',
+      '/images/resort/Hotel/WhatsApp Image 2026-05-08 at 8.43.29 PM.jpeg'
     ],
     amenities: [
       { icon: Wifi, name: 'Complimentary High-speed WiFi' },
@@ -75,9 +74,32 @@ const roomsData: Record<string, any> = {
   }
 };
 
-const RoomDetails = () => {
-  const params = useParams();
-  const slug = params.slug as string;
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const room = roomsData[slug];
+  
+  if (!room) return { title: 'Room Not Found' };
+
+  return {
+    title: `${room.name} | Namita Beach House`,
+    description: room.description,
+    openGraph: {
+      title: room.name,
+      description: room.description,
+      images: [{ url: room.images[0] }],
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: room.name,
+      description: room.description,
+      images: [room.images[0]],
+    },
+  };
+}
+
+export default async function RoomDetails({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
   const room = roomsData[slug];
 
   if (!room) {
@@ -89,14 +111,14 @@ const RoomDetails = () => {
       {/* Gallery Section */}
       <section className="px-6 max-w-[1400px] mx-auto mb-16">
         <div className="grid grid-cols-1 md:grid-cols-4 grid-rows-2 gap-4 h-[600px]">
-          <div className="md:col-span-2 md:row-span-2 rounded-[2rem] overflow-hidden">
-            <img src={room.images[0]} className="w-full h-full object-cover" alt="Main View" />
+          <div className="relative md:col-span-2 md:row-span-2 rounded-[2rem] overflow-hidden">
+            <Image src={room.images[0]} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" alt="Main View" priority />
           </div>
-          <div className="md:col-span-2 rounded-[2rem] overflow-hidden">
-            <img src={room.images[1]} className="w-full h-full object-cover" alt="Detail View" />
+          <div className="relative md:col-span-2 rounded-[2rem] overflow-hidden">
+            <Image src={room.images[1]} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" alt="Detail View" />
           </div>
-          <div className="md:col-span-2 rounded-[2rem] overflow-hidden">
-            <img src={room.images[2]} className="w-full h-full object-cover" alt="Bathroom View" />
+          <div className="relative md:col-span-2 rounded-[2rem] overflow-hidden">
+            <Image src={room.images[2]} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" alt="Bathroom View" />
           </div>
         </div>
       </section>
@@ -116,10 +138,6 @@ const RoomDetails = () => {
               <h1 className="font-playfair text-5xl md:text-6xl text-slate-900 mb-6">{room.name}</h1>
               
               <div className="flex flex-wrap gap-8 py-8 border-y border-coastal-beige/50">
-                <div className="flex items-center gap-3">
-                  <Maximize className="w-5 h-5 text-slate-400" />
-                  <span className="text-sm text-slate-600 font-light">{room.size}</span>
-                </div>
                 <div className="flex items-center gap-3">
                   <Users className="w-5 h-5 text-slate-400" />
                   <span className="text-sm text-slate-600 font-light">{room.guests}</span>
@@ -188,6 +206,4 @@ const RoomDetails = () => {
       </section>
     </main>
   );
-};
-
-export default RoomDetails;
+}

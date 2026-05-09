@@ -1,10 +1,10 @@
-# Azure Sands - Progress Report
+# Namita Beach House - Progress Report
 **Date:** May 7, 2026
 **Status:** In Development
 **Aesthetic:** Coastal Minimalism
 
 ## 1. Project Overview
-Azure Sands is a premium e-commerce hotel website built with a "Coastal Minimalism" aesthetic. The project utilizes Next.js for the frontend and FastAPI for the backend, focusing on a serene user experience and a robust WhatsApp-integrated booking flow.
+Namita Beach House is a premium e-commerce hotel website built with a "Coastal Minimalism" aesthetic. The project utilizes Next.js for the frontend and FastAPI for the backend, focusing on a serene user experience and a robust WhatsApp-integrated booking flow.
 
 ## 2. Implemented Features
 

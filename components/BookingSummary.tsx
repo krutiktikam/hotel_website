@@ -23,14 +23,15 @@ interface BookingSummaryProps {
 const BookingSummary: React.FC<BookingSummaryProps> = ({ bookingData }) => {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
+  const [bookingResponse, setBookingResponse] = useState<any>(null);
 
   const handleConfirmAndPay = async () => {
     setStatus('loading');
     setErrorMessage('');
     try {
       // 1. Create Booking in Python Backend
-      // This will also trigger the WhatsApp notification in the background
-      await createBooking(bookingData);
+      const response = await createBooking(bookingData);
+      setBookingResponse(response);
       
       // 2. Set Success State
       setStatus('success');
@@ -146,15 +147,18 @@ const BookingSummary: React.FC<BookingSummaryProps> = ({ bookingData }) => {
             
             <a
               href={`https://wa.me/918766449594?text=${encodeURIComponent(
-                `Hello Azure Sands! I've just booked a stay:\n\n` +
-                `*Name:* ${bookingData.customerName}\n` +
-                `*Room:* ${bookingData.roomType}\n` +
-                `*Dates:* ${bookingData.checkIn} to ${bookingData.checkOut}\n` +
-                `*Meal Plan:* ${bookingData.mealPlan}\n` +
-                `*Package:* ${bookingData.packageType}\n` +
-                `*Addons:* ${bookingData.selectedAddons.join(', ') || 'None'}\n` +
-                `*Special Requests:* ${bookingData.specialRequests || 'None'}\n\n` +
-                `Please confirm my arrival details.`
+                `🌊 *Namita Beach House | Sanctuary Confirmation*\n\n` +
+                `Warm greetings ${bookingData.customerName},\n\n` +
+                `Your retreat is officially reserved. We are preparing the ${bookingData.roomType} for your arrival.\n\n` +
+                `📅 *Stay Details:*\n` +
+                `• Check-in: ${bookingData.checkIn}\n` +
+                `• Check-out: ${bookingData.checkOut}\n\n` +
+                `💳 *Investment Summary:*\n` +
+                `• Total Stay: $${(bookingResponse?.total_price || 0).toFixed(2)}\n` +
+                `• Required 10% Deposit: $${((bookingResponse?.total_price || 0) * 0.10).toFixed(2)}\n\n` +
+                `Next Steps: Please provide a screenshot of your deposit to this chat to finalize your check-in rituals.\n\n` +
+                `See you where the horizon meets the shore.\n` +
+                `---`
               )}`}
               target="_blank"
               rel="noopener noreferrer"

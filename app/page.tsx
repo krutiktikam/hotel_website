@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, Suspense } from 'react';
+import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
 import BookingSummary from '@/components/BookingSummary';
 import { 
@@ -16,6 +17,7 @@ import {
   ChevronLeft,
   CheckCircle2
 } from 'lucide-react';
+import PricingCalendar from '@/components/PricingCalendar';
 import { fetchOptions } from '@/lib/api';
 
 function BookingFlow() {
@@ -24,6 +26,7 @@ function BookingFlow() {
 
   const [options, setOptions] = useState<any>(null);
   const [currentStep, setCurrentStep] = useState(1);
+  const [showPricingCalendar, setShowPricingCalendar] = useState(false);
   const [formData, setFormData] = useState({
     customerName: '',
     customerPhone: '',
@@ -37,6 +40,9 @@ function BookingFlow() {
   });
   const [loading, setLoading] = useState(true);
   const [viewers, setViewers] = useState(3);
+  const [error, setError] = useState<string | null>(null);
+  const [availability, setAvailability] = useState<Record<string, boolean>>({});
+  const [checkingAvailability, setCheckingAvailability] = useState(false);
 
   useEffect(() => {
     // Simulate changing viewers
@@ -53,8 +59,6 @@ function BookingFlow() {
         setOptions(data);
         if (roomParam) {
           setFormData(prev => ({ ...prev, roomType: roomParam }));
-          // If a room is pre-selected, maybe skip to step 2? 
-          // Let's keep it at step 1 for dates.
         }
       } catch (err) {
         console.error('Failed to load options:', err);
@@ -65,8 +69,72 @@ function BookingFlow() {
     loadOptions();
   }, [roomParam]);
 
-  const nextStep = () => setCurrentStep(prev => Math.min(prev + 1, 4));
+  useEffect(() => {
+    async function updateAvailability() {
+      if (formData.checkIn && formData.checkOut) {
+        setCheckingAvailability(true);
+        try {
+          const { checkAvailability } = await import('@/lib/api');
+          const results: Record<string, boolean> = {};
+          
+          if (options?.room_types) {
+            await Promise.all(options.room_types.map(async (room: any) => {
+              const res = await checkAvailability({
+                room_type: room.name,
+                check_in: formData.checkIn,
+                check_out: formData.checkOut
+              });
+              results[room.name] = res.is_available;
+            }));
+            setAvailability(results);
+          }
+        } catch (err) {
+          console.error('Failed to check availability:', err);
+        } finally {
+          setCheckingAvailability(false);
+        }
+      }
+    }
+    updateAvailability();
+  }, [formData.checkIn, formData.checkOut, options]);
+
+  const nextStep = () => setCurrentStep(prev => Math.min(prev + 1, 5));
   const prevStep = () => setCurrentStep(prev => Math.max(prev - 1, 1));
+
+  const validateStep = () => {
+    setError(null);
+    if (currentStep === 1) {
+      if (!formData.checkIn || !formData.checkOut) {
+        setError('Please select both check-in and check-out dates.');
+        return false;
+      }
+      const checkInDate = new Date(formData.checkIn);
+      const checkOutDate = new Date(formData.checkOut);
+      if (checkOutDate <= checkInDate) {
+        setError('Check-out date must be after check-in date.');
+        return false;
+      }
+    }
+    if (currentStep === 3) {
+      if (!formData.customerName.trim()) {
+        setError('Please provide your name.');
+        return false;
+      }
+      const phoneDigits = formData.customerPhone.replace(/\D/g, '');
+      if (phoneDigits.length < 10) {
+        setError('Please provide a valid 10-digit phone number.');
+        return false;
+      }
+    }
+    return true;
+  };
+
+  const handleNext = () => {
+    if (validateStep()) {
+      nextStep();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
 
   const toggleAddon = (addon: string) => {
     setFormData(prev => ({
@@ -167,7 +235,11 @@ function BookingFlow() {
                 </div>
 
                 <div className="flex justify-between items-center px-2">
-                  <button type="button" className="text-[10px] uppercase tracking-widest text-coastal-seafoam font-bold hover:underline">
+                  <button 
+                    type="button" 
+                    onClick={() => setShowPricingCalendar(true)}
+                    className="text-[10px] uppercase tracking-widest text-coastal-seafoam font-bold hover:underline"
+                  >
                     View Flexible Pricing Calendar
                   </button>
                   <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-slate-400">
@@ -193,23 +265,33 @@ function BookingFlow() {
                 <div className="grid grid-cols-1 gap-8">
                   <div className="space-y-2">
                     <label className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold ml-1 flex items-center gap-2">
-                      <HomeIcon className="w-3 h-3" /> Room Type
+                      <HomeIcon className="w-3 h-3" /> Room Type 
+                      {checkingAvailability && <span className="ml-2 animate-pulse text-coastal-seafoam normal-case tracking-normal font-light">Verifying availability...</span>}
                     </label>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       {options?.room_types.map((room: any) => {
                         const isLowStock = room.name === 'LUXURY' || room.name === 'SUITE';
+                        const isAvailable = availability[room.name] !== false;
                         return (
                           <button
                             key={room.name}
                             type="button"
+                            disabled={!isAvailable}
                             onClick={() => setFormData({...formData, roomType: room.name})}
                             className={`p-6 rounded-2xl border text-left transition-all relative ${
-                              formData.roomType === room.name 
-                                ? 'border-coastal-seafoam bg-coastal-seafoam/5 ring-1 ring-coastal-seafoam' 
-                                : 'border-slate-100 bg-slate-50/30 hover:border-slate-200'
+                              !isAvailable 
+                                ? 'border-slate-100 bg-slate-50 opacity-40 cursor-not-allowed'
+                                : formData.roomType === room.name 
+                                  ? 'border-coastal-seafoam bg-coastal-seafoam/5 ring-1 ring-coastal-seafoam' 
+                                  : 'border-slate-100 bg-slate-50/30 hover:border-slate-200'
                             }`}
                           >
-                            {isLowStock && (
+                            {!isAvailable && (
+                              <span className="absolute inset-0 flex items-center justify-center bg-white/40 backdrop-blur-[1px] rounded-2xl z-10">
+                                <span className="text-[10px] uppercase tracking-widest text-red-500 font-bold">Sold Out</span>
+                              </span>
+                            )}
+                            {isLowStock && isAvailable && (
                               <span className="absolute -top-2 -right-2 bg-red-50 text-red-500 text-[8px] uppercase tracking-widest px-2 py-1 rounded-full font-bold border border-red-100 animate-pulse">
                                 Only 2 Left
                               </span>
@@ -307,7 +389,12 @@ function BookingFlow() {
                       type="tel" 
                       placeholder="+15550000000"
                       value={formData.customerPhone}
-                      onChange={(e) => setFormData({...formData, customerPhone: e.target.value})}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        // Allow only numbers and '+'
+                        const cleaned = val.replace(/[^0-9+]/g, '');
+                        setFormData({...formData, customerPhone: cleaned});
+                      }}
                       className="w-full bg-slate-50/50 border-0 rounded-2xl py-4 px-6 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all placeholder:text-slate-300"
                     />
                   </div>
@@ -349,29 +436,83 @@ function BookingFlow() {
             {currentStep === 4 && (
               <div className="animate-in fade-in slide-in-from-right-4 duration-500">
                 <BookingSummary bookingData={formData} />
+                <div className="mt-12 pt-8 border-t border-slate-100 flex flex-col items-center gap-6">
+                  {error && (
+                    <div className="w-full bg-red-50 text-red-500 p-4 rounded-2xl text-xs font-medium border border-red-100">
+                      {error}
+                    </div>
+                  )}
+                  <button
+                    onClick={async () => {
+                      setLoading(true);
+                      setError(null);
+                      try {
+                        const { createBooking } = await import('@/lib/api');
+                        const result = await createBooking(formData);
+                        // Show success state
+                        setCurrentStep(5); 
+                      } catch (err: any) {
+                        setError(err.message || 'Failed to create booking. Please try again.');
+                      } finally {
+                        setLoading(false);
+                      }
+                    }}
+                    disabled={loading}
+                    className="w-full bg-coastal-seafoam text-white px-12 py-5 rounded-2xl font-bold tracking-[0.2em] uppercase hover:bg-slate-900 transition-all shadow-xl shadow-coastal-seafoam/20 disabled:opacity-50"
+                  >
+                    {loading ? 'Confirming Sanctuary...' : 'Confirm Reservation'}
+                  </button>
+                  <p className="text-[10px] uppercase tracking-widest text-slate-400 font-medium">
+                    By confirming, you agree to our coastal residency terms
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {currentStep === 5 && (
+              <div className="animate-in zoom-in duration-700 flex flex-col items-center text-center py-12">
+                <div className="w-20 h-20 bg-coastal-seafoam/10 rounded-full flex items-center justify-center text-coastal-seafoam mb-8">
+                  <CheckCircle2 className="w-10 h-10" />
+                </div>
+                <h3 className="font-playfair text-4xl text-slate-900 mb-4">Sanctuary Reserved</h3>
+                <p className="text-slate-500 font-light max-w-sm mx-auto leading-relaxed mb-8">
+                  Check your WhatsApp for confirmation details. We've sent the check-in rituals and deposit information to <span className="font-medium text-slate-900">{formData.customerPhone}</span>.
+                </p>
+                <button 
+                  onClick={() => window.location.reload()}
+                  className="text-coastal-seafoam font-bold tracking-widest uppercase text-[10px] hover:underline"
+                >
+                  Return to the Shore
+                </button>
               </div>
             )}
           </div>
 
           {/* Navigation */}
           {currentStep < 4 && (
-            <div className="mt-12 flex justify-between items-center pt-8 border-t border-slate-100">
-              <button
-                onClick={prevStep}
-                disabled={currentStep === 1}
-                className={`flex items-center gap-2 text-sm font-medium transition-colors ${
-                  currentStep === 1 ? 'text-slate-300 cursor-not-allowed' : 'text-slate-500 hover:text-slate-900'
-                }`}
-              >
-                <ChevronLeft className="w-4 h-4" /> Back
-              </button>
-              <button
-                onClick={nextStep}
-                disabled={currentStep === 1 && (!formData.checkIn || !formData.checkOut)}
-                className={`flex items-center gap-2 bg-slate-900 text-white px-8 py-4 rounded-2xl text-sm font-medium hover:bg-slate-800 transition-all shadow-xl shadow-slate-900/10 disabled:bg-slate-100 disabled:text-slate-400 disabled:shadow-none disabled:cursor-not-allowed`}
-              >
-                {currentStep === 3 ? 'Review Summary' : 'Next Step'} <ChevronRight className="w-4 h-4" />
-              </button>
+            <div className="mt-12 space-y-6">
+              {error && (
+                <div className="bg-red-50 text-red-500 p-4 rounded-2xl text-xs font-medium border border-red-100 animate-in fade-in slide-in-from-top-2">
+                  {error}
+                </div>
+              )}
+              <div className="flex justify-between items-center pt-8 border-t border-slate-100">
+                <button
+                  onClick={prevStep}
+                  disabled={currentStep === 1}
+                  className={`flex items-center gap-2 text-sm font-medium transition-colors ${
+                    currentStep === 1 ? 'text-slate-300 cursor-not-allowed' : 'text-slate-500 hover:text-slate-900'
+                  }`}
+                >
+                  <ChevronLeft className="w-4 h-4" /> Back
+                </button>
+                <button
+                  onClick={handleNext}
+                  className={`flex items-center gap-2 bg-slate-900 text-white px-8 py-4 rounded-2xl text-sm font-medium hover:bg-slate-800 transition-all shadow-xl shadow-slate-900/10 disabled:bg-slate-100 disabled:text-slate-400 disabled:shadow-none disabled:cursor-not-allowed`}
+                >
+                  {currentStep === 3 ? 'Review Summary' : 'Next Step'} <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
             </div>
           )}
           
@@ -385,18 +526,269 @@ function BookingFlow() {
           )}
         </div>
       </div>
+
+      {showPricingCalendar && (
+        <PricingCalendar 
+          roomType={formData.roomType} 
+          onClose={() => setShowPricingCalendar(false)} 
+          onSelectDate={(date) => {
+            setFormData({ ...formData, checkIn: date });
+            setShowPricingCalendar(false);
+          }}
+        />
+      )}
     </main>
   );
 }
 
 export default function Home() {
+  const searchParams = useSearchParams();
+  const [isBookingOpen, setIsBookingOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [philosophyRevealed, setPhilosophyRevealed] = useState(false);
+
+  useEffect(() => {
+    if (searchParams.get('book') === 'true') {
+      setIsBookingOpen(true);
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 600);
+    };
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setPhilosophyRevealed(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.2 }
+    );
+
+    const target = document.getElementById('philosophy-image');
+    if (target) observer.observe(target);
+
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      observer.disconnect();
+    };
+  }, []);
+
   return (
     <Suspense fallback={
       <div className="min-h-screen flex items-center justify-center bg-coastal-white">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-coastal-seafoam"></div>
       </div>
     }>
-      <BookingFlow />
+      <main className="bg-coastal-white font-sans overflow-x-hidden relative">
+        
+        {/* Sticky Availability Bar */}
+        <div className={`fixed top-0 left-0 w-full z-[80] transition-all duration-700 transform ${
+          isScrolled ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'
+        }`}>
+          <div className="bg-white/80 backdrop-blur-md border-b border-coastal-beige/50 px-6 py-4">
+             <div className="max-w-7xl mx-auto flex justify-between items-center">
+                <div className="flex items-center gap-3">
+                   <Waves className="w-6 h-6 text-coastal-seafoam" />
+                   <span className="font-playfair text-xl text-slate-900">Namita Beach House</span>
+                </div>
+                <button 
+                  onClick={() => setIsBookingOpen(true)}
+                  className="px-8 py-3 bg-slate-900 text-white rounded-full text-[10px] font-bold tracking-[0.2em] uppercase hover:bg-coastal-seafoam transition-all shadow-lg shadow-slate-900/10"
+                >
+                  Reserve Sanctuary
+                </button>
+             </div>
+          </div>
+        </div>
+
+        {/* Cinematic Hero Section */}
+        <section className="relative h-screen flex items-center justify-center overflow-hidden">
+          <div className="absolute inset-0 z-0">
+            <Image 
+              src="/images/resort/Hotel/IMG20241204150237.jpg" 
+              alt="Panoramic Coastal View"
+              fill
+              priority
+              sizes="100vw"
+              className="object-cover animate-slow-pan"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-slate-900/60 via-slate-900/20 to-coastal-white" />
+          </div>
+
+          <div className="relative z-10 text-center px-6 max-w-5xl mx-auto">
+            <Waves className="w-16 h-16 text-white/80 mx-auto mb-8 animate-pulse" />
+            <h1 className="font-playfair text-6xl md:text-8xl text-white mb-8 leading-tight tracking-tight drop-shadow-2xl">
+              Where Silence <br className="hidden md:block" /> Meets the Sea
+            </h1>
+            <p className="text-white/90 font-light tracking-[0.3em] uppercase text-sm mb-12 max-w-2xl mx-auto leading-loose">
+              Experience the art of coastal minimalism. <br /> A sanctuary for the soul, a rhythm for the heart.
+            </p>
+            <div className="flex flex-col md:flex-row gap-6 justify-center items-center">
+              <button 
+                onClick={() => setIsBookingOpen(true)}
+                className="px-12 py-5 bg-white text-slate-900 rounded-full font-medium hover:bg-coastal-seafoam hover:text-white transition-all shadow-2xl tracking-widest uppercase text-xs"
+              >
+                Reserve Your Stay
+              </button>
+              <button 
+                onClick={() => document.getElementById('philosophy')?.scrollIntoView({ behavior: 'smooth' })}
+                className="px-12 py-5 bg-transparent border border-white/30 text-white rounded-full font-medium hover:bg-white/10 transition-all backdrop-blur-md tracking-widest uppercase text-xs"
+              >
+                Our Philosophy
+              </button>
+            </div>
+          </div>
+
+          {/* Scroll Indicator */}
+          <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-4">
+             <span className="text-white/40 text-[10px] uppercase tracking-[0.5em] font-bold rotate-90 mb-8">Scroll</span>
+             <div className="w-[1px] h-20 bg-gradient-to-b from-white/60 to-transparent" />
+          </div>
+        </section>
+
+        {/* Philosophy Section */}
+        <section id="philosophy" className="py-32 px-6 bg-coastal-white">
+          <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+             <div className="space-y-10">
+                <span className="text-coastal-seafoam font-bold tracking-[0.3em] uppercase text-[10px] block">The Essence</span>
+                <h2 className="font-playfair text-5xl md:text-6xl text-slate-900 leading-tight">
+                  A sanctuary built on <br /> the beauty of less.
+                </h2>
+                <p className="text-slate-500 font-light leading-relaxed text-lg max-w-lg">
+                  At Namita Beach House, we believe that true luxury isn't found in excess, but in the clarity of space and the rhythm of nature. Our architecture breathes with the ocean, our interiors mirror the dunes.
+                </p>
+                <div className="grid grid-cols-2 gap-10 pt-8">
+                   <div className="space-y-4">
+                      <h4 className="font-playfair text-3xl text-slate-900">98%</h4>
+                      <p className="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Natural Materials</p>
+                   </div>
+                   <div className="space-y-4">
+                      <h4 className="font-playfair text-3xl text-slate-900">Zero</h4>
+                      <p className="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Digital Noise</p>
+                   </div>
+                </div>
+             </div>
+             <div 
+              id="philosophy-image"
+              className={`relative aspect-[4/5] rounded-[3rem] overflow-hidden shadow-2xl transition-all duration-1000 ${
+                philosophyRevealed ? 'opacity-100' : 'opacity-0'
+              }`}
+             >
+                <Image 
+                  src="/images/resort/Hotel/IMG_20260327_172419.jpg" 
+                  alt="Coastal Essence" 
+                  fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  className={`object-cover ${
+                    philosophyRevealed ? 'animate-reveal-majestic' : ''
+                  }`}
+                />
+                <div className="absolute inset-0 bg-slate-900/10" />
+             </div>
+          </div>
+        </section>
+
+        {/* Featured Sanctuaries */}
+        <section className="py-32 px-6 bg-coastal-beige/30">
+           <div className="max-w-7xl mx-auto">
+              <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-8">
+                 <div className="space-y-6">
+                    <span className="text-coastal-seafoam font-bold tracking-[0.3em] uppercase text-[10px] block">Our Rooms</span>
+                    <h2 className="font-playfair text-5xl text-slate-900">Featured Sanctuaries</h2>
+                 </div>
+                 <a href="/rooms" className="group flex items-center gap-4 text-slate-900 font-medium tracking-widest uppercase text-xs">
+                    Explore All Rooms <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                 </a>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                 <div 
+                  onClick={() => setIsBookingOpen(true)}
+                  className="group cursor-pointer"
+                 >
+                    <div className="relative aspect-video rounded-[2.5rem] overflow-hidden mb-8 shadow-xl">
+                       <Image src="/images/resort/Hotel/WhatsApp Image 2026-05-08 at 8.43.20 PM.jpeg" alt="Luxury Suite" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover group-hover:scale-110 transition-transform duration-1000" />
+                       <div className="absolute top-6 right-6 bg-white/90 backdrop-blur-md px-6 py-2 rounded-full text-[10px] font-bold tracking-widest uppercase text-slate-900 shadow-sm">
+                          From $450
+                       </div>
+                    </div>
+                    <h3 className="font-playfair text-3xl text-slate-900 mb-3">Ocean Front Luxury</h3>
+                    <p className="text-slate-500 font-light mb-6">Unobstructed views where the sky meets the sea.</p>
+                 </div>
+                 <div 
+                  onClick={() => setIsBookingOpen(true)}
+                  className="group cursor-pointer"
+                 >
+                    <div className="relative aspect-video rounded-[2.5rem] overflow-hidden mb-8 shadow-xl">
+                       <Image src="/images/resort/Hotel/WhatsApp Image 2026-05-08 at 8.43.22 PM.jpeg" alt="Garden Villa" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover group-hover:scale-110 transition-transform duration-1000" />
+                       <div className="absolute top-6 right-6 bg-white/90 backdrop-blur-md px-6 py-2 rounded-full text-[10px] font-bold tracking-widest uppercase text-slate-900 shadow-sm">
+                          From $380
+                       </div>
+                    </div>
+                    <h3 className="font-playfair text-3xl text-slate-900 mb-3">Coastal Garden Villa</h3>
+                    <p className="text-slate-500 font-light mb-6">A private retreat nestled in native flora.</p>
+                 </div>
+              </div>
+           </div>
+        </section>
+
+        {/* Reservation Drawer Overlay */}
+        <div 
+          className={`fixed inset-0 z-[100] transition-all duration-500 ${
+            isBookingOpen ? 'visible pointer-events-auto' : 'invisible pointer-events-none'
+          }`}
+        >
+           {/* Backdrop */}
+           <div 
+            className={`absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity duration-500 ${
+              isBookingOpen ? 'opacity-100' : 'opacity-0'
+            }`}
+            onClick={() => setIsBookingOpen(false)}
+           />
+           
+           {/* Drawer Content */}
+           <div 
+            className={`absolute top-0 right-0 h-full w-full md:w-[600px] lg:w-[800px] bg-coastal-beige shadow-2xl transition-transform duration-700 ease-out transform ${
+              isBookingOpen ? 'translate-x-0' : 'translate-x-full'
+            } overflow-y-auto`}
+           >
+              <div className="p-8 md:p-12">
+                 <div className="flex justify-between items-center mb-12">
+                    <div className="flex items-center gap-3">
+                       <Waves className="w-8 h-8 text-coastal-seafoam" />
+                       <h2 className="font-playfair text-3xl text-slate-900">Reserve Your Sanctuary</h2>
+                    </div>
+                    <button 
+                      onClick={() => setIsBookingOpen(false)}
+                      className="w-12 h-12 rounded-full border border-slate-200 flex items-center justify-center hover:bg-white transition-colors"
+                    >
+                       <ChevronRight className="w-6 h-6 text-slate-400" />
+                    </button>
+                 </div>
+                 
+                 <div className="animate-in fade-in slide-in-from-right-10 duration-700 delay-300">
+                    <BookingFlow />
+                 </div>
+              </div>
+           </div>
+        </div>
+
+        {/* Footer Teaser */}
+        <section className="py-20 text-center bg-white border-t border-coastal-beige">
+           <p className="text-slate-400 text-[10px] font-bold tracking-[0.5em] uppercase mb-8 italic">Stay in the rhythm of the tides</p>
+           <button 
+             onClick={() => setIsBookingOpen(true)}
+             className="text-slate-900 font-playfair text-4xl hover:text-coastal-seafoam transition-colors underline underline-offset-8"
+           >
+              Begin Your Journey
+           </button>
+        </section>
+      </main>
     </Suspense>
   );
 }

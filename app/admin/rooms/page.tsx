@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { API_BASE_URL } from '@/lib/api';
 import { 
   Plus, 
   Edit2, 
@@ -28,17 +29,19 @@ export default function RoomsManagement() {
     slug: '',
     description: '',
     price: 0,
-    size: '',
     guests: '',
     image_url: '',
     is_active: true,
+    total_inventory: 1,
+    seo_title: '',
+    seo_description: '',
     features: [] as string[]
   });
 
   const fetchRooms = async () => {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:8000/api/v1/rooms');
+      const response = await fetch(`${API_BASE_URL}/rooms`);
       if (response.ok) {
         const data = await response.json();
         setRooms(data);
@@ -61,10 +64,12 @@ export default function RoomsManagement() {
         slug: currentRoom.slug,
         description: currentRoom.description,
         price: currentRoom.price,
-        size: currentRoom.size,
         guests: currentRoom.guests,
         image_url: currentRoom.image_url,
         is_active: currentRoom.is_active,
+        total_inventory: currentRoom.total_inventory || 1,
+        seo_title: currentRoom.seo_title || '',
+        seo_description: currentRoom.seo_description || '',
         features: Array.isArray(currentRoom.features) ? currentRoom.features : []
       });
     } else {
@@ -73,10 +78,12 @@ export default function RoomsManagement() {
         slug: '',
         description: '',
         price: 0,
-        size: '',
         guests: '',
         image_url: '',
         is_active: true,
+        total_inventory: 1,
+        seo_title: '',
+        seo_description: '',
         features: []
       });
     }
@@ -88,8 +95,8 @@ export default function RoomsManagement() {
     try {
       const token = localStorage.getItem('admin_token');
       const url = currentRoom 
-        ? `http://localhost:8000/api/v1/admin/rooms/${currentRoom.id}` 
-        : `http://localhost:8000/api/v1/admin/rooms`;
+        ? `${API_BASE_URL}/admin/rooms/${currentRoom.id}` 
+        : `${API_BASE_URL}/admin/rooms`;
       
       const response = await fetch(url, {
         method: currentRoom ? 'PUT' : 'POST',
@@ -124,7 +131,7 @@ export default function RoomsManagement() {
       const formDataUpload = new FormData();
       formDataUpload.append('file', file);
 
-      const response = await fetch('http://localhost:8000/api/v1/admin/upload', {
+      const response = await fetch(`${API_BASE_URL}/admin/upload`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` },
         body: formDataUpload
@@ -148,7 +155,7 @@ export default function RoomsManagement() {
     if (!confirm('Are you sure you want to delete this room?')) return;
     try {
       const token = localStorage.getItem('admin_token');
-      const response = await fetch(`http://localhost:8000/api/v1/admin/rooms/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/admin/rooms/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -299,12 +306,12 @@ export default function RoomsManagement() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Size (e.g. 65m²)</label>
+                  <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Total Inventory</label>
                   <input 
                     required
-                    type="text" 
-                    value={formData.size}
-                    onChange={(e) => setFormData({...formData, size: e.target.value})}
+                    type="number" 
+                    value={formData.total_inventory}
+                    onChange={(e) => setFormData({...formData, total_inventory: parseInt(e.target.value)})}
                     className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all"
                   />
                 </div>
@@ -315,6 +322,29 @@ export default function RoomsManagement() {
                     type="text" 
                     value={formData.guests}
                     onChange={(e) => setFormData({...formData, guests: e.target.value})}
+                    className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">SEO Title</label>
+                  <input 
+                    type="text" 
+                    value={formData.seo_title}
+                    onChange={(e) => setFormData({...formData, seo_title: e.target.value})}
+                    placeholder="Search engine title..."
+                    className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">SEO Description</label>
+                  <input 
+                    type="text" 
+                    value={formData.seo_description}
+                    onChange={(e) => setFormData({...formData, seo_description: e.target.value})}
+                    placeholder="Search engine meta description..."
                     className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all"
                   />
                 </div>

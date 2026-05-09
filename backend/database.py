@@ -6,7 +6,9 @@ from sqlalchemy.orm import sessionmaker
 # Build path to the project root
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(BASE_DIR)
-DB_PATH = os.path.join(PROJECT_ROOT, "bookings.db")
+
+# Default to project root but allow override for production (e.g., persistent volume)
+DB_PATH = os.getenv("DATABASE_PATH", os.path.join(PROJECT_ROOT, "bookings.db"))
 
 SQLALCHEMY_DATABASE_URL = f"sqlite:///{DB_PATH}"
 

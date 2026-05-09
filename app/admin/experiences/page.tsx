@@ -1,29 +1,108 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { API_BASE_URL } from '@/lib/api';
 import { Plus, Edit2, Trash2, Clock, DollarSign, Compass, XCircle } from 'lucide-react';
 
 export default function ExperiencesManagement() {
   const [experiences, setExperiences] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingExp, setEditingExp] = useState<any>(null);
+  const [formData, setFormData] = useState({
+    title: '',
+    category: 'Wellness',
+    description: '',
+    price: 0,
+    duration: '',
+    image_url: '',
+    icon_name: 'Sunrise'
+  });
+
+  const fetchExperiences = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/experiences`);
+      if (response.ok) {
+        const data = await response.json();
+        setExperiences(data);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    async function fetchExperiences() {
-      try {
-        const response = await fetch('http://localhost:8000/api/v1/experiences');
-        if (response.ok) {
-          const data = await response.json();
-          setExperiences(data);
-        }
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    }
     fetchExperiences();
   }, []);
+
+  const handleOpenModal = (exp: any = null) => {
+    if (exp) {
+      setEditingExp(exp);
+      setFormData({
+        title: exp.title,
+        category: exp.category,
+        description: exp.description,
+        price: exp.price,
+        duration: exp.duration,
+        image_url: exp.image_url,
+        icon_name: exp.icon_name
+      });
+    } else {
+      setEditingExp(null);
+      setFormData({
+        title: '',
+        category: 'Wellness',
+        description: '',
+        price: 0,
+        duration: '',
+        image_url: '',
+        icon_name: 'Sunrise'
+      });
+    }
+    setIsModalOpen(true);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const token = localStorage.getItem('admin_token');
+    const url = editingExp 
+      ? `${API_BASE_URL}/admin/experiences/${editingExp.id}` 
+      : `${API_BASE_URL}/admin/experiences`;
+    
+    try {
+      const response = await fetch(url, {
+        method: editingExp ? 'PUT' : 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(formData)
+      });
+
+      if (response.ok) {
+        setIsModalOpen(false);
+        fetchExperiences();
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    if (!confirm('Are you sure you want to delete this experience?')) return;
+    const token = localStorage.getItem('admin_token');
+    try {
+      const response = await fetch(`${API_BASE_URL}/admin/experiences/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.ok) fetchExperiences();
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   return (
     <div className="space-y-8">
@@ -63,8 +142,16 @@ export default function ExperiencesManagement() {
               </div>
 
               <div className="flex gap-2">
-                <button className="flex-grow py-3 bg-slate-50 text-slate-600 rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-slate-100 transition-colors">Edit</button>
-                <button className="px-4 py-3 bg-slate-50 text-slate-400 rounded-xl hover:bg-red-50 hover:text-red-500 transition-colors">
+                <button 
+                  onClick={() => handleOpenModal(exp)}
+                  className="flex-grow py-3 bg-slate-50 text-slate-600 rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-slate-100 transition-colors"
+                >
+                  Edit
+                </button>
+                <button 
+                  onClick={() => handleDelete(exp.id)}
+                  className="px-4 py-3 bg-slate-50 text-slate-400 rounded-xl hover:bg-red-50 hover:text-red-500 transition-colors"
+                >
                   <Trash2 className="w-3.5 h-3.5" />
                 </button>
               </div>
@@ -75,13 +162,88 @@ export default function ExperiencesManagement() {
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-6">
-          <div className="bg-white w-full max-w-xl rounded-[3rem] p-12 relative shadow-2xl">
+          <div className="bg-white w-full max-w-2xl rounded-[3rem] p-12 relative shadow-2xl overflow-y-auto max-h-[90vh]">
             <button onClick={() => setIsModalOpen(false)} className="absolute top-8 right-8 text-slate-400 hover:text-slate-900 transition-colors">
               <XCircle className="w-6 h-6" />
             </button>
-            <h2 className="font-playfair text-3xl mb-8">New Experience</h2>
-            <p className="text-slate-400 italic mb-8">Experience creation form will be implemented in the next phase.</p>
-            <button onClick={() => setIsModalOpen(false)} className="w-full bg-slate-900 text-white py-5 rounded-2xl font-medium">Close</button>
+            <h2 className="font-playfair text-3xl mb-8">{editingExp ? 'Edit Experience' : 'New Experience'}</h2>
+            
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Title</label>
+                  <input 
+                    type="text" 
+                    value={formData.title}
+                    onChange={(e) => setFormData({...formData, title: e.target.value})}
+                    className="w-full bg-slate-50 border-0 rounded-2xl py-4 px-6 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all"
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Category</label>
+                  <select 
+                    value={formData.category}
+                    onChange={(e) => setFormData({...formData, category: e.target.value})}
+                    className="w-full bg-slate-50 border-0 rounded-2xl py-4 px-6 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all"
+                  >
+                    <option>Wellness</option>
+                    <option>Dining</option>
+                    <option>Adventure</option>
+                    <option>Culture</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Description</label>
+                <textarea 
+                  value={formData.description}
+                  onChange={(e) => setFormData({...formData, description: e.target.value})}
+                  className="w-full bg-slate-50 border-0 rounded-2xl py-4 px-6 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all min-h-[100px]"
+                  required
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Price ($)</label>
+                  <input 
+                    type="number" 
+                    value={formData.price}
+                    onChange={(e) => setFormData({...formData, price: Number(e.target.value)})}
+                    className="w-full bg-slate-50 border-0 rounded-2xl py-4 px-6 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all"
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Duration</label>
+                  <input 
+                    type="text" 
+                    placeholder="e.g. 90 Minutes"
+                    value={formData.duration}
+                    onChange={(e) => setFormData({...formData, duration: e.target.value})}
+                    className="w-full bg-slate-50 border-0 rounded-2xl py-4 px-6 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Image URL</label>
+                <input 
+                  type="text" 
+                  value={formData.image_url}
+                  onChange={(e) => setFormData({...formData, image_url: e.target.value})}
+                  className="w-full bg-slate-50 border-0 rounded-2xl py-4 px-6 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all"
+                  required
+                />
+              </div>
+
+              <button type="submit" className="w-full bg-slate-900 text-white py-5 rounded-2xl font-medium hover:bg-slate-800 transition-all shadow-xl shadow-slate-900/10">
+                {editingExp ? 'Save Changes' : 'Create Experience'}
+              </button>
+            </form>
           </div>
         </div>
       )}

@@ -3,6 +3,7 @@ from typing import List, Optional
 from datetime import datetime
 
 class BookingBase(BaseModel):
+    user_id: Optional[int] = None
     customer_name: str
     customer_phone: str
     room_type: str
@@ -69,11 +70,13 @@ class RoomBase(BaseModel):
     slug: str
     description: str
     price: float
-    size: str
     guests: str
     features: List[str]
     image_url: str
+    total_inventory: Optional[int] = 1
     is_active: bool = True
+    seo_title: Optional[str] = None
+    seo_description: Optional[str] = None
 
 class RoomCreate(RoomBase):
     pass
@@ -91,6 +94,8 @@ class ExperienceBase(BaseModel):
     duration: str
     image_url: str
     icon_name: str
+    seo_title: Optional[str] = None
+    seo_description: Optional[str] = None
 
 class ExperienceCreate(ExperienceBase):
     pass
@@ -114,5 +119,44 @@ class GalleryImageResponse(GalleryImageBase):
     class Config:
         from_attributes = True
 
+class DailyPrice(BaseModel):
+    date: str
+    price: float
+    is_available: bool
+
+class PricingResponse(BaseModel):
+    room_type: str
+    month: int
+    year: int
+    daily_prices: List[DailyPrice]
+
 class MessageResponse(BaseModel):
     message: str
+
+class SubscriberBase(BaseModel):
+    email: str
+
+class SubscriberCreate(SubscriberBase):
+    pass
+
+class SubscriberResponse(SubscriberBase):
+    id: int
+    created_at: datetime
+    class Config:
+        from_attributes = True
+
+class LocalSpotBase(BaseModel):
+    name: str
+    distance: str
+    google_maps_url: Optional[str] = None
+    x_pos: int
+    y_pos: int
+
+class LocalSpotCreate(LocalSpotBase):
+    pass
+
+class LocalSpotResponse(LocalSpotBase):
+    id: int
+    created_at: datetime
+    class Config:
+        from_attributes = True
