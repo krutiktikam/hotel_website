@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { Waves, Heart, Shield, Anchor } from 'lucide-react';
 
 export default function AboutPage() {
@@ -11,17 +12,18 @@ export default function AboutPage() {
         <Waves className="w-12 h-12 text-coastal-seafoam mx-auto mb-6" />
         <h1 className="font-playfair text-5xl md:text-7xl text-slate-900 mb-6">Our Story</h1>
         <p className="text-slate-500 max-w-2xl mx-auto font-light leading-relaxed text-lg">
-          Born from the rhythm of the tides and the silence of the dunes, Azure Sands is more than a hotel—it is a sanctuary for the minimalist soul.
+          Born from the rhythm of the tides and the silence of the dunes, Namita Beach House is more than a hotel—it is a sanctuary for the minimalist soul.
         </p>
       </section>
 
       {/* Philosophy Section */}
       <section className="px-6 max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-20 items-center mb-32">
-        <div className="aspect-square rounded-[3rem] overflow-hidden shadow-2xl shadow-slate-200/50">
-          <img 
+        <div className="relative aspect-square rounded-[3rem] overflow-hidden shadow-2xl shadow-slate-200/50">
+          <Image 
             src="https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&q=80&w=1200" 
             alt="Hotel Architecture" 
-            className="w-full h-full object-cover"
+            fill
+            className="object-cover"
           />
         </div>
         <div className="space-y-8">

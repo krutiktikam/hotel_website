@@ -44,16 +44,13 @@ const Header = () => {
         <div className={`transition-all duration-500 overflow-hidden ${isScrolled ? 'max-h-0 opacity-0 mb-0' : 'max-h-10 opacity-100 mt-6 mb-6'}`}>
           <div className="flex justify-between items-center">
             <CoastalPulse />
-            <div className="hidden lg:block text-[10px] uppercase tracking-[0.2em] text-slate-400 font-medium">
-              Sanctuary located in <span className="text-slate-600">Atlantic Coast, SC</span>
-            </div>
           </div>
         </div>
 <div className="flex items-center justify-between gap-8">
   {/* Logo - Purely text-based for absolute minimalism */}
   <Link href="/" className="group shrink-0">
     <span className="font-playfair text-2xl tracking-[0.05em] text-slate-900 border-b-2 border-transparent group-hover:border-coastal-seafoam transition-all duration-300">
-      AZURE <span className="font-light italic text-slate-500">SANDS</span>
+      NAMITA <span className="font-light italic text-slate-500">BEACH HOUSE</span>
     </span>
   </Link>
 
@@ -70,9 +67,12 @@ const Header = () => {
 
           {/* Actions */}
           <div className="flex items-center gap-4 shrink-0">
-            <button className="hidden sm:flex items-center gap-2 bg-slate-900 text-white px-6 py-2.5 rounded-full text-sm font-medium hover:bg-slate-800 transition-all shadow-lg shadow-slate-900/10 whitespace-nowrap">
+            <Link 
+              href="/?book=true"
+              className="hidden sm:flex items-center gap-2 bg-slate-900 text-white px-6 py-2.5 rounded-full text-sm font-medium hover:bg-slate-800 transition-all shadow-lg shadow-slate-900/10 whitespace-nowrap"
+            >
               Book Now
-            </button>
+            </Link>
             
             <button 
               className="md:hidden text-slate-800 p-2"
@@ -92,9 +92,13 @@ const Header = () => {
           <Link href="/about" className="block text-lg font-playfair text-slate-800" onClick={() => setMobileMenuOpen(false)}>About</Link>
           <Link href="/gallery" className="block text-lg font-playfair text-slate-800" onClick={() => setMobileMenuOpen(false)}>Gallery</Link>
           <Link href="/contact" className="block text-lg font-playfair text-slate-800" onClick={() => setMobileMenuOpen(false)}>Contact</Link>
-          <button className="w-full bg-slate-900 text-white py-4 rounded-2xl font-medium mt-4">
+          <Link 
+            href="/?book=true"
+            className="block w-full bg-slate-900 text-white py-4 rounded-2xl font-medium mt-4 text-center"
+            onClick={() => setMobileMenuOpen(false)}
+          >
             Book Now
-          </button>
+          </Link>
         </div>
       )}
     </header>

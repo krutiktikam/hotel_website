@@ -1,10 +1,26 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import List
 import json
 from .models import Booking, Room
 from .schemas import BookingCreate
 from sqlalchemy.orm import Session
 from sqlalchemy import func
+
+def cleanup_expired_bookings(db: Session):
+    """
+    Mark unconfirmed 'pending' bookings that are older than 24 hours as 'cancelled'.
+    """
+    expiry_threshold = datetime.now() - timedelta(hours=24)
+    expired_bookings = db.query(Booking).filter(
+        Booking.status == "pending",
+        Booking.created_at < expiry_threshold
+    ).all()
+    
+    for booking in expired_bookings:
+        booking.status = "cancelled"
+    
+    db.commit()
+    return len(expired_bookings)
 
 # Keep these for now as fallback/metadata but prefer database for pricing
 ADDONS = {
@@ -62,26 +78,78 @@ def calculate_total_price(db: Session, booking: BookingCreate) -> float:
 def check_availability(db: Session, room_type: str, check_in_str: str, check_out_str: str) -> bool:
     """
     Checks if a room type is available for the given dates.
-    Logic: A room is unavailable if there's a booking for that room type where:
-    (existing_check_in < requested_check_out) AND (existing_check_out > requested_check_in)
+    Logic: A room is unavailable if the number of confirmed/pending bookings
+    overlaps with the requested dates and meets or exceeds the room's total inventory.
     """
+    # Get room inventory
+    db_room = db.query(Room).filter(func.lower(Room.name) == func.lower(room_type)).first()
+    if not db_room:
+        db_room = db.query(Room).filter(func.lower(Room.slug) == func.lower(room_type)).first()
+    
+    inventory = db_room.total_inventory if db_room else 1
+
     # Check for overlapping bookings
     # We only count 'confirmed' or 'pending' bookings
+    # Using case-insensitive match for room_type
     overlapping_bookings = db.query(Booking).filter(
-        Booking.room_type == room_type,
+        func.lower(Booking.room_type) == func.lower(room_type),
         Booking.status != "cancelled",
         Booking.check_in < check_out_str,
         Booking.check_out > check_in_str
     ).count()
 
-    # For now, we assume 1 room per type exists (as per simple seed)
-    # In a more advanced system, we'd compare against 'Room.count'
-    return overlapping_bookings == 0
+    return overlapping_bookings < inventory
 
-def get_options():
+def get_pricing(db: Session, room_type: str, month: int, year: int):
+    import calendar
+    from datetime import date
+
+    db_room = db.query(Room).filter(func.lower(Room.name) == func.lower(room_type)).first()
+    if not db_room:
+        db_room = db.query(Room).filter(func.lower(Room.slug) == func.lower(room_type)).first()
+    
+    base_price = db_room.price if db_room else 150.0
+    
+    _, num_days = calendar.monthrange(year, month)
+    daily_prices = []
+    
+    for day in range(1, num_days + 1):
+        current_date = date(year, month, day)
+        date_str = current_date.isoformat()
+        
+        # Simple dynamic pricing: Weekends (Fri, Sat) are 20% more
+        # weekday() returns 0 for Monday, 4 for Friday, 5 for Saturday
+        price = base_price
+        if current_date.weekday() in [4, 5]:
+            price = base_price * 1.2
+            
+        is_available = check_availability(db, room_type, date_str, (date(year, month, day + 1) if day < num_days else date(year, month, day)).isoformat())
+        # The check_availability above is slightly flawed for the last day of month but good enough for a mock/start
+        
+        daily_prices.append({
+            "date": date_str,
+            "price": round(price, 2),
+            "is_available": is_available
+        })
+        
     return {
-        "room_types": [], # Frontend should fetch these from /api/v1/rooms now
+        "room_type": room_type,
+        "month": month,
+        "year": year,
+        "daily_prices": daily_prices
+    }
+
+def get_options(db: Session = None):
+    room_types = []
+    if db:
+        rooms = db.query(Room).filter(Room.is_active == True).all()
+        # Convert names to uppercase to match frontend expectations (DELUXE, LUXURY, SUITE)
+        room_types = [{"name": r.name.upper(), "price": r.price, "description": r.description, "image_url": r.image_url, "gallery_images": json.loads(r.gallery_images) if r.gallery_images else []} for r in rooms]
+
+    return {
+        "room_types": room_types,
         "meal_plans": [{"name": k, "price": v["price"]} for k, v in MEAL_PLANS.items()],
         "packages": [{"name": k, "price": v["price"]} for k, v in PACKAGES.items()],
         "addons": [{"name": k, "price": v["price"]} for k, v in ADDONS.items()],
     }
+

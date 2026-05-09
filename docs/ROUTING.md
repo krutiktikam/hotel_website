@@ -1,4 +1,4 @@
-# Azure Sands - URL Routing Map
+# Namita Beach House - URL Routing Map
 
 | URL Path | Description | Component/Page |
 | :--- | :--- | :--- |

@@ -1,37 +1,28 @@
-'use client';
-
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+import { Metadata } from 'next';
+import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight, Star, Wind, Droplets } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
+import { API_BASE_URL } from '@/lib/api';
 
-export default function RoomsPage() {
-  const [rooms, setRooms] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function loadRooms() {
-      try {
-        const response = await fetch('http://localhost:8000/api/v1/rooms');
-        if (response.ok) {
-          const data = await response.json();
-          setRooms(data);
-        }
-      } catch (err) {
-        console.error('Failed to load rooms:', err);
-      } finally {
-        setLoading(false);
-      }
-    }
-    loadRooms();
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-coastal-white">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-coastal-seafoam"></div>
-      </div>
-    );
+export const metadata: Metadata = {
+  title: 'Our Sanctuaries | Namita Beach House',
+  description: 'Explore our minimalist, coastal-inspired suites and villas in Tarkarli. Each room is a canvas of calm designed for the minimalist soul.',
+  openGraph: {
+    title: 'Our Sanctuaries | Namita Beach House',
+    description: 'Minimalist luxury rooms in Tarkarli.',
+    images: ['/images/resort/Hotel/WhatsApp Image 2026-05-08 at 8.43.20 PM.jpeg'],
   }
+};
+
+async function getRooms() {
+  const response = await fetch(`${API_BASE_URL}/rooms`, { cache: 'no-store' });
+  if (!response.ok) return [];
+  return response.json();
+}
+
+export default async function RoomsPage() {
+  const rooms = await getRooms();
 
   return (
     <main className="pt-32 pb-20 px-6">
@@ -44,14 +35,23 @@ export default function RoomsPage() {
         </header>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-          {rooms.map((room) => (
+          {rooms.map((room: any) => (
             <div key={room.id} className="group flex flex-col bg-coastal-white rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 border border-coastal-beige/30">
               <div className="relative aspect-[4/5] overflow-hidden">
-                <img 
-                  src={room.image_url} 
-                  alt={room.name} 
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                />
+                {room.image_url ? (
+                  <Image 
+                    src={room.image_url.startsWith('http') ? room.image_url : encodeURI(room.image_url)} 
+                    alt={room.name} 
+                    fill
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    priority={room.id <= 3}
+                    className="object-cover transition-transform duration-700 group-hover:scale-110"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-slate-100 flex items-center justify-center text-slate-600">
+                    No Image Available
+                  </div>
+                )}
                 <div className="absolute top-6 left-6 bg-coastal-white/90 backdrop-blur-sm px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase text-slate-800">
                   From ${room.price}
                 </div>
@@ -64,23 +64,23 @@ export default function RoomsPage() {
               <div className="p-8 flex-1 flex flex-col">
                 <div className="flex items-center gap-2 mb-4">
                   <span className="w-1.5 h-1.5 rounded-full bg-coastal-seafoam animate-pulse" />
-                  <span className="text-[10px] uppercase tracking-widest text-slate-400 font-medium">{10 + room.id} people viewing now</span>
+                  <span className="text-[10px] uppercase tracking-widest text-slate-600 font-medium">{10 + room.id} people viewing now</span>
                 </div>
                 <h2 className="font-playfair text-2xl text-slate-900 mb-3">{room.name}</h2>
-                <p className="text-slate-500 font-light text-sm mb-6 flex-1">{room.description}</p>
+                <p className="text-slate-700 font-light text-sm mb-6 flex-1">{room.description}</p>
                 
                 <div className="flex flex-wrap gap-2 mb-8">
                   {room.features.map((f: string) => (
-                    <span key={f} className="text-[10px] uppercase tracking-widest text-slate-400 bg-slate-50 px-2.5 py-1 rounded-md border border-slate-100">{f}</span>
+                    <span key={f} className="text-[10px] uppercase tracking-widest text-slate-600 bg-slate-50 px-2.5 py-1 rounded-md border border-slate-100">{f}</span>
                   ))}
                 </div>
 
                 <Link 
                   href={`/rooms/${room.slug}`}
-                  className="inline-flex items-center justify-between w-full text-slate-800 font-medium group/btn"
+                  className="inline-flex items-center justify-between w-full text-slate-900 font-bold group/btn"
                 >
                   Explore Details 
-                  <span className="w-10 h-10 rounded-full bg-coastal-beige flex items-center justify-center transition-all group-hover/btn:bg-coastal-seafoam">
+                  <span className="w-10 h-10 rounded-full bg-coastal-seafoam flex items-center justify-center transition-all group-hover/btn:bg-slate-900 group-hover/btn:text-white">
                     <ArrowRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-0.5" />
                   </span>
                 </Link>

@@ -19,40 +19,44 @@ export default function ContactPage() {
         <div className="space-y-12">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
             <div className="space-y-4 p-8 bg-coastal-beige/20 rounded-[2rem] border border-coastal-beige/50">
-              <Mail className="w-6 h-6 text-slate-400" />
-              <h3 className="font-playfair text-xl">Reservations</h3>
-              <p className="text-sm text-slate-500 font-light">stay@azuresands.com</p>
+              <Mail className="w-6 h-6 text-slate-600" />
+              <h3 className="font-playfair text-xl text-slate-900">Reservations</h3>
+              <p className="text-sm text-slate-900 font-medium tracking-wide">stay@namitabeachhouse.com</p>
             </div>
             <div className="space-y-4 p-8 bg-coastal-beige/20 rounded-[2rem] border border-coastal-beige/50">
-              <Phone className="w-6 h-6 text-slate-400" />
-              <h3 className="font-playfair text-xl">Concierge</h3>
-              <p className="text-sm text-slate-500 font-light">+91 8766449594</p>
+              <Phone className="w-6 h-6 text-slate-600" />
+              <h3 className="font-playfair text-xl text-slate-900">Concierge</h3>
+              <p className="text-sm text-slate-900 font-medium tracking-wide">+91 8766449594</p>
             </div>
             <div className="space-y-4 p-8 bg-coastal-beige/20 rounded-[2rem] border border-coastal-beige/50">
-              <MapPin className="w-6 h-6 text-slate-400" />
-              <h3 className="font-playfair text-xl">Location</h3>
-              <p className="text-sm text-slate-500 font-light">South Atlantic Coast, SC</p>
+              <MapPin className="w-6 h-6 text-slate-600" />
+              <h3 className="font-playfair text-xl text-slate-900">Location</h3>
+              <p className="text-sm text-slate-900 font-medium tracking-wide">Tarkarli Beach, Maharashtra, India</p>
             </div>
             <div className="space-y-4 p-8 bg-coastal-beige/20 rounded-[2rem] border border-coastal-beige/50">
-              <Clock className="w-6 h-6 text-slate-400" />
-              <h3 className="font-playfair text-xl">Check-in</h3>
-              <p className="text-sm text-slate-500 font-light">3:00 PM / 11:00 AM</p>
-            </div>
-          </div>
+              <Clock className="w-6 h-6 text-slate-600" />
+              <h3 className="font-playfair text-xl text-slate-900">Check-in</h3>
+              <p className="text-sm text-slate-900 font-medium tracking-wide">3:00 PM / 11:00 AM</p>
+            </div>          </div>
 
-          <div className="aspect-video w-full rounded-[2.5rem] overflow-hidden bg-slate-100 border border-slate-200 shadow-sm relative">
+          <a 
+            href="https://maps.app.goo.gl/gY61z6TKHnWAvJN88" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="block aspect-video w-full rounded-[2.5rem] overflow-hidden bg-slate-100 border border-slate-200 shadow-sm relative group cursor-pointer"
+          >
              <img 
                src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&q=80&w=1200" 
-               className="w-full h-full object-cover opacity-60 grayscale" 
+               className="w-full h-full object-cover opacity-60 grayscale transition-transform duration-700 group-hover:scale-105" 
                alt="Map Placeholder"
              />
              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="bg-white/90 backdrop-blur-md px-8 py-4 rounded-full shadow-lg flex items-center gap-3">
+                <div className="bg-white/90 backdrop-blur-md px-8 py-4 rounded-full shadow-lg flex items-center gap-3 group-hover:bg-white transition-colors">
                   <MapPin className="w-5 h-5 text-coastal-seafoam" />
                   <span className="text-sm font-medium text-slate-800">Explore on Google Maps</span>
                 </div>
              </div>
-          </div>
+          </a>
         </div>
 
         {/* Contact Form */}

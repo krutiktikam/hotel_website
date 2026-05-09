@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { API_BASE_URL } from '@/lib/api';
 import { Waves, Lock, User, ArrowRight } from 'lucide-react';
 
 export default function AdminLoginPage() {
@@ -21,7 +22,7 @@ export default function AdminLoginPage() {
       formData.append('username', username);
       formData.append('password', password);
 
-      const response = await fetch('http://localhost:8000/api/v1/auth/login', {
+      const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: formData,
@@ -45,7 +46,7 @@ export default function AdminLoginPage() {
         <div className="text-center mb-10">
           <Waves className="w-12 h-12 text-coastal-seafoam mx-auto mb-4" />
           <h1 className="font-playfair text-3xl text-slate-900">Admin Portal</h1>
-          <p className="text-slate-400 text-sm font-light mt-2 uppercase tracking-widest">Azure Sands Management</p>
+          <p className="text-slate-400 text-sm font-light mt-2 uppercase tracking-widest">Namita Beach House Management</p>
         </div>
 
         <form onSubmit={handleLogin} className="space-y-6">

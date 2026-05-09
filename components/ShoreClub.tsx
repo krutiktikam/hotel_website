@@ -2,19 +2,25 @@
 
 import React, { useState } from 'react';
 import { Mail, ArrowRight, Check } from 'lucide-react';
+import { subscribeToShoreClub } from '@/lib/api';
 
 const ShoreClub = () => {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success'>('idle');
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus('loading');
-    // Simulate API call
-    setTimeout(() => {
+    setError(null);
+    try {
+      await subscribeToShoreClub(email);
       setStatus('success');
       setEmail('');
-    }, 1500);
+    } catch (err: any) {
+      setError('Connection lost. Please try again.');
+      setStatus('idle');
+    }
   };
 
   return (

@@ -1,7 +1,9 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { Camera, Maximize2 } from 'lucide-react';
+import { API_BASE_URL } from '@/lib/api';
 
 export default function GalleryPage() {
   const [images, setImages] = useState<any[]>([]);
@@ -10,7 +12,7 @@ export default function GalleryPage() {
   useEffect(() => {
     async function loadGallery() {
       try {
-        const response = await fetch('http://localhost:8000/api/v1/gallery');
+        const response = await fetch(`${API_BASE_URL}/gallery`);
         if (response.ok) {
           const data = await response.json();
           setImages(data);
@@ -37,8 +39,8 @@ export default function GalleryPage() {
       <section className="px-6 max-w-7xl mx-auto mb-20 text-center">
         <Camera className="w-10 h-10 text-coastal-seafoam mx-auto mb-6" />
         <h1 className="font-playfair text-5xl md:text-6xl text-slate-900 mb-6">Atmosphere</h1>
-        <p className="text-slate-500 max-w-2xl mx-auto font-light tracking-widest uppercase text-xs">
-          Visual glimpses of the Azure Sands experience.
+        <p className="text-slate-700 max-w-2xl mx-auto font-light tracking-widest uppercase text-xs">
+          Visual glimpses of the Namita Beach House experience.
         </p>
       </section>
 
@@ -49,11 +51,19 @@ export default function GalleryPage() {
               key={idx} 
               className={`group relative rounded-[2rem] overflow-hidden bg-slate-100 transition-all duration-700 hover:shadow-2xl hover:shadow-slate-200/50 ${img.span_class || ''}`}
             >
-              <img 
-                src={img.url} 
-                alt={img.category} 
-                className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
-              />
+              {img.url ? (
+                <Image 
+                  src={img.url.startsWith('http') ? img.url : encodeURI(img.url)} 
+                  alt={img.category} 
+                  fill
+                  priority={idx < 4}
+                  className="object-cover transition-transform duration-1000 group-hover:scale-110"
+                />
+              ) : (
+                <div className="w-full h-full bg-slate-100 flex items-center justify-center text-slate-600">
+                  No Image Available
+                </div>
+              )}
               <div className="absolute inset-0 bg-slate-900/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
                 <div className="text-center transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
                   <span className="text-white text-xs uppercase tracking-[0.3em] font-bold">{img.category}</span>
@@ -68,9 +78,9 @@ export default function GalleryPage() {
       </section>
 
       <section className="mt-32 text-center py-20 bg-coastal-beige/20 border-t border-coastal-beige/50">
-        <p className="text-slate-400 font-playfair italic text-lg mb-8">Follow our journey on social for daily tides.</p>
+        <p className="text-slate-600 font-playfair italic text-lg mb-8">Follow our journey on social for daily tides.</p>
         <button className="px-10 py-4 rounded-full border border-slate-200 text-slate-600 hover:bg-slate-900 hover:text-white transition-all text-sm font-medium">
-          @AZURESANDS_HOTEL
+          @NAMITABEACHHOUSE
         </button>
       </section>
     </main>

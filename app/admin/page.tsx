@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { API_BASE_URL } from '@/lib/api';
 import Link from 'next/link';
 import { 
   Users, 
@@ -20,7 +21,7 @@ export default function AdminDashboard() {
     async function fetchBookings() {
       try {
         const token = localStorage.getItem('admin_token');
-        const response = await fetch('http://localhost:8000/api/v1/admin/bookings', {
+        const response = await fetch(`${API_BASE_URL}/admin/bookings`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (response.ok) {
@@ -36,18 +37,45 @@ export default function AdminDashboard() {
     fetchBookings();
   }, []);
 
+  const activeBookings = bookings.filter(b => ['confirmed', 'checked_in', 'pending'].includes(b.status));
+  const revenueBookings = bookings.filter(b => ['confirmed', 'checked_in', 'completed'].includes(b.status));
+  
   const stats = [
-    { name: 'Total Revenue', value: `$${bookings.reduce((acc, b) => acc + b.total_price, 0).toLocaleString()}`, icon: DollarSign, color: 'text-green-500', bg: 'bg-green-50' },
-    { name: 'Active Bookings', value: bookings.length.toString(), icon: Calendar, color: 'text-blue-500', bg: 'bg-blue-50' },
-    { name: 'Avg. Stay Value', value: `$${bookings.length ? Math.round(bookings.reduce((acc, b) => acc + b.total_price, 0) / bookings.length).toLocaleString() : 0}`, icon: TrendingUp, color: 'text-purple-500', bg: 'bg-purple-50' },
-    { name: 'Total Guests', value: bookings.length.toString(), icon: Users, color: 'text-orange-500', bg: 'bg-orange-50' },
+    { 
+      name: 'Realized Revenue', 
+      value: `$${revenueBookings.reduce((acc, b) => acc + b.total_price, 0).toLocaleString()}`, 
+      icon: DollarSign, 
+      color: 'text-green-500', 
+      bg: 'bg-green-50' 
+    },
+    { 
+      name: 'Active Bookings', 
+      value: activeBookings.length.toString(), 
+      icon: Calendar, 
+      color: 'text-blue-500', 
+      bg: 'bg-blue-50' 
+    },
+    { 
+      name: 'Avg. Booking Value', 
+      value: `$${bookings.length ? Math.round(bookings.reduce((acc, b) => acc + b.total_price, 0) / bookings.length).toLocaleString() : 0}`, 
+      icon: TrendingUp, 
+      color: 'text-purple-500', 
+      bg: 'bg-purple-50' 
+    },
+    { 
+      name: 'Total Reservations', 
+      value: bookings.length.toString(), 
+      icon: Users, 
+      color: 'text-orange-500', 
+      bg: 'bg-orange-50' 
+    },
   ];
 
   return (
     <div className="space-y-12">
       <div>
         <h1 className="font-playfair text-4xl text-slate-900 mb-2">Dashboard Overview</h1>
-        <p className="text-slate-500 font-light">Welcome back. Here is what is happening at Azure Sands today.</p>
+        <p className="text-slate-500 font-light">Welcome back. Here is what is happening at Namita Beach House today.</p>
       </div>
 
       {/* Stats Grid */}

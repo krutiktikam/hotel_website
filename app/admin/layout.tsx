@@ -10,7 +10,9 @@ import {
   Compass, 
   LogOut, 
   Waves,
-  CalendarCheck
+  CalendarCheck,
+  Mail,
+  MapPin
 } from 'lucide-react';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -41,6 +43,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { name: 'Rooms', path: '/admin/rooms', icon: Home },
     { name: 'Gallery', path: '/admin/gallery', icon: ImageIcon },
     { name: 'Experiences', path: '/admin/experiences', icon: Compass },
+    { name: 'Geography Map', path: '/admin/map', icon: MapPin },
   ];
 
   return (
@@ -49,7 +52,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <aside className="w-64 bg-white border-r border-slate-200 flex flex-col fixed h-full">
         <div className="p-8 flex items-center gap-3 border-b border-slate-50">
           <Waves className="w-8 h-8 text-coastal-seafoam" />
-          <span className="font-playfair text-xl tracking-tighter">AZURE <span className="italic text-slate-400">ADMIN</span></span>
+          <span className="font-playfair text-xl tracking-tighter uppercase">Namita <span className="italic text-slate-400">Admin</span></span>
         </div>
         
         <nav className="flex-grow p-6 space-y-2">
@@ -67,6 +70,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               {item.name}
             </Link>
           ))}
+          <Link 
+            href="/admin/subscribers"
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+              pathname === '/admin/subscribers' 
+                ? 'bg-slate-900 text-white shadow-lg shadow-slate-900/10' 
+                : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
+            }`}
+          >
+            <Mail className="w-4 h-4" />
+            Shore Club
+          </Link>
         </nav>
 
         <div className="p-6 border-t border-slate-50">

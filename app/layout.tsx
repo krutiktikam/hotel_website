@@ -19,7 +19,7 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Azure Sands | Coastal Minimalism",
+  title: "Namita Beach House | Coastal Minimalism",
   description: "Experience minimalism by the sea",
 };
 

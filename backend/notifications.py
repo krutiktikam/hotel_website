@@ -47,28 +47,29 @@ async def send_whatsapp_confirmation(booking: Booking):
     # Clean phone number: remove any non-digit characters
     clean_phone = "".join(filter(str.isdigit, booking.customer_phone))
 
-    # Payload for Meta WhatsApp Cloud API Template
+    # Payload for Meta WhatsApp Cloud API Text Message
+    # Refined for a professional, welcoming 'Coastal Minimalism' feel
+    message_text = (
+        f"🌊 *Namita Beach House | Sanctuary Confirmation*\n\n"
+        f"Warm greetings {booking.customer_name},\n\n"
+        f"Your retreat is officially reserved. We are preparing the {booking.room_type} for your arrival.\n\n"
+        f"📅 *Stay Details:*\n"
+        f"• Check-in: {booking.check_in}\n"
+        f"• Check-out: {booking.check_out}\n\n"
+        f"💳 *Investment Summary:*\n"
+        f"• Total Stay: ${booking.total_price:.2f}\n"
+        f"• Required 10% Deposit: ${deposit_amount:.2f}\n\n"
+        f"Next Steps: Please provide a screenshot of your deposit to this chat to finalize your check-in rituals.\n\n"
+        f"See you where the horizon meets the shore.\n"
+        f"---"
+    )
+
     payload = {
         "messaging_product": "whatsapp",
         "to": clean_phone,
-        "type": "template",
-        "template": {
-            "name": "booking_confirmation", 
-            "language": {
-                "code": "en"
-            },
-            "components": [
-                {
-                    "type": "body",
-                    "parameters": [
-                        {"type": "text", "text": str(booking.customer_name)},
-                        {"type": "text", "text": str(booking.room_type)},
-                        {"type": "text", "text": str(booking.check_in)},
-                        {"type": "text", "text": str(booking.check_out)},
-                        {"type": "text", "text": f"Total: ${booking.total_price:.2f} | 10% Deposit: ${deposit_amount:.2f}"}
-                    ]
-                }
-            ]
+        "type": "text",
+        "text": {
+            "body": message_text
         }
     }
     

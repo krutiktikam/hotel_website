@@ -1,8 +1,14 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
 
 export async function fetchOptions() {
   const response = await fetch(`${API_BASE_URL}/options`);
   if (!response.ok) throw new Error('Failed to fetch options');
+  return response.json();
+}
+
+export async function fetchPricing(roomType: string, month: number, year: number) {
+  const response = await fetch(`${API_BASE_URL}/pricing?room_type=${roomType}&month=${month}&year=${year}`);
+  if (!response.ok) throw new Error('Failed to fetch pricing');
   return response.json();
 }
 
@@ -58,5 +64,15 @@ export async function createCheckoutSession(bookingId: number) {
     method: 'POST',
   });
   if (!response.ok) throw new Error('Failed to create checkout session');
+  return response.json();
+}
+
+export async function subscribeToShoreClub(email: string) {
+  const response = await fetch(`${API_BASE_URL}/subscribers`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email }),
+  });
+  if (!response.ok) throw new Error('Failed to subscribe');
   return response.json();
 }

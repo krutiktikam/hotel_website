@@ -31,17 +31,70 @@ def seed_database():
     # Seed Rooms
     if db.query(models.Room).count() == 0:
         rooms = [
-            models.Room(name="Luxury", slug="ocean-suite", description="Panoramic views of the Atlantic with a private terrace.", price=450, size="65m²", guests="2 Adults", features=json.dumps(['Sea View', 'Private Balcony', 'King Bed']), image_url="https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&q=80&w=800"),
-            models.Room(name="Suite", slug="garden-villa", description="Secluded villa surrounded by native flora and salt air.", price=380, size="80m²", guests="2-4 Adults", features=json.dumps(['Garden View', 'Outdoor Shower', 'Queen Bed']), image_url="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&q=80&w=800"),
-            models.Room(name="Deluxe", slug="dune-studio", description="Minimalist studio perfect for solo retreats or couples.", price=290, size="45m²", guests="2 Adults", features=json.dumps(['Dune View', 'Work Space', 'Queen Bed']), image_url="https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&q=80&w=800"),
+            models.Room(
+                name="Luxury", 
+                slug="ocean-suite", 
+                description="Panoramic views of the Atlantic with a private terrace.", 
+                price=450, 
+                guests="2 Adults", 
+                features=json.dumps(['Sea View', 'Private Balcony', 'King Bed']), 
+                image_url="/images/resort/Hotel/WhatsApp Image 2026-05-08 at 8.43.20 PM.jpeg",
+                total_inventory=3,
+                seo_title="Ocean Front Suite | Namita Beach House Luxury Stay",
+                seo_description="Experience ultimate coastal luxury in our premier suite with panoramic Atlantic views."
+            ),
+            models.Room(
+                name="Suite", 
+                slug="garden-villa", 
+                description="Secluded villa surrounded by native flora and salt air.", 
+                price=380, 
+                guests="2-4 Adults", 
+                features=json.dumps(['Garden View', 'Outdoor Shower', 'Queen Bed']), 
+                image_url="/images/resort/Hotel/WhatsApp Image 2026-05-08 at 8.43.22 PM.jpeg",
+                total_inventory=5,
+                seo_title="Coastal Garden Villa | Private Sanctuary at Namita Beach House",
+                seo_description="Nestled in native flora, our garden villa offers a private rain shower and serene retreat."
+            ),
+            models.Room(
+                name="Deluxe", 
+                slug="dune-studio", 
+                description="Minimalist studio perfect for solo retreats or couples.", 
+                price=290, 
+                guests="2 Adults", 
+                features=json.dumps(['Dune View', 'Work Space', 'Queen Bed']), 
+                image_url="/images/resort/Hotel/WhatsApp Image 2026-05-08 at 8.43.23 PM.jpeg",
+                total_inventory=10,
+                seo_title="Sand Dune Studio | Minimalist Coastal Living",
+                seo_description="A refined studio capturing the essence of coastal minimalism with linen textiles and dune views."
+            ),
         ]
         db.add_all(rooms)
     
     # Seed Experiences
     if db.query(models.Experience).count() == 0:
         experiences = [
-            models.Experience(title='Sunrise Shore Yoga', category='Wellness', description='Begin your day in harmony with the tides.', price=45, duration='90 Minutes', image_url='https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&q=80&w=1000', icon_name='Sunrise'),
-            models.Experience(title='Minimalist Beach Picnic', category='Dining', description='A curated basket of local, organic delicacies.', price=120, duration='Flexible', image_url='https://images.unsplash.com/photo-1590377033320-911075d97039?auto=format&fit=crop&q=80&w=1000', icon_name='Palmtree'),
+            models.Experience(
+                title='Sunrise Shore Yoga', 
+                category='Wellness', 
+                description='Begin your day in harmony with the tides.', 
+                price=45, 
+                duration='90 Minutes', 
+                image_url='https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&q=80&w=1000', 
+                icon_name='Sunrise',
+                seo_title="Sunrise Shore Yoga | Wellness at Namita Beach House",
+                seo_description="Join our morning yoga session on the beach to find your rhythm with the sea."
+            ),
+            models.Experience(
+                title='Minimalist Beach Picnic', 
+                category='Dining', 
+                description='A curated basket of local, organic delicacies.', 
+                price=120, 
+                duration='Flexible', 
+                image_url='https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?auto=format&fit=crop&q=80&w=1000', 
+                icon_name='Palmtree',
+                seo_title="Minimalist Beach Picnic | Curated Dining Experience",
+                seo_description="Enjoy a curated selection of local delicacies in a private beach picnic setting."
+            ),
         ]
         db.add_all(experiences)
         
@@ -53,6 +106,16 @@ def seed_database():
         ]
         db.add_all(gallery)
     
+    # Seed Local Spots
+    if db.query(models.LocalSpot).count() == 0:
+        spots = [
+            models.LocalSpot(name='Sunrise Yoga Shore', distance='0.4km', x_pos=450, y_pos=320, google_maps_url="https://maps.google.com"),
+            models.LocalSpot(name='Hidden Dune Path', distance='1.2km', x_pos=800, y_pos=180, google_maps_url="https://maps.google.com"),
+            models.LocalSpot(name='Crystal Cove', distance='2.5km', x_pos=300, y_pos=220, google_maps_url="https://maps.google.com"),
+            models.LocalSpot(name='Local Fisherman Port', distance='0.8km', x_pos=750, y_pos=350, google_maps_url="https://maps.google.com"),
+        ]
+        db.add_all(spots)
+
     # Seed Admin User
     if db.query(models.User).count() == 0:
         admin_user = models.User(
@@ -71,9 +134,14 @@ app = FastAPI(title="Hotel Booking API")
 app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
 # Configure CORS
+origins = [
+    "http://localhost:3000",
+    os.getenv("FRONTEND_URL", "http://localhost:3000"),
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -103,16 +171,30 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
 # --- PUBLIC ENDPOINTS ---
 
 @app.get("/api/v1/options", response_model=schemas.OptionsResponse)
-def get_options():
-    return services.get_options()
+def get_options(db: Session = Depends(get_db)):
+    return services.get_options(db)
+
+@app.get("/api/v1/pricing", response_model=schemas.PricingResponse)
+def get_pricing(room_type: str, month: int, year: int, db: Session = Depends(get_db)):
+    return services.get_pricing(db, room_type, month, year)
 
 @app.get("/api/v1/rooms", response_model=List[schemas.RoomResponse])
 def get_rooms(db: Session = Depends(get_db)):
     rooms = db.query(models.Room).filter(models.Room.is_active == True).all()
-    # Handle JSON features parsing
+    # Handle JSON parsing
     for room in rooms:
         room.features = json.loads(room.features) if room.features else []
+        room.gallery_images = json.loads(room.gallery_images) if room.gallery_images else []
     return rooms
+
+@app.get("/api/v1/rooms/{slug}", response_model=schemas.RoomResponse)
+def get_room_by_slug(slug: str, db: Session = Depends(get_db)):
+    room = db.query(models.Room).filter(models.Room.slug == slug, models.Room.is_active == True).first()
+    if not room:
+        raise HTTPException(status_code=404, detail="Room not found")
+    room.features = json.loads(room.features) if room.features else []
+    room.gallery_images = json.loads(room.gallery_images) if room.gallery_images else []
+    return room
 
 @app.get("/api/v1/gallery", response_model=List[schemas.GalleryImageResponse])
 def get_gallery(db: Session = Depends(get_db)):
@@ -121,6 +203,21 @@ def get_gallery(db: Session = Depends(get_db)):
 @app.get("/api/v1/experiences", response_model=List[schemas.ExperienceResponse])
 def get_experiences(db: Session = Depends(get_db)):
     return db.query(models.Experience).all()
+
+@app.post("/api/v1/subscribers", response_model=schemas.SubscriberResponse)
+def subscribe(subscriber: schemas.SubscriberCreate, db: Session = Depends(get_db)):
+    existing = db.query(models.Subscriber).filter(models.Subscriber.email == subscriber.email).first()
+    if existing:
+        return existing
+    db_subscriber = models.Subscriber(email=subscriber.email)
+    db.add(db_subscriber)
+    db.commit()
+    db.refresh(db_subscriber)
+    return db_subscriber
+
+@app.get("/api/v1/local-spots", response_model=List[schemas.LocalSpotResponse])
+def get_local_spots(db: Session = Depends(get_db)):
+    return db.query(models.LocalSpot).all()
 
 @app.get("/api/v1/availability", response_model=schemas.AvailabilityResponse)
 def check_room_availability(room_type: str, check_in: str, check_out: str, db: Session = Depends(get_db)):
@@ -133,6 +230,7 @@ async def create_booking(booking: schemas.BookingCreate, background_tasks: Backg
         raise HTTPException(status_code=409, detail="Room not available for selected dates")
     total_price = services.calculate_total_price(db, booking)
     db_booking = models.Booking(
+        user_id=booking.user_id,
         customer_name=booking.customer_name,
         customer_phone=booking.customer_phone,
         room_type=booking.room_type,
@@ -189,16 +287,13 @@ def register_admin(user: schemas.UserCreate, db: Session = Depends(get_db)):
 
 @app.post("/api/v1/admin/rooms", response_model=schemas.RoomResponse)
 def create_room(room: schemas.RoomCreate, current_user: models.User = Depends(get_current_user), db: Session = Depends(get_db)):
+    # Extract features to handle JSON string conversion
+    room_data = room.dict()
+    features = room_data.pop("features", [])
+    
     db_room = models.Room(
-        name=room.name,
-        slug=room.slug,
-        description=room.description,
-        price=room.price,
-        size=room.size,
-        guests=room.guests,
-        features=json.dumps(room.features),
-        image_url=room.image_url,
-        is_active=room.is_active
+        **room_data,
+        features=json.dumps(features)
     )
     db.add(db_room)
     db.commit()
@@ -238,6 +333,26 @@ def create_experience(exp: schemas.ExperienceCreate, current_user: models.User =
     db.refresh(db_exp)
     return db_exp
 
+@app.put("/api/v1/admin/experiences/{exp_id}", response_model=schemas.ExperienceResponse)
+def update_experience(exp_id: int, exp: schemas.ExperienceCreate, current_user: models.User = Depends(get_current_user), db: Session = Depends(get_db)):
+    db_exp = db.query(models.Experience).filter(models.Experience.id == exp_id).first()
+    if not db_exp:
+        raise HTTPException(status_code=404, detail="Experience not found")
+    for key, value in exp.dict().items():
+        setattr(db_exp, key, value)
+    db.commit()
+    db.refresh(db_exp)
+    return db_exp
+
+@app.delete("/api/v1/admin/experiences/{exp_id}")
+def delete_experience(exp_id: int, current_user: models.User = Depends(get_current_user), db: Session = Depends(get_db)):
+    db_exp = db.query(models.Experience).filter(models.Experience.id == exp_id).first()
+    if not db_exp:
+        raise HTTPException(status_code=404, detail="Experience not found")
+    db.delete(db_exp)
+    db.commit()
+    return {"message": "Experience deleted successfully"}
+
 @app.post("/api/v1/admin/gallery", response_model=schemas.GalleryImageResponse)
 def create_gallery_image(img: schemas.GalleryImageCreate, current_user: models.User = Depends(get_current_user), db: Session = Depends(get_db)):
     db_img = models.GalleryImage(**img.dict())
@@ -245,6 +360,40 @@ def create_gallery_image(img: schemas.GalleryImageCreate, current_user: models.U
     db.commit()
     db.refresh(db_img)
     return db_img
+
+@app.delete("/api/v1/admin/gallery/{img_id}")
+def delete_gallery_image(img_id: int, current_user: models.User = Depends(get_current_user), db: Session = Depends(get_db)):
+    db_img = db.query(models.GalleryImage).filter(models.GalleryImage.id == img_id).first()
+    if not db_img:
+        raise HTTPException(status_code=404, detail="Image not found")
+    db.delete(db_img)
+    db.commit()
+    return {"message": "Image deleted successfully"}
+
+@app.post("/api/v1/admin/bookings", response_model=schemas.BookingResponse)
+def admin_create_booking(booking: schemas.BookingCreate, status: str = "confirmed", current_user: models.User = Depends(get_current_user), db: Session = Depends(get_db)):
+    # Admins can bypass availability check if they want, but let's keep it for safety or make it optional
+    total_price = services.calculate_total_price(db, booking)
+    db_booking = models.Booking(
+        customer_name=booking.customer_name,
+        customer_phone=booking.customer_phone,
+        room_type=booking.room_type,
+        check_in=booking.check_in,
+        check_out=booking.check_out,
+        meal_plan=booking.meal_plan,
+        package_type=booking.package_type,
+        special_requests=booking.special_requests,
+        addons=json.dumps(booking.selected_addons),
+        total_price=total_price,
+        status=status
+    )
+    db.add(db_booking)
+    db.commit()
+    db.refresh(db_booking)
+    
+    res = schemas.BookingResponse.from_orm(db_booking)
+    res.selected_addons = json.loads(db_booking.addons) if db_booking.addons else []
+    return res
 
 @app.get("/api/v1/admin/bookings", response_model=List[schemas.BookingResponse])
 def get_all_bookings(current_user: models.User = Depends(get_current_user), db: Session = Depends(get_db)):
@@ -278,6 +427,49 @@ def delete_booking(booking_id: int, current_user: models.User = Depends(get_curr
     db.commit()
     return {"message": "Booking deleted successfully"}
 
+@app.get("/api/v1/admin/subscribers", response_model=List[schemas.SubscriberResponse])
+def get_subscribers(current_user: models.User = Depends(get_current_user), db: Session = Depends(get_db)):
+    return db.query(models.Subscriber).order_by(models.Subscriber.created_at.desc()).all()
+
+# --- ADMIN LOCAL SPOTS ---
+
+@app.get("/api/v1/admin/local-spots", response_model=List[schemas.LocalSpotResponse])
+def admin_get_local_spots(current_user: models.User = Depends(get_current_user), db: Session = Depends(get_db)):
+    return db.query(models.LocalSpot).all()
+
+@app.post("/api/v1/admin/local-spots", response_model=schemas.LocalSpotResponse)
+def create_local_spot(spot: schemas.LocalSpotCreate, current_user: models.User = Depends(get_current_user), db: Session = Depends(get_db)):
+    db_spot = models.LocalSpot(**spot.dict())
+    db.add(db_spot)
+    db.commit()
+    db.refresh(db_spot)
+    return db_spot
+
+@app.put("/api/v1/admin/local-spots/{spot_id}", response_model=schemas.LocalSpotResponse)
+def update_local_spot(spot_id: int, spot: schemas.LocalSpotCreate, current_user: models.User = Depends(get_current_user), db: Session = Depends(get_db)):
+    db_spot = db.query(models.LocalSpot).filter(models.LocalSpot.id == spot_id).first()
+    if not db_spot:
+        raise HTTPException(status_code=404, detail="Spot not found")
+    for key, value in spot.dict().items():
+        setattr(db_spot, key, value)
+    db.commit()
+    db.refresh(db_spot)
+    return db_spot
+
+@app.delete("/api/v1/admin/local-spots/{spot_id}")
+def delete_local_spot(spot_id: int, current_user: models.User = Depends(get_current_user), db: Session = Depends(get_db)):
+    db_spot = db.query(models.LocalSpot).filter(models.LocalSpot.id == spot_id).first()
+    if not db_spot:
+        raise HTTPException(status_code=404, detail="Spot not found")
+    db.delete(db_spot)
+    db.commit()
+    return {"message": "Spot deleted successfully"}
+
+@app.post("/api/v1/admin/cleanup")
+def cleanup_bookings(current_user: models.User = Depends(get_current_user), db: Session = Depends(get_db)):
+    count = services.cleanup_expired_bookings(db)
+    return {"message": f"Successfully cancelled {count} expired pending bookings."}
+
 # --- UPLOAD ENDPOINT ---
 
 @app.post("/api/v1/admin/upload")
@@ -290,7 +482,8 @@ async def upload_file(file: UploadFile = File(...), current_user: models.User = 
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
         
-    return {"url": f"http://localhost:8000/uploads/{unique_filename}"}
+    base_url = os.getenv("BACKEND_URL", "http://localhost:8000")
+    return {"url": f"{base_url}/uploads/{unique_filename}"}
 
 # --- STRIPE ENDPOINTS ---
 
