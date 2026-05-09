@@ -18,9 +18,10 @@ interface BookingData {
 
 interface BookingSummaryProps {
   bookingData: BookingData;
+  imageUrl?: string;
 }
 
-const BookingSummary: React.FC<BookingSummaryProps> = ({ bookingData }) => {
+const BookingSummary: React.FC<BookingSummaryProps> = ({ bookingData, imageUrl }) => {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
   const [bookingResponse, setBookingResponse] = useState<any>(null);
@@ -90,12 +91,23 @@ const BookingSummary: React.FC<BookingSummaryProps> = ({ bookingData }) => {
             <h4 className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold border-b border-slate-100 pb-2">Stay Details</h4>
             <div className="space-y-4">
               <div className="flex items-start gap-4">
-                <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400">
+                <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 shrink-0">
                   <Home className="w-4 h-4" />
                 </div>
-                <div>
-                  <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Room Type</p>
-                  <p className="text-slate-800 font-light">{bookingData.roomType}</p>
+                <div className="flex gap-4 items-center">
+                  <div>
+                    <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Room Type</p>
+                    <p className="text-slate-800 font-light">{bookingData.roomType}</p>
+                  </div>
+                  {imageUrl && (
+                    <div className="relative w-16 h-12 rounded-lg overflow-hidden border border-slate-100 shadow-sm ml-2">
+                       <img 
+                        src={imageUrl.startsWith('http') ? imageUrl : encodeURI(imageUrl)} 
+                        alt="Selected Room" 
+                        className="w-full h-full object-cover" 
+                       />
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="flex items-start gap-4">

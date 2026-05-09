@@ -72,11 +72,13 @@ class RoomBase(BaseModel):
     price: float
     guests: str
     features: List[str]
-    image_url: str
-    total_inventory: Optional[int] = 1
+    image_url: Optional[str] = None
+    gallery_images: Optional[List[str]] = []
+    total_inventory: int = 1
     is_active: bool = True
     seo_title: Optional[str] = None
     seo_description: Optional[str] = None
+
 
 class RoomCreate(RoomBase):
     pass

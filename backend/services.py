@@ -139,15 +139,12 @@ def get_pricing(db: Session, room_type: str, month: int, year: int):
         "daily_prices": daily_prices
     }
 
-from functools import lru_cache
-
-@lru_cache(maxsize=1)
 def get_options(db: Session = None):
     room_types = []
     if db:
         rooms = db.query(Room).filter(Room.is_active == True).all()
         # Convert names to uppercase to match frontend expectations (DELUXE, LUXURY, SUITE)
-        room_types = [{"name": r.name.upper(), "price": r.price, "description": r.description} for r in rooms]
+        room_types = [{"name": r.name.upper(), "price": r.price, "description": r.description, "image_url": r.image_url, "gallery_images": json.loads(r.gallery_images) if r.gallery_images else []} for r in rooms]
 
     return {
         "room_types": room_types,

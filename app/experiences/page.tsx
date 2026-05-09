@@ -51,7 +51,7 @@ export default function ExperiencesPage() {
         <div className="text-center mb-24 space-y-4">
           <span className="text-xs uppercase tracking-[0.3em] text-coastal-seafoam font-semibold">Lifestyle</span>
           <h1 className="font-playfair text-5xl md:text-7xl text-slate-900 italic">Curated Moments</h1>
-          <p className="max-w-2xl mx-auto text-slate-500 font-light leading-relaxed">
+          <p className="max-w-2xl mx-auto text-slate-700 font-light leading-relaxed">
             Beyond the sanctuary of your room, we invite you to immerse yourself in the rhythm of the shore through our bespoke experiences.
           </p>
         </div>
@@ -66,13 +66,20 @@ export default function ExperiencesPage() {
               {/* Image Container */}
               <div className="flex-1 w-full group">
                 <div className="relative aspect-[16/10] rounded-[3rem] overflow-hidden shadow-2xl shadow-slate-200/50 transition-all duration-700 hover:shadow-coastal-seafoam/10">
-                  <Image 
-                    src={exp.image_url} 
-                    alt={exp.title} 
-                    fill
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                    className="object-cover transition-transform duration-1000 group-hover:scale-105"
-                  />
+                  {exp.image_url ? (
+                    <Image 
+                      src={exp.image_url.startsWith('http') ? exp.image_url : encodeURI(exp.image_url)} 
+                      alt={exp.title} 
+                      fill
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                      priority={index === 0}
+                      className="object-cover transition-transform duration-1000 group-hover:scale-105"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-slate-100 flex items-center justify-center text-slate-600">
+                      No Image Available
+                    </div>
+                  )}
                   <div className="absolute inset-0 bg-slate-900/5 transition-opacity group-hover:opacity-0" />
                 </div>
               </div>
@@ -97,11 +104,11 @@ export default function ExperiencesPage() {
 
                 <div className="flex items-center gap-12 py-6 border-y border-white/50">
                   <div className="space-y-1">
-                    <span className="text-[10px] uppercase tracking-widest text-slate-400">Investment</span>
+                    <span className="text-[10px] uppercase tracking-widest text-slate-600">Investment</span>
                     <p className="font-medium text-slate-800">${exp.price}</p>
                   </div>
                   <div className="space-y-1">
-                    <span className="text-[10px] uppercase tracking-widest text-slate-400">Duration</span>
+                    <span className="text-[10px] uppercase tracking-widest text-slate-600">Duration</span>
                     <p className="font-medium text-slate-800">{exp.duration}</p>
                   </div>
                 </div>
@@ -125,7 +132,7 @@ export default function ExperiencesPage() {
           <div className="text-center space-y-4">
             <span className="text-coastal-seafoam font-bold tracking-[0.3em] uppercase text-[10px]">Geography</span>
             <h2 className="font-playfair text-5xl text-slate-900 italic">Between Shore & Sky</h2>
-            <p className="max-w-xl mx-auto text-slate-500 font-light">
+            <p className="max-w-xl mx-auto text-slate-700 font-light">
               Explore the curated locale surrounding our sanctuary. All points are easily accessible by foot or via our house bicycle rituals.
             </p>
           </div>
@@ -166,7 +173,7 @@ export default function ExperiencesPage() {
 
             {/* Floating Distance Legend */}
             <div className="absolute top-8 right-8 bg-white/60 backdrop-blur-md px-6 py-4 rounded-3xl border border-white/40">
-              <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-slate-400 mb-3">House Rituals</p>
+              <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-slate-600 mb-3">House Rituals</p>
               <div className="space-y-2">
                 <div className="flex items-center gap-3">
                   <div className="w-1.5 h-1.5 rounded-full bg-coastal-seafoam" />
@@ -192,7 +199,7 @@ export default function ExperiencesPage() {
         {/* Footer CTA */}
         <div className="mt-40 bg-coastal-white p-16 rounded-[4rem] text-center shadow-sm border border-coastal-beige/50">
           <h2 className="font-playfair text-4xl text-slate-900 mb-6 italic">Tailor your retreat</h2>
-          <p className="text-slate-500 mb-10 max-w-xl mx-auto font-light">
+          <p className="text-slate-700 mb-10 max-w-xl mx-auto font-light">
             Our concierge is available via WhatsApp to arrange private, custom itineraries based on your preferences.
           </p>
           <Link 

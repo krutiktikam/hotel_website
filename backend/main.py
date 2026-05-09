@@ -90,7 +90,7 @@ def seed_database():
                 description='A curated basket of local, organic delicacies.', 
                 price=120, 
                 duration='Flexible', 
-                image_url='https://images.unsplash.com/photo-1590377033320-911075d97039?auto=format&fit=crop&q=80&w=1000', 
+                image_url='https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?auto=format&fit=crop&q=80&w=1000', 
                 icon_name='Palmtree',
                 seo_title="Minimalist Beach Picnic | Curated Dining Experience",
                 seo_description="Enjoy a curated selection of local delicacies in a private beach picnic setting."
@@ -181,10 +181,20 @@ def get_pricing(room_type: str, month: int, year: int, db: Session = Depends(get
 @app.get("/api/v1/rooms", response_model=List[schemas.RoomResponse])
 def get_rooms(db: Session = Depends(get_db)):
     rooms = db.query(models.Room).filter(models.Room.is_active == True).all()
-    # Handle JSON features parsing
+    # Handle JSON parsing
     for room in rooms:
         room.features = json.loads(room.features) if room.features else []
+        room.gallery_images = json.loads(room.gallery_images) if room.gallery_images else []
     return rooms
+
+@app.get("/api/v1/rooms/{slug}", response_model=schemas.RoomResponse)
+def get_room_by_slug(slug: str, db: Session = Depends(get_db)):
+    room = db.query(models.Room).filter(models.Room.slug == slug, models.Room.is_active == True).first()
+    if not room:
+        raise HTTPException(status_code=404, detail="Room not found")
+    room.features = json.loads(room.features) if room.features else []
+    room.gallery_images = json.loads(room.gallery_images) if room.gallery_images else []
+    return room
 
 @app.get("/api/v1/gallery", response_model=List[schemas.GalleryImageResponse])
 def get_gallery(db: Session = Depends(get_db)):

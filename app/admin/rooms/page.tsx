@@ -31,6 +31,7 @@ export default function RoomsManagement() {
     price: 0,
     guests: '',
     image_url: '',
+    gallery_images: [] as string[],
     is_active: true,
     total_inventory: 1,
     seo_title: '',
@@ -121,7 +122,7 @@ export default function RoomsManagement() {
     }
   };
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, isGallery = false) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -139,7 +140,14 @@ export default function RoomsManagement() {
 
       if (response.ok) {
         const data = await response.json();
-        setFormData({ ...formData, image_url: data.url });
+        if (isGallery) {
+          setFormData(prev => ({ 
+            ...prev, 
+            gallery_images: [...prev.gallery_images, data.url] 
+          }));
+        } else {
+          setFormData({ ...formData, image_url: data.url });
+        }
       } else {
         alert('Upload failed');
       }
@@ -350,37 +358,39 @@ export default function RoomsManagement() {
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Image Selection</label>
-                <div className="flex flex-col md:flex-row gap-4">
-                  <div className="flex-grow">
-                    <input 
-                      required
-                      type="url" 
-                      placeholder="Paste image URL..."
-                      value={formData.image_url}
-                      onChange={(e) => setFormData({...formData, image_url: e.target.value})}
-                      className="w-full bg-slate-50 border-0 rounded-2xl py-4 px-5 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all"
-                    />
-                  </div>
-                  <div className="relative">
+              <div className="space-y-4">
+                <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Sanctuary Gallery</label>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {(formData.gallery_images || []).map((url, idx) => (
+                    <div key={idx} className="relative aspect-square rounded-xl overflow-hidden group border border-slate-100 shadow-sm">
+                      <img src={url} alt="Gallery" className="w-full h-full object-cover" />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newGallery = formData.gallery_images.filter((_, i) => i !== idx);
+                          setFormData(prev => ({
+                            ...prev,
+                            gallery_images: newGallery,
+                            image_url: newGallery[0] || ''
+                          }));
+                        }}
+                        className="absolute inset-0 bg-red-500/80 text-white opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    </div>
+                  ))}
+                  <div className="relative aspect-square rounded-xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 transition-colors text-slate-400 hover:text-coastal-seafoam hover:border-coastal-seafoam overflow-hidden">
+                    <Plus className="w-6 h-6 mb-2" />
+                    <span className="text-[8px] uppercase font-bold tracking-widest">Add View</span>
                     <input 
                       type="file" 
                       accept="image/*"
-                      onChange={handleFileUpload}
-                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                      className="absolute inset-0 opacity-0 cursor-pointer" 
+                      onChange={(e) => handleFileUpload(e, true)} 
                     />
-                    <div className="bg-slate-900 text-white px-8 py-4 rounded-2xl text-xs font-bold uppercase tracking-widest hover:bg-slate-800 transition-all flex items-center gap-2 h-full whitespace-nowrap">
-                      {isUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ImageIcon className="w-4 h-4" />}
-                      Upload File
-                    </div>
                   </div>
                 </div>
-                {formData.image_url && (
-                  <div className="mt-4 aspect-video rounded-[2rem] overflow-hidden border border-slate-100 shadow-inner bg-slate-50">
-                    <img src={formData.image_url} alt="Preview" className="w-full h-full object-cover" />
-                  </div>
-                )}
               </div>
 
               <div className="flex items-center gap-3 py-2">

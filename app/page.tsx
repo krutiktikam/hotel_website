@@ -20,11 +20,10 @@ import {
 import PricingCalendar from '@/components/PricingCalendar';
 import { fetchOptions } from '@/lib/api';
 
-function BookingFlow() {
+function BookingFlow({ options, loading: optionsLoading }: { options: any, loading: boolean }) {
   const searchParams = useSearchParams();
   const roomParam = searchParams.get('room');
 
-  const [options, setOptions] = useState<any>(null);
   const [currentStep, setCurrentStep] = useState(1);
   const [showPricingCalendar, setShowPricingCalendar] = useState(false);
   const [formData, setFormData] = useState({
@@ -38,11 +37,11 @@ function BookingFlow() {
     selectedAddons: [] as string[],
     specialRequests: ''
   });
-  const [loading, setLoading] = useState(true);
   const [viewers, setViewers] = useState(3);
   const [error, setError] = useState<string | null>(null);
   const [availability, setAvailability] = useState<Record<string, boolean>>({});
   const [checkingAvailability, setCheckingAvailability] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     // Simulate changing viewers
@@ -53,20 +52,9 @@ function BookingFlow() {
   }, []);
 
   useEffect(() => {
-    async function loadOptions() {
-      try {
-        const data = await fetchOptions();
-        setOptions(data);
-        if (roomParam) {
-          setFormData(prev => ({ ...prev, roomType: roomParam }));
-        }
-      } catch (err) {
-        console.error('Failed to load options:', err);
-      } finally {
-        setLoading(false);
-      }
+    if (roomParam) {
+      setFormData(prev => ({ ...prev, roomType: roomParam }));
     }
-    loadOptions();
   }, [roomParam]);
 
   useEffect(() => {
@@ -145,9 +133,9 @@ function BookingFlow() {
     }));
   };
 
-  if (loading) {
+  if (optionsLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-coastal-white">
+      <div className="flex items-center justify-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-coastal-seafoam"></div>
       </div>
     );
@@ -161,370 +149,381 @@ function BookingFlow() {
   ];
 
   return (
-    <main className="min-h-screen bg-coastal-beige text-slate-800 font-sans pb-20">
-      {/* Hero Section */}
-      <div className="bg-coastal-white pt-32 pb-16 px-6 shadow-sm border-b border-coastal-beige">
-        <div className="max-w-7xl mx-auto flex flex-col items-center text-center">
-          <Waves className="w-12 h-12 text-coastal-seafoam mb-4" />
-          <h1 className="font-playfair text-5xl md:text-6xl text-slate-900 mb-2">Secure Your Sanctuary</h1>
-          <p className="text-slate-500 font-light tracking-[0.2em] uppercase text-sm">Your journey to calm begins here</p>
-        </div>
+    <div className="min-h-[500px] flex flex-col">
+      {/* Progress Stepper */}
+      <div className="flex justify-between mb-12 relative">
+        <div className="absolute top-1/2 left-0 w-full h-0.5 bg-slate-200 -translate-y-1/2 z-0" />
+        <div 
+          className="absolute top-1/2 left-0 h-0.5 bg-coastal-seafoam -translate-y-1/2 z-0 transition-all duration-500" 
+          style={{ width: `${((currentStep - 1) / (steps.length - 1)) * 100}%` }}
+        />
+        {steps.map((step) => (
+          <div key={step.id} className="relative z-10 flex flex-col items-center">
+            <div 
+              className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500 border-2 ${
+                currentStep >= step.id 
+                  ? 'bg-coastal-seafoam border-coastal-seafoam text-white' 
+                  : 'bg-white border-slate-200 text-slate-600'
+              }`}
+            >
+              <step.icon className="w-5 h-5" />
+            </div>
+            <span className={`text-[10px] uppercase tracking-widest mt-2 font-bold ${currentStep >= step.id ? 'text-slate-900' : 'text-slate-600'}`}>
+              {step.title}
+            </span>
+          </div>
+        ))}
       </div>
 
-      <div className="max-w-4xl mx-auto px-6 mt-12">
-        {/* Progress Stepper */}
-        <div className="flex justify-between mb-12 relative">
-          <div className="absolute top-1/2 left-0 w-full h-0.5 bg-slate-200 -translate-y-1/2 z-0" />
-          <div 
-            className="absolute top-1/2 left-0 h-0.5 bg-coastal-seafoam -translate-y-1/2 z-0 transition-all duration-500" 
-            style={{ width: `${((currentStep - 1) / (steps.length - 1)) * 100}%` }}
-          />
-          {steps.map((step) => (
-            <div key={step.id} className="relative z-10 flex flex-col items-center">
-              <div 
-                className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500 border-2 ${
-                  currentStep >= step.id 
-                    ? 'bg-coastal-seafoam border-coastal-seafoam text-white' 
-                    : 'bg-white border-slate-200 text-slate-400'
-                }`}
-              >
-                <step.icon className="w-5 h-5" />
-              </div>
-              <span className={`text-[10px] uppercase tracking-widest mt-2 font-bold ${currentStep >= step.id ? 'text-slate-900' : 'text-slate-400'}`}>
-                {step.title}
-              </span>
-            </div>
-          ))}
-        </div>
-
-        {/* Step Content */}
-        <div className="bg-coastal-white p-8 md:p-12 rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-coastal-beige/30 min-h-[500px] flex flex-col">
+      {/* Step Content */}
+      <div className="bg-coastal-white p-8 md:p-12 rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-coastal-beige/30 min-h-[500px] flex flex-col">
           
-          <div className="flex-grow">
-            {currentStep === 1 && (
-              <div className="animate-in fade-in slide-in-from-right-4 duration-500 space-y-8">
+        <div className="flex-grow">
+          {currentStep === 1 && (
+            <div className="animate-in fade-in slide-in-from-right-4 duration-500 space-y-8">
+              <div className="space-y-2">
+                <h3 className="font-playfair text-3xl">When will you join us?</h3>
+                <p className="text-slate-700 font-light">Select your preferred dates for a coastal retreat.</p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-2">
-                  <h3 className="font-playfair text-3xl">When will you join us?</h3>
-                  <p className="text-slate-500 font-light">Select your preferred dates for a coastal retreat.</p>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div className="space-y-2">
-                    <label className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold ml-1 flex items-center gap-2">
-                      <Calendar className="w-3 h-3" /> Check-in
-                    </label>
-                    <input 
-                      required
-                      type="date" 
-                      value={formData.checkIn}
-                      onChange={(e) => setFormData({...formData, checkIn: e.target.value})}
-                      className="w-full bg-slate-50/50 border-0 rounded-2xl py-4 px-6 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all text-slate-600"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold ml-1 flex items-center gap-2">
-                      <Calendar className="w-3 h-3" /> Check-out
-                    </label>
-                    <input 
-                      required
-                      type="date" 
-                      value={formData.checkOut}
-                      onChange={(e) => setFormData({...formData, checkOut: e.target.value})}
-                      className="w-full bg-slate-50/50 border-0 rounded-2xl py-4 px-6 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all text-slate-600"
-                    />
-                  </div>
-                </div>
+                  <label className="text-[10px] uppercase tracking-[0.2em] text-slate-600 font-bold ml-1 flex items-center gap-2">
+                    <Calendar className="w-3 h-3" /> Check-in
+                  </label>
+                  <input 
+                    required
+                    type="date" 
+                    value={formData.checkIn}
+                    onChange={(e) => setFormData({...formData, checkIn: e.target.value})}
+                    className="w-full bg-slate-50/50 border-0 rounded-2xl py-4 px-6 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all text-slate-900 font-medium"
+                  />
 
-                <div className="flex justify-between items-center px-2">
-                  <button 
-                    type="button" 
-                    onClick={() => setShowPricingCalendar(true)}
-                    className="text-[10px] uppercase tracking-widest text-coastal-seafoam font-bold hover:underline"
-                  >
-                    View Flexible Pricing Calendar
-                  </button>
-                  <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-slate-400">
-                    <CheckCircle2 className="w-3 h-3 text-green-500" />
-                    Last booking 2 hours ago
-                  </div>
                 </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] uppercase tracking-[0.2em] text-slate-600 font-bold ml-1 flex items-center gap-2">
+                    <Calendar className="w-3 h-3" /> Check-out
+                  </label>
+                  <input 
+                    required
+                    type="date" 
+                    value={formData.checkOut}
+                    onChange={(e) => setFormData({...formData, checkOut: e.target.value})}
+                    className="w-full bg-slate-50/50 border-0 rounded-2xl py-4 px-6 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all text-slate-900 font-medium"
+                  />
 
-                <div className="bg-coastal-beige/20 p-6 rounded-3xl border border-coastal-beige/50">
-                  <p className="text-sm text-slate-600 font-light leading-relaxed">
-                    <span className="font-semibold text-slate-900">Pro tip:</span> Most guests stay for at least 3 nights to fully experience the rhythm of the tides.
-                  </p>
                 </div>
               </div>
-            )}
 
-            {currentStep === 2 && (
-              <div className="animate-in fade-in slide-in-from-right-4 duration-500 space-y-8">
-                <div className="space-y-2">
-                  <h3 className="font-playfair text-3xl">Choose your sanctuary</h3>
-                  <p className="text-slate-500 font-light">Tailor your stay with our curated options.</p>
+              <div className="flex justify-between items-center px-2">
+                <button 
+                  type="button" 
+                  onClick={() => setShowPricingCalendar(true)}
+                  className="text-[10px] uppercase tracking-widest text-coastal-seafoam font-bold hover:underline"
+                >
+                  View Flexible Pricing Calendar
+                </button>
+                <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-slate-600">
+                  <CheckCircle2 className="w-3 h-3 text-green-500" />
+                  Last booking 2 hours ago
                 </div>
-                <div className="grid grid-cols-1 gap-8">
-                  <div className="space-y-2">
-                    <label className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold ml-1 flex items-center gap-2">
-                      <HomeIcon className="w-3 h-3" /> Room Type 
-                      {checkingAvailability && <span className="ml-2 animate-pulse text-coastal-seafoam normal-case tracking-normal font-light">Verifying availability...</span>}
-                    </label>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      {options?.room_types.map((room: any) => {
-                        const isLowStock = room.name === 'LUXURY' || room.name === 'SUITE';
-                        const isAvailable = availability[room.name] !== false;
-                        return (
-                          <button
-                            key={room.name}
-                            type="button"
-                            disabled={!isAvailable}
-                            onClick={() => setFormData({...formData, roomType: room.name})}
-                            className={`p-6 rounded-2xl border text-left transition-all relative ${
-                              !isAvailable 
-                                ? 'border-slate-100 bg-slate-50 opacity-40 cursor-not-allowed'
-                                : formData.roomType === room.name 
-                                  ? 'border-coastal-seafoam bg-coastal-seafoam/5 ring-1 ring-coastal-seafoam' 
-                                  : 'border-slate-100 bg-slate-50/30 hover:border-slate-200'
-                            }`}
-                          >
+              </div>
+
+              <div className="bg-coastal-beige/20 p-6 rounded-3xl border border-coastal-beige/50">
+                <p className="text-sm text-slate-700 font-light leading-relaxed">
+                  <span className="font-semibold text-slate-900">Pro tip:</span> Most guests stay for at least 3 nights to fully experience the rhythm of the tides.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {currentStep === 2 && (
+            <div className="animate-in fade-in slide-in-from-right-4 duration-500 space-y-8">
+              <div className="space-y-2">
+                <h3 className="font-playfair text-3xl">Choose your sanctuary</h3>
+                <p className="text-slate-700 font-light">Tailor your stay with our curated options.</p>
+              </div>
+              <div className="grid grid-cols-1 gap-8">
+                <div className="space-y-2">
+                  <label className="text-[10px] uppercase tracking-[0.2em] text-slate-600 font-bold ml-1 flex items-center gap-2">
+                    <HomeIcon className="w-3 h-3" /> Room Type 
+                    {checkingAvailability && <span className="ml-2 animate-pulse text-coastal-seafoam normal-case tracking-normal font-light">Verifying availability...</span>}
+                  </label>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {options?.room_types.map((room: any) => {
+                      const isLowStock = room.name === 'LUXURY' || room.name === 'SUITE';
+                      const isAvailable = availability[room.name] !== false;
+                      return (
+                        <button
+                          key={room.name}
+                          type="button"
+                          disabled={!isAvailable}
+                          onClick={() => setFormData({...formData, roomType: room.name})}
+                          className={`p-4 rounded-3xl border text-left transition-all relative overflow-hidden flex flex-col gap-4 ${
+                            !isAvailable 
+                              ? 'border-slate-100 bg-slate-50 opacity-40 cursor-not-allowed'
+                              : formData.roomType === room.name 
+                                ? 'border-coastal-seafoam bg-coastal-seafoam/5 ring-1 ring-coastal-seafoam shadow-md shadow-coastal-seafoam/5' 
+                                : 'border-slate-100 bg-slate-50/30 hover:border-slate-200 hover:bg-white'
+                          }`}
+                        >
+                          {room.image_url && (
+                            <div className="relative aspect-video rounded-2xl overflow-hidden bg-slate-100">
+                              <Image 
+                                src={room.image_url.startsWith('http') ? room.image_url : encodeURI(room.image_url)} 
+                                alt={room.name}
+                                fill
+                                sizes="(max-width: 768px) 100vw, 20vw"
+                                className="object-cover"
+                              />
+                            </div>
+                          )}
+                          <div className="px-2 pb-2">
                             {!isAvailable && (
                               <span className="absolute inset-0 flex items-center justify-center bg-white/40 backdrop-blur-[1px] rounded-2xl z-10">
                                 <span className="text-[10px] uppercase tracking-widest text-red-500 font-bold">Sold Out</span>
                               </span>
                             )}
                             {isLowStock && isAvailable && (
-                              <span className="absolute -top-2 -right-2 bg-red-50 text-red-500 text-[8px] uppercase tracking-widest px-2 py-1 rounded-full font-bold border border-red-100 animate-pulse">
+                              <span className="absolute top-2 right-2 bg-red-50 text-red-500 text-[8px] uppercase tracking-widest px-2 py-1 rounded-full font-bold border border-red-100 animate-pulse z-10">
                                 Only 2 Left
                               </span>
                             )}
                             <p className="font-medium text-slate-900">{room.name}</p>
-                            <p className="text-xs text-slate-400 mt-1">From ${room.price}/night</p>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  {formData.roomType === 'DELUXE' && (
-                    <div className="bg-coastal-seafoam/5 border border-coastal-seafoam/20 p-6 rounded-3xl flex items-center justify-between group cursor-pointer hover:bg-coastal-seafoam/10 transition-all"
-                      onClick={() => setFormData({...formData, roomType: 'SUITE'})}>
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center text-coastal-seafoam shadow-sm group-hover:scale-110 transition-transform">
-                          <Gift className="w-6 h-6" />
-                        </div>
-                        <div>
-                          <p className="text-sm font-semibold text-slate-900">Upgrade to Garden Villa?</p>
-                          <p className="text-xs text-slate-500">Add an outdoor shower and private garden for just $50 extra.</p>
-                        </div>
-                      </div>
-                      <ChevronRight className="w-5 h-5 text-coastal-seafoam" />
-                    </div>
-                  )}
-
-                  <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-slate-400 font-medium bg-slate-50/50 w-fit px-4 py-2 rounded-full">
-                    <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                    {viewers} people are viewing this room right now
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div className="space-y-2">
-                      <label className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold ml-1 flex items-center gap-2">
-                        <Utensils className="w-3 h-3" /> Meal Plan
-                      </label>
-                      <select 
-                        value={formData.mealPlan}
-                        onChange={(e) => setFormData({...formData, mealPlan: e.target.value})}
-                        className="w-full bg-slate-50/50 border-0 rounded-2xl py-4 px-6 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all text-slate-600 appearance-none"
-                      >
-                        {options?.meal_plans.map((meal: any) => (
-                          <option key={meal.name} value={meal.name}>{meal.name} (+${meal.price})</option>
-                        ))}
-                      </select>
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold ml-1 flex items-center gap-2">
-                        <Gift className="w-3 h-3" /> Package
-                      </label>
-                      <select 
-                        value={formData.packageType}
-                        onChange={(e) => setFormData({...formData, packageType: e.target.value})}
-                        className="w-full bg-slate-50/50 border-0 rounded-2xl py-4 px-6 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all text-slate-600 appearance-none"
-                      >
-                        {options?.packages.map((pkg: any) => (
-                          <option key={pkg.name} value={pkg.name}>{pkg.name} (+${pkg.price})</option>
-                        ))}
-                      </select>
-                    </div>
+                            <p className="text-xs text-slate-600 mt-1">From ${room.price}/night</p>
+                          </div>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
-              </div>
-            )}
 
-            {currentStep === 3 && (
-              <div className="animate-in fade-in slide-in-from-right-4 duration-500 space-y-8">
-                <div className="space-y-2">
-                  <h3 className="font-playfair text-3xl">Personal Details</h3>
-                  <p className="text-slate-500 font-light">Tell us a bit about yourself and any special requests.</p>
+                {formData.roomType === 'DELUXE' && (
+                  <div className="bg-coastal-seafoam/5 border border-coastal-seafoam/20 p-6 rounded-3xl flex items-center justify-between group cursor-pointer hover:bg-coastal-seafoam/10 transition-all"
+                    onClick={() => setFormData({...formData, roomType: 'SUITE'})}>
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center text-coastal-seafoam shadow-sm group-hover:scale-110 transition-transform">
+                        <Gift className="w-6 h-6" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-slate-900">Upgrade to Garden Villa?</p>
+                        <p className="text-xs text-slate-700">Add an outdoor shower and private garden for just $50 extra.</p>
+                      </div>
+                    </div>
+                    <ChevronRight className="w-5 h-5 text-coastal-seafoam" />
+                  </div>
+                )}
+
+                <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-slate-600 font-medium bg-slate-50/50 w-fit px-4 py-2 rounded-full">
+                  <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                  {viewers} people are viewing this room right now
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div className="space-y-2">
-                    <label className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold ml-1 flex items-center gap-2">
-                      <User className="w-3 h-3" /> Full Name
+                    <label className="text-[10px] uppercase tracking-[0.2em] text-slate-600 font-bold ml-1 flex items-center gap-2">
+                      <Utensils className="w-3 h-3" /> Meal Plan
                     </label>
-                    <input 
-                      required
-                      type="text" 
-                      placeholder="Jane Cooper"
-                      value={formData.customerName}
-                      onChange={(e) => setFormData({...formData, customerName: e.target.value})}
-                      className="w-full bg-slate-50/50 border-0 rounded-2xl py-4 px-6 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all placeholder:text-slate-300"
-                    />
+                    <select 
+                      value={formData.mealPlan}
+                      onChange={(e) => setFormData({...formData, mealPlan: e.target.value})}
+                      className="w-full bg-slate-50/50 border-0 rounded-2xl py-4 px-6 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all text-slate-900 font-medium appearance-none"
+                    >
+
+                      {options?.meal_plans.map((meal: any) => (
+                        <option key={meal.name} value={meal.name}>{meal.name} (+${meal.price})</option>
+                      ))}
+                    </select>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold ml-1 flex items-center gap-2">
-                      <Phone className="w-3 h-3" /> WhatsApp Number
+                    <label className="text-[10px] uppercase tracking-[0.2em] text-slate-600 font-bold ml-1 flex items-center gap-2">
+                      <Gift className="w-3 h-3" /> Package
                     </label>
-                    <input 
-                      required
-                      type="tel" 
-                      placeholder="+15550000000"
-                      value={formData.customerPhone}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        // Allow only numbers and '+'
-                        const cleaned = val.replace(/[^0-9+]/g, '');
-                        setFormData({...formData, customerPhone: cleaned});
-                      }}
-                      className="w-full bg-slate-50/50 border-0 rounded-2xl py-4 px-6 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all placeholder:text-slate-300"
-                    />
+                    <select 
+                      value={formData.packageType}
+                      onChange={(e) => setFormData({...formData, packageType: e.target.value})}
+                      className="w-full bg-slate-50/50 border-0 rounded-2xl py-4 px-6 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all text-slate-900 font-medium appearance-none"
+                    >
+
+                      {options?.packages.map((pkg: any) => (
+                        <option key={pkg.name} value={pkg.name}>{pkg.name} (+${pkg.price})</option>
+                      ))}
+                    </select>
                   </div>
                 </div>
-
-                <div className="space-y-4">
-                  <label className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold ml-1">Optional Enhancements</label>
-                  <div className="flex flex-wrap gap-3">
-                    {options?.addons.map((addon: any) => (
-                      <button
-                        key={addon.name}
-                        type="button"
-                        onClick={() => toggleAddon(addon.name)}
-                        className={`flex items-center gap-2 px-5 py-3 rounded-xl border transition-all text-sm ${
-                          formData.selectedAddons.includes(addon.name)
-                            ? 'bg-coastal-seafoam/10 border-coastal-seafoam text-slate-800 shadow-sm'
-                            : 'bg-transparent border-slate-100 text-slate-500 hover:border-slate-200'
-                        }`}
-                      >
-                        <Plus className={`w-3 h-3 transition-transform ${formData.selectedAddons.includes(addon.name) ? 'rotate-45' : ''}`} />
-                        {addon.name} (+${addon.price})
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold ml-1">Special Requests</label>
-                  <textarea 
-                    placeholder="Any specific preferences or requirements..."
-                    value={formData.specialRequests}
-                    onChange={(e) => setFormData({...formData, specialRequests: e.target.value})}
-                    className="w-full bg-slate-50/50 border-0 rounded-2xl py-4 px-6 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all placeholder:text-slate-300 min-h-[80px]"
-                  />
-                </div>
-              </div>
-            )}
-
-            {currentStep === 4 && (
-              <div className="animate-in fade-in slide-in-from-right-4 duration-500">
-                <BookingSummary bookingData={formData} />
-                <div className="mt-12 pt-8 border-t border-slate-100 flex flex-col items-center gap-6">
-                  {error && (
-                    <div className="w-full bg-red-50 text-red-500 p-4 rounded-2xl text-xs font-medium border border-red-100">
-                      {error}
-                    </div>
-                  )}
-                  <button
-                    onClick={async () => {
-                      setLoading(true);
-                      setError(null);
-                      try {
-                        const { createBooking } = await import('@/lib/api');
-                        const result = await createBooking(formData);
-                        // Show success state
-                        setCurrentStep(5); 
-                      } catch (err: any) {
-                        setError(err.message || 'Failed to create booking. Please try again.');
-                      } finally {
-                        setLoading(false);
-                      }
-                    }}
-                    disabled={loading}
-                    className="w-full bg-coastal-seafoam text-white px-12 py-5 rounded-2xl font-bold tracking-[0.2em] uppercase hover:bg-slate-900 transition-all shadow-xl shadow-coastal-seafoam/20 disabled:opacity-50"
-                  >
-                    {loading ? 'Confirming Sanctuary...' : 'Confirm Reservation'}
-                  </button>
-                  <p className="text-[10px] uppercase tracking-widest text-slate-400 font-medium">
-                    By confirming, you agree to our coastal residency terms
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {currentStep === 5 && (
-              <div className="animate-in zoom-in duration-700 flex flex-col items-center text-center py-12">
-                <div className="w-20 h-20 bg-coastal-seafoam/10 rounded-full flex items-center justify-center text-coastal-seafoam mb-8">
-                  <CheckCircle2 className="w-10 h-10" />
-                </div>
-                <h3 className="font-playfair text-4xl text-slate-900 mb-4">Sanctuary Reserved</h3>
-                <p className="text-slate-500 font-light max-w-sm mx-auto leading-relaxed mb-8">
-                  Check your WhatsApp for confirmation details. We've sent the check-in rituals and deposit information to <span className="font-medium text-slate-900">{formData.customerPhone}</span>.
-                </p>
-                <button 
-                  onClick={() => window.location.reload()}
-                  className="text-coastal-seafoam font-bold tracking-widest uppercase text-[10px] hover:underline"
-                >
-                  Return to the Shore
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/* Navigation */}
-          {currentStep < 4 && (
-            <div className="mt-12 space-y-6">
-              {error && (
-                <div className="bg-red-50 text-red-500 p-4 rounded-2xl text-xs font-medium border border-red-100 animate-in fade-in slide-in-from-top-2">
-                  {error}
-                </div>
-              )}
-              <div className="flex justify-between items-center pt-8 border-t border-slate-100">
-                <button
-                  onClick={prevStep}
-                  disabled={currentStep === 1}
-                  className={`flex items-center gap-2 text-sm font-medium transition-colors ${
-                    currentStep === 1 ? 'text-slate-300 cursor-not-allowed' : 'text-slate-500 hover:text-slate-900'
-                  }`}
-                >
-                  <ChevronLeft className="w-4 h-4" /> Back
-                </button>
-                <button
-                  onClick={handleNext}
-                  className={`flex items-center gap-2 bg-slate-900 text-white px-8 py-4 rounded-2xl text-sm font-medium hover:bg-slate-800 transition-all shadow-xl shadow-slate-900/10 disabled:bg-slate-100 disabled:text-slate-400 disabled:shadow-none disabled:cursor-not-allowed`}
-                >
-                  {currentStep === 3 ? 'Review Summary' : 'Next Step'} <ChevronRight className="w-4 h-4" />
-                </button>
               </div>
             </div>
           )}
-          
+
+          {currentStep === 3 && (
+            <div className="animate-in fade-in slide-in-from-right-4 duration-500 space-y-8">
+              <div className="space-y-2">
+                <h3 className="font-playfair text-3xl">Personal Details</h3>
+                <p className="text-slate-700 font-light">Tell us a bit about yourself and any special requests.</p>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="space-y-2">
+                  <label className="text-[10px] uppercase tracking-[0.2em] text-slate-600 font-bold ml-1 flex items-center gap-2">
+                    <User className="w-3 h-3" /> Full Name
+                  </label>
+                  <input 
+                    required
+                    type="text" 
+                    placeholder="Jane Cooper"
+                    value={formData.customerName}
+                    onChange={(e) => setFormData({...formData, customerName: e.target.value})}
+                    className="w-full bg-slate-50/50 border-0 rounded-2xl py-4 px-6 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all text-slate-900 font-medium placeholder:text-slate-500"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-[10px] uppercase tracking-[0.2em] text-slate-600 font-bold ml-1 flex items-center gap-2">
+                    <Phone className="w-3 h-3" /> WhatsApp Number
+                  </label>
+                  <input 
+                    required
+                    type="tel" 
+                    placeholder="+15550000000"
+                    value={formData.customerPhone}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      // Allow only numbers and '+'
+                      const cleaned = val.replace(/[^0-9+]/g, '');
+                      setFormData({...formData, customerPhone: cleaned});
+                    }}
+                    className="w-full bg-slate-50/50 border-0 rounded-2xl py-4 px-6 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all text-slate-900 font-medium placeholder:text-slate-500"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <label className="text-[10px] uppercase tracking-[0.2em] text-slate-600 font-bold ml-1">Optional Enhancements</label>
+                <div className="flex flex-wrap gap-3">
+                  {options?.addons.map((addon: any) => (
+                    <button
+                      key={addon.name}
+                      type="button"
+                      onClick={() => toggleAddon(addon.name)}
+                      className={`flex items-center gap-2 px-5 py-3 rounded-xl border transition-all text-sm ${
+                        formData.selectedAddons.includes(addon.name)
+                          ? 'bg-coastal-seafoam/10 border-coastal-seafoam text-slate-800 shadow-sm'
+                          : 'bg-transparent border-slate-100 text-slate-700 hover:border-slate-200'
+                      }`}
+                    >
+                      <Plus className={`w-3 h-3 transition-transform ${formData.selectedAddons.includes(addon.name) ? 'rotate-45' : ''}`} />
+                      {addon.name} (+${addon.price})
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[10px] uppercase tracking-[0.2em] text-slate-600 font-bold ml-1">Special Requests</label>
+                <textarea 
+                  placeholder="Any specific preferences or requirements..."
+                  value={formData.specialRequests}
+                  onChange={(e) => setFormData({...formData, specialRequests: e.target.value})}
+                  className="w-full bg-slate-50/50 border-0 rounded-2xl py-4 px-6 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all text-slate-900 font-medium placeholder:text-slate-500 min-h-[80px]"
+                />
+              </div>
+            </div>
+          )}
+
           {currentStep === 4 && (
-            <button 
-              onClick={() => setCurrentStep(3)}
-              className="mt-8 text-slate-400 text-sm hover:text-slate-600 transition-colors mx-auto"
-            >
-              ← Back to personal details
-            </button>
+            <div className="animate-in fade-in slide-in-from-right-4 duration-500">
+              <BookingSummary 
+                bookingData={formData} 
+                imageUrl={options?.room_types.find((r: any) => r.name === formData.roomType)?.image_url}
+              />
+              <div className="mt-12 pt-8 border-t border-slate-100 flex flex-col items-center gap-6">
+                {error && (
+                  <div className="w-full bg-red-50 text-red-500 p-4 rounded-2xl text-xs font-medium border border-red-100">
+                    {error}
+                  </div>
+                )}
+                <button
+                  onClick={async () => {
+                    setSubmitting(true);
+                    setError(null);
+                    try {
+                      const { createBooking } = await import('@/lib/api');
+                      await createBooking(formData);
+                      // Show success state
+                      setCurrentStep(5); 
+                    } catch (err: any) {
+                      setError(err.message || 'Failed to create booking. Please try again.');
+                    } finally {
+                      setSubmitting(false);
+                    }
+                  }}
+                  disabled={submitting}
+                  className="w-full bg-slate-900 text-white px-12 py-5 rounded-2xl font-bold tracking-[0.2em] uppercase hover:bg-coastal-seafoam hover:text-slate-900 transition-all shadow-xl shadow-slate-900/20 disabled:opacity-50"
+                >
+                  {submitting ? 'Confirming Sanctuary...' : 'Confirm Reservation'}
+                </button>
+
+                <p className="text-[10px] uppercase tracking-widest text-slate-600 font-medium">
+                  By confirming, you agree to our coastal residency terms
+                </p>
+              </div>
+            </div>
+          )}
+
+          {currentStep === 5 && (
+            <div className="animate-in zoom-in duration-700 flex flex-col items-center text-center py-12">
+              <div className="w-20 h-20 bg-coastal-seafoam/10 rounded-full flex items-center justify-center text-coastal-seafoam mb-8">
+                <CheckCircle2 className="w-10 h-10" />
+              </div>
+              <h3 className="font-playfair text-4xl text-slate-900 mb-4">Sanctuary Reserved</h3>
+              <p className="text-slate-700 font-light max-w-sm mx-auto leading-relaxed mb-8">
+                Check your WhatsApp for confirmation details. We've sent the check-in rituals and deposit information to <span className="font-medium text-slate-900">{formData.customerPhone}</span>.
+              </p>
+              <button 
+                onClick={() => window.location.reload()}
+                className="text-coastal-seafoam font-bold tracking-widest uppercase text-[10px] hover:underline"
+              >
+                Return to the Shore
+              </button>
+            </div>
           )}
         </div>
+
+        {/* Navigation */}
+        {currentStep < 4 && (
+          <div className="mt-12 space-y-6">
+            {error && (
+              <div className="bg-red-50 text-red-500 p-4 rounded-2xl text-xs font-medium border border-red-100 animate-in fade-in slide-in-from-top-2">
+                {error}
+              </div>
+            )}
+            <div className="flex justify-between items-center pt-8 border-t border-slate-100">
+              <button
+                onClick={prevStep}
+                disabled={currentStep === 1}
+                className={`flex items-center gap-2 text-sm font-medium transition-colors ${
+                  currentStep === 1 ? 'text-slate-300 cursor-not-allowed' : 'text-slate-700 hover:text-slate-900'
+                }`}
+              >
+                <ChevronLeft className="w-4 h-4" /> Back
+              </button>
+              <button
+                onClick={handleNext}
+                className={`flex items-center gap-2 bg-slate-900 text-white px-8 py-4 rounded-2xl text-sm font-medium hover:bg-slate-800 transition-all shadow-xl shadow-slate-900/10 disabled:bg-slate-100 disabled:text-slate-600 disabled:shadow-none disabled:cursor-not-allowed`}
+              >
+                {currentStep === 3 ? 'Review Summary' : 'Next Step'} <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
+        
+        {currentStep === 4 && (
+          <button 
+            onClick={() => setCurrentStep(3)}
+            className="mt-8 text-slate-600 text-sm hover:text-slate-600 transition-colors mx-auto"
+          >
+            ← Back to personal details
+          </button>
+        )}
       </div>
 
       {showPricingCalendar && (
@@ -537,7 +536,7 @@ function BookingFlow() {
           }}
         />
       )}
-    </main>
+    </div>
   );
 }
 
@@ -546,6 +545,22 @@ export default function Home() {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [philosophyRevealed, setPhilosophyRevealed] = useState(false);
+  const [options, setOptions] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadOptions() {
+      try {
+        const data = await fetchOptions();
+        setOptions(data);
+      } catch (err) {
+        console.error('Failed to load options:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadOptions();
+  }, []);
 
   useEffect(() => {
     if (searchParams.get('book') === 'true') {
@@ -598,7 +613,7 @@ export default function Home() {
                 </div>
                 <button 
                   onClick={() => setIsBookingOpen(true)}
-                  className="px-8 py-3 bg-slate-900 text-white rounded-full text-[10px] font-bold tracking-[0.2em] uppercase hover:bg-coastal-seafoam transition-all shadow-lg shadow-slate-900/10"
+                  className="px-8 py-3 bg-coastal-seafoam text-slate-900 rounded-full text-[10px] font-bold tracking-[0.2em] uppercase hover:bg-slate-900 hover:text-white transition-all shadow-lg shadow-coastal-seafoam/20"
                 >
                   Reserve Sanctuary
                 </button>
@@ -631,7 +646,7 @@ export default function Home() {
             <div className="flex flex-col md:flex-row gap-6 justify-center items-center">
               <button 
                 onClick={() => setIsBookingOpen(true)}
-                className="px-12 py-5 bg-white text-slate-900 rounded-full font-medium hover:bg-coastal-seafoam hover:text-white transition-all shadow-2xl tracking-widest uppercase text-xs"
+                className="px-12 py-5 bg-coastal-seafoam text-slate-900 rounded-full font-bold hover:bg-slate-900 hover:text-white transition-all shadow-2xl tracking-widest uppercase text-xs"
               >
                 Reserve Your Stay
               </button>
@@ -659,17 +674,17 @@ export default function Home() {
                 <h2 className="font-playfair text-5xl md:text-6xl text-slate-900 leading-tight">
                   A sanctuary built on <br /> the beauty of less.
                 </h2>
-                <p className="text-slate-500 font-light leading-relaxed text-lg max-w-lg">
+                <p className="text-slate-700 font-light leading-relaxed text-lg max-w-lg">
                   At Namita Beach House, we believe that true luxury isn't found in excess, but in the clarity of space and the rhythm of nature. Our architecture breathes with the ocean, our interiors mirror the dunes.
                 </p>
                 <div className="grid grid-cols-2 gap-10 pt-8">
                    <div className="space-y-4">
                       <h4 className="font-playfair text-3xl text-slate-900">98%</h4>
-                      <p className="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Natural Materials</p>
+                      <p className="text-[10px] uppercase tracking-widest text-slate-600 font-bold">Natural Materials</p>
                    </div>
                    <div className="space-y-4">
                       <h4 className="font-playfair text-3xl text-slate-900">Zero</h4>
-                      <p className="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Digital Noise</p>
+                      <p className="text-[10px] uppercase tracking-widest text-slate-600 font-bold">Digital Noise</p>
                    </div>
                 </div>
              </div>
@@ -707,32 +722,40 @@ export default function Home() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                 <div 
-                  onClick={() => setIsBookingOpen(true)}
-                  className="group cursor-pointer"
-                 >
-                    <div className="relative aspect-video rounded-[2.5rem] overflow-hidden mb-8 shadow-xl">
-                       <Image src="/images/resort/Hotel/WhatsApp Image 2026-05-08 at 8.43.20 PM.jpeg" alt="Luxury Suite" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover group-hover:scale-110 transition-transform duration-1000" />
-                       <div className="absolute top-6 right-6 bg-white/90 backdrop-blur-md px-6 py-2 rounded-full text-[10px] font-bold tracking-widest uppercase text-slate-900 shadow-sm">
-                          From $450
-                       </div>
+                 {options?.room_types.slice(0, 2).map((room: any) => (
+                    <div 
+                      key={room.name}
+                      onClick={() => setIsBookingOpen(true)}
+                      className="group cursor-pointer"
+                    >
+                      <div className="relative aspect-video rounded-[2.5rem] overflow-hidden mb-8 shadow-xl bg-slate-100">
+                        {room.image_url ? (
+                          <Image 
+                            src={room.image_url.startsWith('http') ? room.image_url : encodeURI(room.image_url)} 
+                            alt={room.name} 
+                            fill 
+                            sizes="(max-width: 768px) 100vw, 50vw" 
+                            className="object-cover group-hover:scale-110 transition-transform duration-1000" 
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-slate-300">No Image Available</div>
+                        )}
+                        <div className="absolute top-6 right-6 bg-white/90 backdrop-blur-md px-6 py-2 rounded-full text-[10px] font-bold tracking-widest uppercase text-slate-900 shadow-sm">
+                            From ${room.price}
+                        </div>
+                      </div>
+                      <h3 className="font-playfair text-3xl text-slate-900 mb-3">{room.name}</h3>
+                      <p className="text-slate-700 font-light mb-6 line-clamp-2 italic">"{room.description}"</p>
                     </div>
-                    <h3 className="font-playfair text-3xl text-slate-900 mb-3">Ocean Front Luxury</h3>
-                    <p className="text-slate-500 font-light mb-6">Unobstructed views where the sky meets the sea.</p>
-                 </div>
-                 <div 
-                  onClick={() => setIsBookingOpen(true)}
-                  className="group cursor-pointer"
-                 >
-                    <div className="relative aspect-video rounded-[2.5rem] overflow-hidden mb-8 shadow-xl">
-                       <Image src="/images/resort/Hotel/WhatsApp Image 2026-05-08 at 8.43.22 PM.jpeg" alt="Garden Villa" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover group-hover:scale-110 transition-transform duration-1000" />
-                       <div className="absolute top-6 right-6 bg-white/90 backdrop-blur-md px-6 py-2 rounded-full text-[10px] font-bold tracking-widest uppercase text-slate-900 shadow-sm">
-                          From $380
-                       </div>
-                    </div>
-                    <h3 className="font-playfair text-3xl text-slate-900 mb-3">Coastal Garden Villa</h3>
-                    <p className="text-slate-500 font-light mb-6">A private retreat nestled in native flora.</p>
-                 </div>
+                 ))}
+                 {(!options || options.room_types.length === 0) && !loading && (
+                   <p className="text-slate-600 font-light italic">No featured sanctuaries available.</p>
+                 )}
+                 {loading && (
+                   <div className="col-span-2 py-20 flex justify-center">
+                     <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-coastal-seafoam"></div>
+                   </div>
+                 )}
               </div>
            </div>
         </section>
@@ -767,12 +790,12 @@ export default function Home() {
                       onClick={() => setIsBookingOpen(false)}
                       className="w-12 h-12 rounded-full border border-slate-200 flex items-center justify-center hover:bg-white transition-colors"
                     >
-                       <ChevronRight className="w-6 h-6 text-slate-400" />
+                       <ChevronRight className="w-6 h-6 text-slate-600" />
                     </button>
                  </div>
                  
                  <div className="animate-in fade-in slide-in-from-right-10 duration-700 delay-300">
-                    <BookingFlow />
+                    <BookingFlow options={options} loading={loading} />
                  </div>
               </div>
            </div>
@@ -780,7 +803,7 @@ export default function Home() {
 
         {/* Footer Teaser */}
         <section className="py-20 text-center bg-white border-t border-coastal-beige">
-           <p className="text-slate-400 text-[10px] font-bold tracking-[0.5em] uppercase mb-8 italic">Stay in the rhythm of the tides</p>
+           <p className="text-slate-600 text-[10px] font-bold tracking-[0.5em] uppercase mb-8 italic">Stay in the rhythm of the tides</p>
            <button 
              onClick={() => setIsBookingOpen(true)}
              className="text-slate-900 font-playfair text-4xl hover:text-coastal-seafoam transition-colors underline underline-offset-8"

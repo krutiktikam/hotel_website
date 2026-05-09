@@ -38,13 +38,20 @@ export default async function RoomsPage() {
           {rooms.map((room: any) => (
             <div key={room.id} className="group flex flex-col bg-coastal-white rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 border border-coastal-beige/30">
               <div className="relative aspect-[4/5] overflow-hidden">
-                <Image 
-                  src={room.image_url} 
-                  alt={room.name} 
-                  fill
-                  sizes="(max-width: 768px) 100vw, 33vw"
-                  className="object-cover transition-transform duration-700 group-hover:scale-110"
-                />
+                {room.image_url ? (
+                  <Image 
+                    src={room.image_url.startsWith('http') ? room.image_url : encodeURI(room.image_url)} 
+                    alt={room.name} 
+                    fill
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    priority={room.id <= 3}
+                    className="object-cover transition-transform duration-700 group-hover:scale-110"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-slate-100 flex items-center justify-center text-slate-600">
+                    No Image Available
+                  </div>
+                )}
                 <div className="absolute top-6 left-6 bg-coastal-white/90 backdrop-blur-sm px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase text-slate-800">
                   From ${room.price}
                 </div>
@@ -57,23 +64,23 @@ export default async function RoomsPage() {
               <div className="p-8 flex-1 flex flex-col">
                 <div className="flex items-center gap-2 mb-4">
                   <span className="w-1.5 h-1.5 rounded-full bg-coastal-seafoam animate-pulse" />
-                  <span className="text-[10px] uppercase tracking-widest text-slate-400 font-medium">{10 + room.id} people viewing now</span>
+                  <span className="text-[10px] uppercase tracking-widest text-slate-600 font-medium">{10 + room.id} people viewing now</span>
                 </div>
                 <h2 className="font-playfair text-2xl text-slate-900 mb-3">{room.name}</h2>
-                <p className="text-slate-500 font-light text-sm mb-6 flex-1">{room.description}</p>
+                <p className="text-slate-700 font-light text-sm mb-6 flex-1">{room.description}</p>
                 
                 <div className="flex flex-wrap gap-2 mb-8">
                   {room.features.map((f: string) => (
-                    <span key={f} className="text-[10px] uppercase tracking-widest text-slate-400 bg-slate-50 px-2.5 py-1 rounded-md border border-slate-100">{f}</span>
+                    <span key={f} className="text-[10px] uppercase tracking-widest text-slate-600 bg-slate-50 px-2.5 py-1 rounded-md border border-slate-100">{f}</span>
                   ))}
                 </div>
 
                 <Link 
                   href={`/rooms/${room.slug}`}
-                  className="inline-flex items-center justify-between w-full text-slate-800 font-medium group/btn"
+                  className="inline-flex items-center justify-between w-full text-slate-900 font-bold group/btn"
                 >
                   Explore Details 
-                  <span className="w-10 h-10 rounded-full bg-coastal-beige flex items-center justify-center transition-all group-hover/btn:bg-coastal-seafoam">
+                  <span className="w-10 h-10 rounded-full bg-coastal-seafoam flex items-center justify-center transition-all group-hover/btn:bg-slate-900 group-hover/btn:text-white">
                     <ArrowRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-0.5" />
                   </span>
                 </Link>

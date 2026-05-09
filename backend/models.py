@@ -45,6 +45,7 @@ class Room(Base):
     guests = Column(String)
     features = Column(Text) # JSON string
     image_url = Column(String)
+    gallery_images = Column(Text, nullable=True) # JSON string list of images
     total_inventory = Column(Integer, default=1) # Number of rooms available of this type
     is_active = Column(Boolean, default=True)
     
