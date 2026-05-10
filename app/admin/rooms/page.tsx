@@ -345,6 +345,37 @@ export default function RoomsManagement() {
                 </div>
               </div>
 
+              <div className="space-y-4">
+                <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Main Sanctuary Image</label>
+                <div className="flex gap-4">
+                  <div className="flex-grow">
+                    <input 
+                      type="text" 
+                      placeholder="Paste image URL here (e.g. from ImgBB or Unsplash)"
+                      value={formData.image_url}
+                      onChange={(e) => setFormData({...formData, image_url: e.target.value})}
+                      className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all text-xs"
+                    />
+                  </div>
+                  <div className="relative group">
+                    <button type="button" className="px-6 py-3 bg-slate-100 text-slate-600 rounded-2xl text-xs font-bold hover:bg-slate-200 transition-all">
+                      {isUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Upload'}
+                    </button>
+                    <input 
+                      type="file" 
+                      accept="image/*"
+                      className="absolute inset-0 opacity-0 cursor-pointer" 
+                      onChange={(e) => handleFileUpload(e, false)} 
+                    />
+                  </div>
+                </div>
+                {formData.image_url && (
+                  <div className="relative aspect-video rounded-2xl overflow-hidden border border-slate-100 shadow-sm w-48">
+                    <img src={getImageUrl(formData.image_url)} alt="Preview" className="w-full h-full object-cover" />
+                  </div>
+                )}
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">SEO Title</label>
