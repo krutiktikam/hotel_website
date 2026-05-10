@@ -137,6 +137,7 @@ app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 origins = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
+    "https://hotel-website-zeta-red.vercel.app", # Explicitly add the production frontend
 ]
 frontend_url = os.getenv("FRONTEND_URL")
 if frontend_url:
@@ -148,6 +149,7 @@ if frontend_url:
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
+    allow_origin_regex="https://.*vercel\.app", # Allow all Vercel previews
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -296,15 +298,18 @@ def create_room(room: schemas.RoomCreate, current_user: models.User = Depends(ge
     # Extract features to handle JSON string conversion
     room_data = room.dict()
     features = room_data.pop("features", [])
+    gallery_images = room_data.pop("gallery_images", [])
     
     db_room = models.Room(
         **room_data,
-        features=json.dumps(features)
+        features=json.dumps(features),
+        gallery_images=json.dumps(gallery_images)
     )
     db.add(db_room)
     db.commit()
     db.refresh(db_room)
     db_room.features = json.loads(db_room.features)
+    db_room.gallery_images = json.loads(db_room.gallery_images)
     return db_room
 
 @app.put("/api/v1/admin/rooms/{room_id}", response_model=schemas.RoomResponse)
@@ -313,13 +318,14 @@ def update_room(room_id: int, room: schemas.RoomCreate, current_user: models.Use
     if not db_room:
         raise HTTPException(status_code=404, detail="Room not found")
     for key, value in room.dict().items():
-        if key == "features":
+        if key == "features" or key == "gallery_images":
             setattr(db_room, key, json.dumps(value))
         else:
             setattr(db_room, key, value)
     db.commit()
     db.refresh(db_room)
-    db_room.features = json.loads(db_room.features)
+    db_room.features = json.loads(db_room.features) if db_room.features else []
+    db_room.gallery_images = json.loads(db_room.gallery_images) if db_room.gallery_images else []
     return db_room
 
 @app.delete("/api/v1/admin/rooms/{room_id}")
@@ -479,7 +485,7 @@ def cleanup_bookings(current_user: models.User = Depends(get_current_user), db: 
 # --- UPLOAD ENDPOINT ---
 
 @app.post("/api/v1/admin/upload")
-async def upload_file(file: UploadFile = File(...), current_user: models.User = Depends(get_current_user)):
+async def upload_file(request: Request, file: UploadFile = File(...), current_user: models.User = Depends(get_current_user)):
     # Generate unique filename
     file_extension = os.path.splitext(file.filename)[1]
     unique_filename = f"{uuid.uuid4()}{file_extension}"
@@ -488,7 +494,13 @@ async def upload_file(file: UploadFile = File(...), current_user: models.User = 
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
         
-    base_url = os.getenv("BACKEND_URL", "http://localhost:8000")
+    base_url = os.getenv("BACKEND_URL")
+    if not base_url:
+        # Determine base URL from request if not explicitly set
+        scheme = request.headers.get("x-forwarded-proto", request.url.scheme)
+        host = request.headers.get("x-forwarded-host", request.url.netloc)
+        base_url = f"{scheme}://{host}"
+        
     return {"url": f"{base_url}/uploads/{unique_filename}"}
 
 # --- STRIPE ENDPOINTS ---
