@@ -229,7 +229,7 @@ export default function BookingsManagement() {
                     </p>
                   </td>
                   <td className="px-8 py-6">
-                    <p className="font-medium text-slate-900">${booking.total_price.toLocaleString()}</p>
+                    <p className="font-medium text-slate-900">₹{booking.total_price.toLocaleString()}</p>
                     <p className="text-[10px] text-slate-400 uppercase tracking-widest">{booking.meal_plan}</p>
                   </td>
                   <td className="px-8 py-6">

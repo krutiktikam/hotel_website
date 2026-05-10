@@ -168,7 +168,7 @@ export default async function RoomDetails({ params }: { params: Promise<{ slug: 
               <div className="flex justify-between items-end mb-8">
                 <div>
                   <span className="text-xs uppercase tracking-widest text-slate-600 block mb-1">Price per night</span>
-                  <span className="text-3xl font-playfair text-slate-900">${room.price}</span>
+                  <span className="text-3xl font-playfair text-slate-900">₹{room.price}</span>
                 </div>
                 <div className="flex items-center gap-1 text-slate-700 text-sm">
                   <Calendar className="w-4 h-4" />

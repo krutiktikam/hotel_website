@@ -220,7 +220,7 @@ export default function RoomsManagement() {
                     <h3 className="font-playfair text-2xl text-slate-900 mb-1">{room.name}</h3>
                     <p className="text-[10px] uppercase tracking-widest text-slate-400 font-bold">{room.slug}</p>
                   </div>
-                  <p className="text-2xl font-playfair text-slate-900">${room.price}<span className="text-xs text-slate-400 font-sans">/nt</span></p>
+                  <p className="text-2xl font-playfair text-slate-900">₹{room.price}<span className="text-xs text-slate-400 font-sans">/nt</span></p>
                 </div>
                 
                 <p className="text-sm text-slate-500 font-light line-clamp-2 mb-6 flex-grow italic">
@@ -306,7 +306,7 @@ export default function RoomsManagement() {
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="space-y-2">
-                  <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Price/Night ($)</label>
+                  <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Price/Night (₹)</label>
                   <input 
                     required
                     type="number" 

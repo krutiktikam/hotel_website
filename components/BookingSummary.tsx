@@ -166,8 +166,8 @@ const BookingSummary: React.FC<BookingSummaryProps> = ({ bookingData, imageUrl }
                 `• Check-in: ${bookingData.checkIn}\n` +
                 `• Check-out: ${bookingData.checkOut}\n\n` +
                 `💳 *Investment Summary:*\n` +
-                `• Total Stay: $${(bookingResponse?.total_price || 0).toFixed(2)}\n` +
-                `• Required 10% Deposit: $${((bookingResponse?.total_price || 0) * 0.10).toFixed(2)}\n\n` +
+                `• Total Stay: ₹${(bookingResponse?.total_price || 0).toFixed(2)}\n` +
+                `• Required 10% Deposit: ₹${((bookingResponse?.total_price || 0) * 0.10).toFixed(2)}\n\n` +
                 `Next Steps: Please provide a screenshot of your deposit to this chat to finalize your check-in rituals.\n\n` +
                 `See you where the horizon meets the shore.\n` +
                 `---`

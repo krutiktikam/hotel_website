@@ -43,7 +43,7 @@ export default function AdminDashboard() {
   const stats = [
     { 
       name: 'Realized Revenue', 
-      value: `$${revenueBookings.reduce((acc, b) => acc + b.total_price, 0).toLocaleString()}`, 
+      value: `₹${revenueBookings.reduce((acc, b) => acc + b.total_price, 0).toLocaleString()}`, 
       icon: DollarSign, 
       color: 'text-green-500', 
       bg: 'bg-green-50' 
@@ -57,7 +57,7 @@ export default function AdminDashboard() {
     },
     { 
       name: 'Avg. Booking Value', 
-      value: `$${bookings.length ? Math.round(bookings.reduce((acc, b) => acc + b.total_price, 0) / bookings.length).toLocaleString() : 0}`, 
+      value: `₹${bookings.length ? Math.round(bookings.reduce((acc, b) => acc + b.total_price, 0) / bookings.length).toLocaleString() : 0}`, 
       icon: TrendingUp, 
       color: 'text-purple-500', 
       bg: 'bg-purple-50' 
@@ -138,7 +138,7 @@ export default function AdminDashboard() {
                     </span>
                   </td>
                   <td className="px-8 py-6 font-medium text-slate-900">
-                    ${booking.total_price.toLocaleString()}
+                    ₹{booking.total_price.toLocaleString()}
                   </td>
                   <td className="px-8 py-6 text-xs text-slate-400">
                     {new Date(booking.created_at).toLocaleDateString()}

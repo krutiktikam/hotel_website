@@ -113,7 +113,7 @@ const PricingCalendar: React.FC<PricingCalendarProps> = ({ roomType, onClose, on
                     <span className="text-sm font-medium mb-1">{actualDay}</span>
                     {day.is_available && (
                       <span className={`text-[9px] font-bold ${isWeekend ? 'text-coastal-seafoam' : 'text-slate-400'}`}>
-                        ${day.price}
+                        ₹{day.price}
                       </span>
                     )}
                   </button>

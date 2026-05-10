@@ -29,8 +29,8 @@ async def send_whatsapp_confirmation(booking: Booking):
     print(f"Guest: {booking.customer_name}")
     print(f"Room: {booking.room_type}")
     print(f"Dates: {booking.check_in} to {booking.check_out}")
-    print(f"Total Price: ${booking.total_price:.2f}")
-    print(f"Required 10% Deposit: ${deposit_amount:.2f}")
+    print(f"Total Price: ₹{booking.total_price:.2f}")
+    print(f"Required 10% Deposit: ₹{deposit_amount:.2f}")
     print(f"------------------------------------")
 
     if not whatsapp_token or not phone_number_id:
@@ -57,8 +57,8 @@ async def send_whatsapp_confirmation(booking: Booking):
         f"• Check-in: {booking.check_in}\n"
         f"• Check-out: {booking.check_out}\n\n"
         f"💳 *Investment Summary:*\n"
-        f"• Total Stay: ${booking.total_price:.2f}\n"
-        f"• Required 10% Deposit: ${deposit_amount:.2f}\n\n"
+        f"• Total Stay: ₹{booking.total_price:.2f}\n"
+        f"• Required 10% Deposit: ₹{deposit_amount:.2f}\n\n"
         f"Next Steps: Please provide a screenshot of your deposit to this chat to finalize your check-in rituals.\n\n"
         f"See you where the horizon meets the shore.\n"
         f"---"
