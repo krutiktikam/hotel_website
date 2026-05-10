@@ -18,7 +18,14 @@ import {
   CheckCircle2
 } from 'lucide-react';
 import PricingCalendar from '@/components/PricingCalendar';
-import { fetchOptions } from '@/lib/api';
+import { fetchOptions, API_BASE_URL } from '@/lib/api';
+
+const getImageUrl = (url: string) => {
+  if (!url) return '';
+  if (url.startsWith('http')) return url;
+  const baseUrl = API_BASE_URL.replace('/api/v1', '');
+  return `${baseUrl}${url.startsWith('/') ? '' : '/'}${url}`;
+};
 
 function BookingFlow({ options, loading: optionsLoading }: { options: any, loading: boolean }) {
   const searchParams = useSearchParams();
@@ -269,7 +276,7 @@ function BookingFlow({ options, loading: optionsLoading }: { options: any, loadi
                           {room.image_url && (
                             <div className="relative aspect-video rounded-2xl overflow-hidden bg-slate-100">
                               <Image 
-                                src={room.image_url.startsWith('http') ? room.image_url : encodeURI(room.image_url)} 
+                                src={getImageUrl(room.image_url)} 
                                 alt={room.name}
                                 fill
                                 sizes="(max-width: 768px) 100vw, 20vw"
