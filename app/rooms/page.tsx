@@ -53,7 +53,7 @@ export default async function RoomsPage() {
                   </div>
                 )}
                 <div className="absolute top-6 left-6 bg-coastal-white/90 backdrop-blur-sm px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase text-slate-800">
-                  From ${room.price}
+                  From ₹{room.price}
                 </div>
                 {/* Randomly simulate scarcity if not in DB yet */}
                 <div className="absolute bottom-6 left-6 bg-red-500/90 backdrop-blur-sm px-4 py-1.5 rounded-full text-[10px] font-bold tracking-widest uppercase text-white animate-pulse">

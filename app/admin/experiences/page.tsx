@@ -138,7 +138,7 @@ export default function ExperiencesManagement() {
                 <div className="flex items-center gap-2 text-xs text-slate-400">
                   <Clock className="w-3.5 h-3.5" /> {exp.duration}
                 </div>
-                <div className="font-playfair text-slate-900 text-lg">${exp.price}</div>
+                <div className="font-playfair text-slate-900 text-lg">₹{exp.price}</div>
               </div>
 
               <div className="flex gap-2">
@@ -207,7 +207,7 @@ export default function ExperiencesManagement() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Price ($)</label>
+                  <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Price (₹)</label>
                   <input 
                     type="number" 
                     value={formData.price}

@@ -289,7 +289,7 @@ function BookingFlow({ options, loading: optionsLoading }: { options: any, loadi
                               </span>
                             )}
                             <p className="font-medium text-slate-900">{room.name}</p>
-                            <p className="text-xs text-slate-600 mt-1">From ${room.price}/night</p>
+                            <p className="text-xs text-slate-600 mt-1">From ₹{room.price}/night</p>
                           </div>
                         </button>
                       );
@@ -306,7 +306,7 @@ function BookingFlow({ options, loading: optionsLoading }: { options: any, loadi
                       </div>
                       <div>
                         <p className="text-sm font-semibold text-slate-900">Upgrade to Garden Villa?</p>
-                        <p className="text-xs text-slate-700">Add an outdoor shower and private garden for just $50 extra.</p>
+                        <p className="text-xs text-slate-700">Add an outdoor shower and private garden for just ₹5000 extra.</p>
                       </div>
                     </div>
                     <ChevronRight className="w-5 h-5 text-coastal-seafoam" />
@@ -330,7 +330,7 @@ function BookingFlow({ options, loading: optionsLoading }: { options: any, loadi
                     >
 
                       {options?.meal_plans.map((meal: any) => (
-                        <option key={meal.name} value={meal.name}>{meal.name} (+${meal.price})</option>
+                        <option key={meal.name} value={meal.name}>{meal.name} (+₹{meal.price})</option>
                       ))}
                     </select>
                   </div>
@@ -345,7 +345,7 @@ function BookingFlow({ options, loading: optionsLoading }: { options: any, loadi
                     >
 
                       {options?.packages.map((pkg: any) => (
-                        <option key={pkg.name} value={pkg.name}>{pkg.name} (+${pkg.price})</option>
+                        <option key={pkg.name} value={pkg.name}>{pkg.name} (+₹{pkg.price})</option>
                       ))}
                     </select>
                   </div>
@@ -411,7 +411,7 @@ function BookingFlow({ options, loading: optionsLoading }: { options: any, loadi
                       }`}
                     >
                       <Plus className={`w-3 h-3 transition-transform ${formData.selectedAddons.includes(addon.name) ? 'rotate-45' : ''}`} />
-                      {addon.name} (+${addon.price})
+                      {addon.name} (+₹{addon.price})
                     </button>
                   ))}
                 </div>
@@ -736,9 +736,8 @@ function HomeContent() {
                         <div className="w-full h-full flex items-center justify-center text-slate-300">No Image Available</div>
                       )}
                       <div className="absolute top-6 right-6 bg-white/90 backdrop-blur-md px-6 py-2 rounded-full text-[10px] font-bold tracking-widest uppercase text-slate-900 shadow-sm">
-                          From ${room.price}
-                      </div>
-                    </div>
+                            From ₹{room.price}
+                        </div>                    </div>
                     <h3 className="font-playfair text-3xl text-slate-900 mb-3">{room.name}</h3>
                     <p className="text-slate-700 font-light mb-6 line-clamp-2 italic">"{room.description}"</p>
                   </div>

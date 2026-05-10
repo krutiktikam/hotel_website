@@ -105,7 +105,7 @@ export default function ExperiencesPage() {
                 <div className="flex items-center gap-12 py-6 border-y border-white/50">
                   <div className="space-y-1">
                     <span className="text-[10px] uppercase tracking-widest text-slate-600">Investment</span>
-                    <p className="font-medium text-slate-800">${exp.price}</p>
+                    <p className="font-medium text-slate-800">₹{exp.price}</p>
                   </div>
                   <div className="space-y-1">
                     <span className="text-[10px] uppercase tracking-widest text-slate-600">Duration</span>
