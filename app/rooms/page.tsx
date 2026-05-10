@@ -3,7 +3,7 @@ import { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
-import { API_BASE_URL } from '@/lib/api';
+import { API_BASE_URL, getImageUrl } from '@/lib/api';
 
 export const metadata: Metadata = {
   title: 'Our Sanctuaries | Namita Beach House',
@@ -40,7 +40,7 @@ export default async function RoomsPage() {
               <div className="relative aspect-[4/5] overflow-hidden">
                 {room.image_url ? (
                   <Image 
-                    src={room.image_url.startsWith('http') ? room.image_url : encodeURI(room.image_url)} 
+                    src={getImageUrl(room.image_url)} 
                     alt={room.name} 
                     fill
                     sizes="(max-width: 768px) 100vw, 33vw"

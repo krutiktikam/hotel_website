@@ -1,5 +1,14 @@
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
 
+export const getImageUrl = (url: string) => {
+  if (!url) return '';
+  if (url.startsWith('http')) return url;
+  
+  // Base URL for images is the API base URL without the /api/v1 part
+  const baseUrl = API_BASE_URL.replace('/api/v1', '');
+  return `${baseUrl}${url.startsWith('/') ? '' : '/'}${url}`;
+};
+
 export async function fetchOptions() {
   const response = await fetch(`${API_BASE_URL}/options`);
   if (!response.ok) throw new Error('Failed to fetch options');

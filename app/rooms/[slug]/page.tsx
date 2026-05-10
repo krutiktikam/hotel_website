@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 
-import { API_BASE_URL } from '@/lib/api';
+import { API_BASE_URL, getImageUrl } from '@/lib/api';
 
 async function getRoom(slug: string) {
   const response = await fetch(`${API_BASE_URL}/rooms/${slug}`, { cache: 'no-store' });
@@ -29,20 +29,22 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   
   if (!room) return { title: 'Room Not Found' };
 
+  const finalImageUrl = getImageUrl(room.image_url);
+
   return {
     title: `${room.name} | Namita Beach House`,
     description: room.description,
     openGraph: {
       title: room.name,
       description: room.description,
-      images: [{ url: room.image_url }],
+      images: [{ url: finalImageUrl }],
       type: 'website',
     },
     twitter: {
       card: 'summary_large_image',
       title: room.name,
       description: room.description,
-      images: [room.image_url],
+      images: [finalImageUrl],
     },
   };
 }
@@ -78,7 +80,7 @@ export default async function RoomDetails({ params }: { params: Promise<{ slug: 
             <>
               <div className="relative md:col-span-2 md:row-span-2 rounded-[2rem] overflow-hidden bg-slate-100">
                 <Image 
-                  src={allImages[0].startsWith('http') ? allImages[0] : encodeURI(allImages[0])} 
+                  src={getImageUrl(allImages[0])} 
                   fill 
                   sizes="(max-width: 768px) 100vw, 50vw" 
                   className="object-cover" 
@@ -89,7 +91,7 @@ export default async function RoomDetails({ params }: { params: Promise<{ slug: 
               {allImages.slice(1, 3).map((img, idx) => (
                 <div key={idx} className="relative md:col-span-2 rounded-[2rem] overflow-hidden bg-slate-100">
                   <Image 
-                    src={img.startsWith('http') ? img : encodeURI(img)} 
+                    src={getImageUrl(img)} 
                     fill 
                     sizes="(max-width: 768px) 100vw, 50vw" 
                     className="object-cover" 

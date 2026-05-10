@@ -1,7 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { API_BASE_URL } from '@/lib/api';
+import { API_BASE_URL, getImageUrl } from '@/lib/api';
 import Image from 'next/image';
 import { Sunrise, Palmtree, Anchor, ArrowRight, Compass } from 'lucide-react';
 import Link from 'next/link';
@@ -68,7 +67,7 @@ export default function ExperiencesPage() {
                 <div className="relative aspect-[16/10] rounded-[3rem] overflow-hidden shadow-2xl shadow-slate-200/50 transition-all duration-700 hover:shadow-coastal-seafoam/10">
                   {exp.image_url ? (
                     <Image 
-                      src={exp.image_url.startsWith('http') ? exp.image_url : encodeURI(exp.image_url)} 
+                      src={getImageUrl(exp.image_url)} 
                       alt={exp.title} 
                       fill
                       sizes="(max-width: 768px) 100vw, 50vw"

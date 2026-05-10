@@ -726,7 +726,7 @@ function HomeContent() {
                     <div className="relative aspect-video rounded-[2.5rem] overflow-hidden mb-8 shadow-xl bg-slate-100">
                       {room.image_url ? (
                         <Image 
-                          src={room.image_url.startsWith('http') ? room.image_url : encodeURI(room.image_url)} 
+                          src={getImageUrl(room.image_url)} 
                           alt={room.name} 
                           fill 
                           sizes="(max-width: 768px) 100vw, 50vw" 

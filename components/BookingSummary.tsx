@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Waves, CheckCircle2, CreditCard, Calendar, User, Home, Utensils, Gift, PlusCircle, Phone, ShieldCheck, Zap } from 'lucide-react';
-import { createBooking, createCheckoutSession } from '@/lib/api';
+import { createBooking, createCheckoutSession, getImageUrl } from '@/lib/api';
 
 interface BookingData {
   customerName: string;
@@ -102,7 +102,7 @@ const BookingSummary: React.FC<BookingSummaryProps> = ({ bookingData, imageUrl }
                   {imageUrl && (
                     <div className="relative w-16 h-12 rounded-lg overflow-hidden border border-slate-100 shadow-sm ml-2">
                        <img 
-                        src={imageUrl.startsWith('http') ? imageUrl : encodeURI(imageUrl)} 
+                        src={getImageUrl(imageUrl)} 
                         alt="Selected Room" 
                         className="w-full h-full object-cover" 
                        />
