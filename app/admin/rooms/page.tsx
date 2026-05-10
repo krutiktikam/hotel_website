@@ -186,29 +186,29 @@ export default function RoomsManagement() {
   };
 
   return (
-    <div className="space-y-8">
-      <div className="flex justify-between items-end">
+    <div className="space-y-6 sm:space-y-8">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4">
         <div>
-          <h1 className="font-playfair text-4xl text-slate-900 mb-2">Rooms</h1>
-          <p className="text-slate-500 font-light">Manage room types, pricing, and availability.</p>
+          <h1 className="font-playfair text-3xl sm:text-4xl text-slate-900 mb-2">Rooms</h1>
+          <p className="text-slate-500 font-light text-sm sm:text-base">Manage room types, pricing, and availability.</p>
         </div>
         <button 
           onClick={() => { setCurrentRoom(null); setIsModalOpen(true); }}
-          className="flex items-center gap-2 bg-slate-900 text-white px-8 py-4 rounded-2xl text-sm font-medium hover:bg-slate-800 transition-all shadow-xl shadow-slate-900/10"
+          className="flex items-center justify-center gap-2 bg-slate-900 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-2xl text-sm font-medium hover:bg-slate-800 transition-all shadow-xl shadow-slate-900/10 w-full sm:w-auto"
         >
           <Plus className="w-4 h-4" /> Add New Room
         </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
         {loading ? (
           <p className="col-span-2 text-center py-20 text-slate-400 flex items-center justify-center gap-3">
             <Loader2 className="w-6 h-6 animate-spin" /> Loading rooms...
           </p>
         ) : rooms.map((room) => (
-          <div key={room.id} className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden group">
+          <div key={room.id} className="bg-white rounded-[2rem] sm:rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden group">
             <div className="flex flex-col md:flex-row h-full">
-              <div className="md:w-2/5 relative overflow-hidden h-64 md:h-auto">
+              <div className="md:w-2/5 relative overflow-hidden h-48 sm:h-64 md:h-auto">
                 <img 
                   src={getImageUrl(room.image_url)} 
                   alt={room.name} 
@@ -222,13 +222,13 @@ export default function RoomsManagement() {
                   </span>
                 </div>
               </div>
-              <div className="md:w-3/5 p-8 flex flex-col">
+              <div className="md:w-3/5 p-6 sm:p-8 flex flex-col">
                 <div className="flex justify-between items-start mb-4">
                   <div>
-                    <h3 className="font-playfair text-2xl text-slate-900 mb-1">{room.name}</h3>
+                    <h3 className="font-playfair text-xl sm:text-2xl text-slate-900 mb-1">{room.name}</h3>
                     <p className="text-[10px] uppercase tracking-widest text-slate-400 font-bold">{room.slug}</p>
                   </div>
-                  <p className="text-2xl font-playfair text-slate-900">₹{room.price}<span className="text-xs text-slate-400 font-sans">/nt</span></p>
+                  <p className="text-xl sm:text-2xl font-playfair text-slate-900">₹{room.price}<span className="text-xs text-slate-400 font-sans">/nt</span></p>
                 </div>
                 
                 <p className="text-sm text-slate-500 font-light line-clamp-2 mb-6 flex-grow italic">
@@ -265,16 +265,16 @@ export default function RoomsManagement() {
       </div>
 
       {isModalOpen && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-6 overflow-y-auto">
-          <div className="bg-white w-full max-w-2xl rounded-[3rem] p-10 relative shadow-2xl my-8 text-slate-900">
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+          <div className="bg-white w-full max-w-2xl rounded-[2rem] sm:rounded-[3rem] p-6 sm:p-10 relative shadow-2xl my-8 text-slate-900">
             <button 
               onClick={() => setIsModalOpen(false)}
-              className="absolute top-8 right-8 text-slate-400 hover:text-slate-900 transition-colors"
+              className="absolute top-6 right-6 sm:top-8 sm:right-8 text-slate-400 hover:text-slate-900 transition-colors"
             >
               <XCircle className="w-6 h-6" />
             </button>
             
-            <h2 className="font-playfair text-3xl mb-8">{currentRoom ? 'Edit Room' : 'Add New Room'}</h2>
+            <h2 className="font-playfair text-2xl sm:text-3xl mb-8">{currentRoom ? 'Edit Room' : 'Add New Room'}</h2>
             
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -312,7 +312,7 @@ export default function RoomsManagement() {
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                 <div className="space-y-2">
                   <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Price/Night (₹)</label>
                   <input 
@@ -347,19 +347,19 @@ export default function RoomsManagement() {
 
               <div className="space-y-4">
                 <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Main Room Image</label>
-                <div className="flex gap-4">
+                <div className="flex flex-col sm:flex-row gap-4">
                   <div className="flex-grow">
                     <input 
                       type="text" 
-                      placeholder="Paste image URL here (e.g. from ImgBB or Unsplash)"
+                      placeholder="Paste image URL here..."
                       value={formData.image_url}
                       onChange={(e) => setFormData({...formData, image_url: e.target.value})}
                       className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all text-slate-900 text-xs font-medium"
                     />
                   </div>
                   <div className="relative group">
-                    <button type="button" className="px-6 py-3 bg-slate-100 text-slate-600 rounded-2xl text-xs font-bold hover:bg-slate-200 transition-all">
-                      {isUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Upload'}
+                    <button type="button" className="w-full sm:px-6 py-3 bg-slate-100 text-slate-600 rounded-2xl text-xs font-bold hover:bg-slate-200 transition-all">
+                      {isUploading ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : 'Upload'}
                     </button>
                     <input 
                       type="file" 
@@ -370,7 +370,7 @@ export default function RoomsManagement() {
                   </div>
                 </div>
                 {formData.image_url && (
-                  <div className="relative aspect-video rounded-2xl overflow-hidden border border-slate-100 shadow-sm w-48">
+                  <div className="relative aspect-video rounded-2xl overflow-hidden border border-slate-100 shadow-sm w-full sm:w-48">
                     <img src={getImageUrl(formData.image_url)} alt="Preview" className="w-full h-full object-cover" />
                   </div>
                 )}
@@ -403,7 +403,7 @@ export default function RoomsManagement() {
                 <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Room Gallery</label>
                 
                 {/* New: Add Gallery Image via URL */}
-                <div className="flex gap-4 mb-4">
+                <div className="flex flex-col sm:flex-row gap-4 mb-4">
                   <div className="flex-grow">
                     <input 
                       type="text" 
@@ -439,7 +439,7 @@ export default function RoomsManagement() {
                         input.value = '';
                       }
                     }}
-                    className="px-6 py-3 bg-slate-900 text-white rounded-2xl text-xs font-bold hover:bg-slate-800 transition-all"
+                    className="px-6 py-3 bg-slate-900 text-white rounded-2xl text-xs font-bold hover:bg-slate-800 transition-all w-full sm:w-auto"
                   >
                     Add URL
                   </button>
@@ -488,18 +488,18 @@ export default function RoomsManagement() {
                 <label htmlFor="is_active" className="text-sm text-slate-600 font-medium">Room is active and available for booking</label>
               </div>
 
-              <div className="flex gap-4 pt-4">
+              <div className="flex flex-col sm:flex-row gap-4 pt-4">
                 <button 
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="flex-grow py-5 rounded-2xl border border-slate-100 font-medium text-slate-500 hover:bg-slate-50 transition-all"
+                  className="flex-grow py-4 sm:py-5 rounded-2xl border border-slate-100 font-medium text-slate-500 hover:bg-slate-50 transition-all w-full sm:w-auto"
                 >
                   Cancel
                 </button>
                 <button 
                   type="submit"
                   disabled={isSubmitting || isUploading}
-                  className="flex-[2] bg-slate-900 text-white py-5 rounded-2xl font-medium shadow-xl shadow-slate-900/10 hover:bg-slate-800 transition-all flex items-center justify-center gap-2 disabled:bg-slate-100 disabled:text-slate-400"
+                  className="flex-[2] bg-slate-900 text-white py-4 sm:py-5 rounded-2xl font-medium shadow-xl shadow-slate-900/10 hover:bg-slate-800 transition-all flex items-center justify-center gap-2 disabled:bg-slate-100 disabled:text-slate-400 w-full sm:w-auto"
                 >
                   {isSubmitting ? (
                     <Loader2 className="w-5 h-5 animate-spin" />

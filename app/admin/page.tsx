@@ -72,46 +72,46 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-8 sm:space-y-12">
       <div>
-        <h1 className="font-playfair text-4xl text-slate-900 mb-2">Dashboard Overview</h1>
-        <p className="text-slate-500 font-light">Welcome back. Here is what is happening at Namita Beach House today.</p>
+        <h1 className="font-playfair text-3xl sm:text-4xl text-slate-900 mb-2">Dashboard Overview</h1>
+        <p className="text-slate-500 font-light text-sm sm:text-base">Welcome back. Here is what is happening at Namita Beach House today.</p>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8">
         {stats.map((stat) => (
-          <div key={stat.name} className="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm">
-            <div className={`w-12 h-12 ${stat.bg} ${stat.color} rounded-2xl flex items-center justify-center mb-6`}>
-              <stat.icon className="w-6 h-6" />
+          <div key={stat.name} className="bg-white p-6 sm:p-8 rounded-[1.5rem] sm:rounded-[2rem] border border-slate-100 shadow-sm">
+            <div className={`w-10 h-10 sm:w-12 sm:h-12 ${stat.bg} ${stat.color} rounded-xl sm:rounded-2xl flex items-center justify-center mb-4 sm:mb-6`}>
+              <stat.icon className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
-            <p className="text-xs uppercase tracking-widest text-slate-400 font-bold mb-1">{stat.name}</p>
-            <p className="text-3xl font-playfair text-slate-900">{stat.value}</p>
+            <p className="text-[10px] sm:text-xs uppercase tracking-widest text-slate-400 font-bold mb-1">{stat.name}</p>
+            <p className="text-2xl sm:text-3xl font-playfair text-slate-900">{stat.value}</p>
           </div>
         ))}
       </div>
 
       {/* Recent Bookings */}
-      <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden">
-        <div className="p-8 border-b border-slate-50 flex justify-between items-center">
-          <h2 className="font-playfair text-2xl text-slate-900">Recent Reservations</h2>
+      <div className="bg-white rounded-[1.5rem] sm:rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden">
+        <div className="p-6 sm:p-8 border-b border-slate-50 flex justify-between items-center">
+          <h2 className="font-playfair text-xl sm:text-2xl text-slate-900">Recent Reservations</h2>
           <Link 
             href="/admin/bookings" 
-            className="text-xs uppercase tracking-widest text-coastal-seafoam font-bold hover:text-slate-900 transition-colors"
+            className="text-[10px] sm:text-xs uppercase tracking-widest text-coastal-seafoam font-bold hover:text-slate-900 transition-colors"
           >
             View All
           </Link>
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-left">
+          <table className="w-full text-left min-w-[600px]">
             <thead>
               <tr className="bg-slate-50/50 text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold">
-                <th className="px-8 py-4">Guest</th>
-                <th className="px-8 py-4">Stay</th>
-                <th className="px-8 py-4">Status</th>
-                <th className="px-8 py-4">Amount</th>
-                <th className="px-8 py-4">Date</th>
+                <th className="px-6 sm:px-8 py-4">Guest</th>
+                <th className="px-6 sm:px-8 py-4">Stay</th>
+                <th className="px-6 sm:px-8 py-4">Status</th>
+                <th className="px-6 sm:px-8 py-4">Amount</th>
+                <th className="px-6 sm:px-8 py-4">Date</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
@@ -119,28 +119,30 @@ export default function AdminDashboard() {
                 <tr><td colSpan={5} className="p-20 text-center text-slate-400">Loading bookings...</td></tr>
               ) : bookings.length === 0 ? (
                 <tr><td colSpan={5} className="p-20 text-center text-slate-400">No bookings found.</td></tr>
-              ) : bookings.map((booking) => (
+              ) : bookings.slice(0, 5).map((booking) => (
                 <tr key={booking.id} className="hover:bg-slate-50/30 transition-colors">
-                  <td className="px-8 py-6">
+                  <td className="px-6 sm:px-8 py-6">
                     <p className="font-medium text-slate-900">{booking.customer_name}</p>
                     <p className="text-xs text-slate-400">{booking.customer_phone}</p>
                   </td>
-                  <td className="px-8 py-6">
+                  <td className="px-6 sm:px-8 py-6">
                     <p className="text-sm text-slate-600">{booking.room_type}</p>
                     <p className="text-[10px] text-slate-400 uppercase tracking-wider">{booking.check_in} — {booking.check_out}</p>
                   </td>
-                  <td className="px-8 py-6">
+                  <td className="px-6 sm:px-8 py-6">
                     <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${
-                      booking.status === 'confirmed' ? 'bg-green-50 text-green-600' : 'bg-orange-50 text-orange-600'
+                      booking.status === 'confirmed' ? 'bg-green-50 text-green-600' : 
+                      booking.status === 'pending' ? 'bg-orange-50 text-orange-600' :
+                      'bg-slate-50 text-slate-500'
                     }`}>
                       {booking.status === 'confirmed' ? <CheckCircle2 className="w-3 h-3" /> : <Clock className="w-3 h-3" />}
                       {booking.status}
                     </span>
                   </td>
-                  <td className="px-8 py-6 font-medium text-slate-900">
+                  <td className="px-6 sm:px-8 py-6 font-medium text-slate-900">
                     ₹{booking.total_price.toLocaleString()}
                   </td>
-                  <td className="px-8 py-6 text-xs text-slate-400">
+                  <td className="px-6 sm:px-8 py-6 text-xs text-slate-400">
                     {new Date(booking.created_at).toLocaleDateString()}
                   </td>
                 </tr>

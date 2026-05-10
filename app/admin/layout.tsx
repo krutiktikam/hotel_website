@@ -115,7 +115,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             onClick={handleLogout}
             className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-red-500 hover:bg-red-50 transition-all w-full text-left"
           >
-            <item.icon className="w-4 h-4" />
+            <LogOut className="w-4 h-4" />
             Sign Out
           </button>
         </div>

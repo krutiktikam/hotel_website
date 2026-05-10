@@ -104,27 +104,29 @@ export default function AdminLocalSpots() {
   };
 
   return (
-    <div className="space-y-12">
-      <div className="flex justify-between items-end">
+    <div className="space-y-8 sm:space-y-12">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4">
         <div>
-          <h1 className="font-playfair text-4xl text-slate-900 mb-2">Map Geography</h1>
-          <p className="text-slate-500 font-light">Manage local points of interest and their distances from the sanctuary.</p>
+          <h1 className="font-playfair text-3xl sm:text-4xl text-slate-900 mb-2">Map Geography</h1>
+          <p className="text-slate-500 font-light text-sm sm:text-base">Manage local points of interest and their distances from the shore.</p>
         </div>
         <button 
           onClick={() => handleOpenModal()}
-          className="flex items-center gap-2 bg-slate-900 text-white px-6 py-3 rounded-xl text-sm font-medium hover:bg-slate-800 transition-all shadow-lg"
+          className="flex items-center justify-center gap-2 bg-slate-900 text-white px-6 py-3 rounded-xl text-sm font-medium hover:bg-slate-800 transition-all shadow-lg w-full sm:w-auto"
         >
           <Plus className="w-4 h-4" /> Add New Spot
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
         {loading ? (
-          <div className="col-span-full py-20 text-center text-slate-400 font-light tracking-widest">Consulting the tides...</div>
+          <div className="col-span-full py-20 text-center text-slate-400 font-light tracking-widest flex items-center justify-center gap-3">
+            <Loader2 className="w-6 h-6 animate-spin" /> Consulting the tides...
+          </div>
         ) : spots.length === 0 ? (
           <div className="col-span-full py-20 text-center text-slate-400 font-light tracking-widest">No local spots mapped yet.</div>
         ) : spots.map((spot) => (
-          <div key={spot.id} className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm group hover:shadow-md transition-all">
+          <div key={spot.id} className="bg-white p-6 sm:p-8 rounded-[2rem] sm:rounded-[2.5rem] border border-slate-100 shadow-sm group hover:shadow-md transition-all">
             <div className="flex justify-between items-start mb-6">
               <div className="w-12 h-12 bg-coastal-seafoam/10 rounded-2xl flex items-center justify-center text-coastal-seafoam">
                 <MapPin className="w-6 h-6" />
@@ -164,50 +166,50 @@ export default function AdminLocalSpots() {
 
       {/* Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-900/40 backdrop-blur-sm">
-          <div className="bg-white w-full max-w-xl rounded-[3rem] shadow-2xl overflow-hidden border border-coastal-beige/50 animate-in zoom-in duration-300">
-            <div className="p-8 border-b border-coastal-beige flex justify-between items-center bg-coastal-beige/10">
-              <h3 className="font-playfair text-2xl text-slate-900">{currentSpot ? 'Edit Spot' : 'New Local Spot'}</h3>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-900/40 backdrop-blur-sm overflow-y-auto">
+          <div className="bg-white w-full max-w-xl rounded-[2rem] sm:rounded-[3rem] shadow-2xl overflow-hidden border border-coastal-beige/50 animate-in zoom-in duration-300 my-8 text-slate-900">
+            <div className="p-6 sm:p-8 border-b border-coastal-beige flex justify-between items-center bg-coastal-beige/10">
+              <h3 className="font-playfair text-xl sm:text-2xl text-slate-900">{currentSpot ? 'Edit Spot' : 'New Local Spot'}</h3>
               <button onClick={() => setIsModalOpen(false)} className="p-2 text-slate-400 hover:text-slate-900"><X className="w-6 h-6" /></button>
             </div>
             
-            <form onSubmit={handleSubmit} className="p-10 space-y-6">
+            <form onSubmit={handleSubmit} className="p-6 sm:p-10 space-y-6">
               <div className="space-y-2">
-                <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Spot Name</label>
+                <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Spot Name</label>
                 <input 
                   required
                   type="text" 
                   value={formData.name}
                   onChange={(e) => setFormData({...formData, name: e.target.value})}
-                  className="w-full bg-slate-50 border-0 rounded-2xl py-4 px-6 focus:ring-2 focus:ring-coastal-seafoam transition-all"
+                  className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 sm:py-4 sm:px-6 focus:ring-2 focus:ring-coastal-seafoam transition-all text-slate-900 font-medium"
                   placeholder="e.g. Crystal Cove"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Distance</label>
+                  <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Distance</label>
                   <input 
                     required
                     type="text" 
                     value={formData.distance}
                     onChange={(e) => setFormData({...formData, distance: e.target.value})}
-                    className="w-full bg-slate-50 border-0 rounded-2xl py-4 px-6 focus:ring-2 focus:ring-coastal-seafoam transition-all"
+                    className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 sm:py-4 sm:px-6 focus:ring-2 focus:ring-coastal-seafoam transition-all text-slate-900 font-medium"
                     placeholder="e.g. 0.8km"
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Google Maps Link</label>
+                  <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Google Maps Link</label>
                   <input 
                     type="url" 
                     value={formData.google_maps_url}
                     onChange={(e) => setFormData({...formData, google_maps_url: e.target.value})}
-                    className="w-full bg-slate-50 border-0 rounded-2xl py-4 px-6 focus:ring-2 focus:ring-coastal-seafoam transition-all"
+                    className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 sm:py-4 sm:px-6 focus:ring-2 focus:ring-coastal-seafoam transition-all text-slate-900 font-medium"
                     placeholder="https://goo.gl/maps/..."
                   />
                 </div>
               </div>
 
-              <div className="p-6 bg-slate-50 rounded-[2rem] space-y-4">
+              <div className="p-5 sm:p-6 bg-slate-50 rounded-[1.5rem] sm:rounded-[2rem] space-y-4">
                 <p className="text-[10px] uppercase tracking-widest text-slate-400 font-bold text-center">SVG Placement Coordinates</p>
                 <div className="grid grid-cols-2 gap-6">
                   <div className="space-y-2">
@@ -216,7 +218,7 @@ export default function AdminLocalSpots() {
                       type="number" 
                       value={formData.x_pos}
                       onChange={(e) => setFormData({...formData, x_pos: parseInt(e.target.value)})}
-                      className="w-full bg-white border-0 rounded-xl py-3 px-4 focus:ring-2 focus:ring-coastal-seafoam transition-all text-sm"
+                      className="w-full bg-white border-0 rounded-xl py-3 px-4 focus:ring-2 focus:ring-coastal-seafoam transition-all text-slate-900 text-sm font-medium"
                     />
                   </div>
                   <div className="space-y-2">
@@ -225,15 +227,24 @@ export default function AdminLocalSpots() {
                       type="number" 
                       value={formData.y_pos}
                       onChange={(e) => setFormData({...formData, y_pos: parseInt(e.target.value)})}
-                      className="w-full bg-white border-0 rounded-xl py-3 px-4 focus:ring-2 focus:ring-coastal-seafoam transition-all text-sm"
+                      className="w-full bg-white border-0 rounded-xl py-3 px-4 focus:ring-2 focus:ring-coastal-seafoam transition-all text-slate-900 text-sm font-medium"
                     />
                   </div>
                 </div>
               </div>
 
-              <button type="submit" className="w-full bg-slate-900 text-white py-5 rounded-2xl font-bold uppercase tracking-widest text-xs flex items-center justify-center gap-3 hover:bg-slate-800 transition-all">
-                <Save className="w-4 h-4" /> {currentSpot ? 'Update Sanctuary Map' : 'Add to Map'}
-              </button>
+              <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                <button 
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  className="flex-1 py-4 text-slate-500 font-medium hover:text-slate-900 transition-colors order-2 sm:order-1"
+                >
+                  Cancel
+                </button>
+                <button type="submit" className="flex-[2] bg-slate-900 text-white py-4 sm:py-5 rounded-2xl font-bold uppercase tracking-widest text-[10px] sm:text-xs flex items-center justify-center gap-3 hover:bg-slate-800 transition-all order-1 sm:order-2">
+                  <Save className="w-4 h-4" /> {currentSpot ? 'Update Map' : 'Add to Map'}
+                </button>
+              </div>
             </form>
           </div>
         </div>

@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { Camera, Maximize2 } from 'lucide-react';
-import { API_BASE_URL } from '@/lib/api';
+import { API_BASE_URL, getImageUrl } from '@/lib/api';
 
 export default function GalleryPage() {
   const [images, setImages] = useState<any[]>([]);
@@ -53,7 +53,7 @@ export default function GalleryPage() {
             >
               {img.url ? (
                 <Image 
-                  src={img.url.startsWith('http') ? img.url : encodeURI(img.url)} 
+                  src={getImageUrl(img.url)} 
                   alt={img.category} 
                   fill
                   priority={idx < 4}
