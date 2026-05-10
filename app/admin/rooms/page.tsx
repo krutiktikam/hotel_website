@@ -401,6 +401,50 @@ export default function RoomsManagement() {
 
               <div className="space-y-4">
                 <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Sanctuary Gallery</label>
+                
+                {/* New: Add Gallery Image via URL */}
+                <div className="flex gap-4 mb-4">
+                  <div className="flex-grow">
+                    <input 
+                      type="text" 
+                      id="gallery-url-input"
+                      placeholder="Paste gallery image URL here..."
+                      className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all text-xs"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          const input = e.currentTarget;
+                          const url = input.value.trim();
+                          if (url) {
+                            setFormData(prev => ({ 
+                              ...prev, 
+                              gallery_images: [...prev.gallery_images, url] 
+                            }));
+                            input.value = '';
+                          }
+                        }
+                      }}
+                    />
+                  </div>
+                  <button 
+                    type="button" 
+                    onClick={() => {
+                      const input = document.getElementById('gallery-url-input') as HTMLInputElement;
+                      const url = input.value.trim();
+                      if (url) {
+                        setFormData(prev => ({ 
+                          ...prev, 
+                          gallery_images: [...prev.gallery_images, url] 
+                        }));
+                        input.value = '';
+                      }
+                    }}
+                    className="px-6 py-3 bg-slate-900 text-white rounded-2xl text-xs font-bold hover:bg-slate-800 transition-all"
+                  >
+                    Add URL
+                  </button>
+                </div>
+
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {(formData.gallery_images || []).map((url, idx) => (
                     <div key={idx} className="relative aspect-square rounded-xl overflow-hidden group border border-slate-100 shadow-sm">
@@ -412,7 +456,6 @@ export default function RoomsManagement() {
                           setFormData(prev => ({
                             ...prev,
                             gallery_images: newGallery,
-                            image_url: newGallery[0] || ''
                           }));
                         }}
                         className="absolute inset-0 bg-red-500/80 text-white opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
@@ -423,7 +466,7 @@ export default function RoomsManagement() {
                   ))}
                   <div className="relative aspect-square rounded-xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 transition-colors text-slate-400 hover:text-coastal-seafoam hover:border-coastal-seafoam overflow-hidden">
                     <Plus className="w-6 h-6 mb-2" />
-                    <span className="text-[8px] uppercase font-bold tracking-widest">Add View</span>
+                    <span className="text-[8px] uppercase font-bold tracking-widest">Upload File</span>
                     <input 
                       type="file" 
                       accept="image/*"
