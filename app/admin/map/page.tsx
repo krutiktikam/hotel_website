@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { API_BASE_URL } from '@/lib/api';
-import { MapPin, Plus, Trash2, Edit3, ExternalLink, X, Save } from 'lucide-react';
+import { MapPin, Plus, Trash2, Edit3, ExternalLink, X, Save, Loader2 } from 'lucide-react';
 
 export default function AdminLocalSpots() {
   const [spots, setSpots] = useState<any[]>([]);
