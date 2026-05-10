@@ -136,8 +136,14 @@ app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 # Configure CORS
 origins = [
     "http://localhost:3000",
-    os.getenv("FRONTEND_URL", "http://localhost:3000"),
+    "http://127.0.0.1:3000",
 ]
+frontend_url = os.getenv("FRONTEND_URL")
+if frontend_url:
+    origins.append(frontend_url)
+    # Also add version without trailing slash if present
+    if frontend_url.endswith("/"):
+        origins.append(frontend_url[:-1])
 
 app.add_middleware(
     CORSMiddleware,
