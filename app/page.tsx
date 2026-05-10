@@ -540,7 +540,7 @@ function BookingFlow({ options, loading: optionsLoading }: { options: any, loadi
   );
 }
 
-export default function Home() {
+function HomeContent() {
   const searchParams = useSearchParams();
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -594,224 +594,230 @@ export default function Home() {
   }, []);
 
   return (
+    <main className="bg-coastal-white font-sans overflow-x-hidden relative">
+      
+      {/* Sticky Availability Bar */}
+      <div className={`fixed top-0 left-0 w-full z-[80] transition-all duration-700 transform ${
+        isScrolled ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'
+      }`}>
+        <div className="bg-white/80 backdrop-blur-md border-b border-coastal-beige/50 px-6 py-4">
+            <div className="max-w-7xl mx-auto flex justify-between items-center">
+              <div className="flex items-center gap-3">
+                  <Waves className="w-6 h-6 text-coastal-seafoam" />
+                  <span className="font-playfair text-xl text-slate-900">Namita Beach House</span>
+              </div>
+              <button 
+                onClick={() => setIsBookingOpen(true)}
+                className="px-8 py-3 bg-coastal-seafoam text-slate-900 rounded-full text-[10px] font-bold tracking-[0.2em] uppercase hover:bg-slate-900 hover:text-white transition-all shadow-lg shadow-coastal-seafoam/20"
+              >
+                Reserve Sanctuary
+              </button>
+            </div>
+        </div>
+      </div>
+
+      {/* Cinematic Hero Section */}
+      <section className="relative h-screen flex items-center justify-center overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <Image 
+            src="/images/resort/Hotel/IMG20241204150237.jpg" 
+            alt="Panoramic Coastal View"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover animate-slow-pan"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-slate-900/60 via-slate-900/20 to-coastal-white" />
+        </div>
+
+        <div className="relative z-10 text-center px-6 max-w-5xl mx-auto">
+          <Waves className="w-16 h-16 text-white/80 mx-auto mb-8 animate-pulse" />
+          <h1 className="font-playfair text-6xl md:text-8xl text-white mb-8 leading-tight tracking-tight drop-shadow-2xl">
+            Where Silence <br className="hidden md:block" /> Meets the Sea
+          </h1>
+          <p className="text-white/90 font-light tracking-[0.3em] uppercase text-sm mb-12 max-w-2xl mx-auto leading-loose">
+            Experience the art of coastal minimalism. <br /> A sanctuary for the soul, a rhythm for the heart.
+          </p>
+          <div className="flex flex-col md:flex-row gap-6 justify-center items-center">
+            <button 
+              onClick={() => setIsBookingOpen(true)}
+              className="px-12 py-5 bg-coastal-seafoam text-slate-900 rounded-full font-bold hover:bg-slate-900 hover:text-white transition-all shadow-2xl tracking-widest uppercase text-xs"
+            >
+              Reserve Your Stay
+            </button>
+            <button 
+              onClick={() => document.getElementById('philosophy')?.scrollIntoView({ behavior: 'smooth' })}
+              className="px-12 py-5 bg-transparent border border-white/30 text-white rounded-full font-medium hover:bg-white/10 transition-all backdrop-blur-md tracking-widest uppercase text-xs"
+            >
+              Our Philosophy
+            </button>
+          </div>
+        </div>
+
+        {/* Scroll Indicator */}
+        <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-4">
+            <span className="text-white/40 text-[10px] uppercase tracking-[0.5em] font-bold rotate-90 mb-8">Scroll</span>
+            <div className="w-[1px] h-20 bg-gradient-to-b from-white/60 to-transparent" />
+        </div>
+      </section>
+
+      {/* Philosophy Section */}
+      <section id="philosophy" className="py-32 px-6 bg-coastal-white">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+            <div className="space-y-10">
+              <span className="text-coastal-seafoam font-bold tracking-[0.3em] uppercase text-[10px] block">The Essence</span>
+              <h2 className="font-playfair text-5xl md:text-6xl text-slate-900 leading-tight">
+                A sanctuary built on <br /> the beauty of less.
+              </h2>
+              <p className="text-slate-700 font-light leading-relaxed text-lg max-w-lg">
+                At Namita Beach House, we believe that true luxury isn't found in excess, but in the clarity of space and the rhythm of nature. Our architecture breathes with the ocean, our interiors mirror the dunes.
+              </p>
+              <div className="grid grid-cols-2 gap-10 pt-8">
+                  <div className="space-y-4">
+                    <h4 className="font-playfair text-3xl text-slate-900">98%</h4>
+                    <p className="text-[10px] uppercase tracking-widest text-slate-600 font-bold">Natural Materials</p>
+                  </div>
+                  <div className="space-y-4">
+                    <h4 className="font-playfair text-3xl text-slate-900">Zero</h4>
+                    <p className="text-[10px] uppercase tracking-widest text-slate-600 font-bold">Digital Noise</p>
+                  </div>
+              </div>
+            </div>
+            <div 
+            id="philosophy-image"
+            className={`relative aspect-[4/5] rounded-[3rem] overflow-hidden shadow-2xl transition-all duration-1000 ${
+              philosophyRevealed ? 'opacity-100' : 'opacity-0'
+            }`}
+            >
+              <Image 
+                src="/images/resort/Hotel/IMG_20260327_172419.jpg" 
+                alt="Coastal Essence" 
+                fill
+                sizes="(max-width: 768px) 100vw, 50vw"
+                className={`object-cover ${
+                  philosophyRevealed ? 'animate-reveal-majestic' : ''
+                }`}
+              />
+              <div className="absolute inset-0 bg-slate-900/10" />
+            </div>
+        </div>
+      </section>
+
+      {/* Featured Sanctuaries */}
+      <section className="py-32 px-6 bg-coastal-beige/30">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-8">
+                <div className="space-y-6">
+                  <span className="text-coastal-seafoam font-bold tracking-[0.3em] uppercase text-[10px] block">Our Rooms</span>
+                  <h2 className="font-playfair text-5xl text-slate-900">Featured Sanctuaries</h2>
+                </div>
+                <a href="/rooms" className="group flex items-center gap-4 text-slate-900 font-medium tracking-widest uppercase text-xs">
+                  Explore All Rooms <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </a>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                {options?.room_types.slice(0, 2).map((room: any) => (
+                  <div 
+                    key={room.name}
+                    onClick={() => setIsBookingOpen(true)}
+                    className="group cursor-pointer"
+                  >
+                    <div className="relative aspect-video rounded-[2.5rem] overflow-hidden mb-8 shadow-xl bg-slate-100">
+                      {room.image_url ? (
+                        <Image 
+                          src={room.image_url.startsWith('http') ? room.image_url : encodeURI(room.image_url)} 
+                          alt={room.name} 
+                          fill 
+                          sizes="(max-width: 768px) 100vw, 50vw" 
+                          className="object-cover group-hover:scale-110 transition-transform duration-1000" 
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-slate-300">No Image Available</div>
+                      )}
+                      <div className="absolute top-6 right-6 bg-white/90 backdrop-blur-md px-6 py-2 rounded-full text-[10px] font-bold tracking-widest uppercase text-slate-900 shadow-sm">
+                          From ${room.price}
+                      </div>
+                    </div>
+                    <h3 className="font-playfair text-3xl text-slate-900 mb-3">{room.name}</h3>
+                    <p className="text-slate-700 font-light mb-6 line-clamp-2 italic">"{room.description}"</p>
+                  </div>
+                ))}
+                {(!options || options.room_types.length === 0) && !loading && (
+                  <p className="text-slate-600 font-light italic">No featured sanctuaries available.</p>
+                )}
+                {loading && (
+                  <div className="col-span-2 py-20 flex justify-center">
+                    <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-coastal-seafoam"></div>
+                  </div>
+                )}
+            </div>
+          </div>
+      </section>
+
+      {/* Reservation Drawer Overlay */}
+      <div 
+        className={`fixed inset-0 z-[100] transition-all duration-500 ${
+          isBookingOpen ? 'visible pointer-events-auto' : 'invisible pointer-events-none'
+        }`}
+      >
+          {/* Backdrop */}
+          <div 
+          className={`absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity duration-500 ${
+            isBookingOpen ? 'opacity-100' : 'opacity-0'
+          }`}
+          onClick={() => setIsBookingOpen(false)}
+          />
+          
+          {/* Drawer Content */}
+          <div 
+          className={`absolute top-0 right-0 h-full w-full md:w-[600px] lg:w-[800px] bg-coastal-beige shadow-2xl transition-transform duration-700 ease-out transform ${
+            isBookingOpen ? 'translate-x-0' : 'translate-x-full'
+          } overflow-y-auto`}
+          >
+            <div className="p-8 md:p-12">
+                <div className="flex justify-between items-center mb-12">
+                  <div className="flex items-center gap-3">
+                      <Waves className="w-8 h-8 text-coastal-seafoam" />
+                      <h2 className="font-playfair text-3xl text-slate-900">Reserve Your Sanctuary</h2>
+                  </div>
+                  <button 
+                    onClick={() => setIsBookingOpen(false)}
+                    className="w-12 h-12 rounded-full border border-slate-200 flex items-center justify-center hover:bg-white transition-colors"
+                  >
+                      <ChevronRight className="w-6 h-6 text-slate-600" />
+                  </button>
+                </div>
+                
+                <div className="animate-in fade-in slide-in-from-right-10 duration-700 delay-300">
+                  <BookingFlow options={options} loading={loading} />
+                </div>
+            </div>
+          </div>
+      </div>
+
+      {/* Footer Teaser */}
+      <section className="py-20 text-center bg-white border-t border-coastal-beige">
+          <p className="text-slate-600 text-[10px] font-bold tracking-[0.5em] uppercase mb-8 italic">Stay in the rhythm of the tides</p>
+          <button 
+            onClick={() => setIsBookingOpen(true)}
+            className="text-slate-900 font-playfair text-4xl hover:text-coastal-seafoam transition-colors underline underline-offset-8"
+          >
+            Begin Your Journey
+          </button>
+      </section>
+    </main>
+  );
+}
+
+export default function Home() {
+  return (
     <Suspense fallback={
       <div className="min-h-screen flex items-center justify-center bg-coastal-white">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-coastal-seafoam"></div>
       </div>
     }>
-      <main className="bg-coastal-white font-sans overflow-x-hidden relative">
-        
-        {/* Sticky Availability Bar */}
-        <div className={`fixed top-0 left-0 w-full z-[80] transition-all duration-700 transform ${
-          isScrolled ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'
-        }`}>
-          <div className="bg-white/80 backdrop-blur-md border-b border-coastal-beige/50 px-6 py-4">
-             <div className="max-w-7xl mx-auto flex justify-between items-center">
-                <div className="flex items-center gap-3">
-                   <Waves className="w-6 h-6 text-coastal-seafoam" />
-                   <span className="font-playfair text-xl text-slate-900">Namita Beach House</span>
-                </div>
-                <button 
-                  onClick={() => setIsBookingOpen(true)}
-                  className="px-8 py-3 bg-coastal-seafoam text-slate-900 rounded-full text-[10px] font-bold tracking-[0.2em] uppercase hover:bg-slate-900 hover:text-white transition-all shadow-lg shadow-coastal-seafoam/20"
-                >
-                  Reserve Sanctuary
-                </button>
-             </div>
-          </div>
-        </div>
-
-        {/* Cinematic Hero Section */}
-        <section className="relative h-screen flex items-center justify-center overflow-hidden">
-          <div className="absolute inset-0 z-0">
-            <Image 
-              src="/images/resort/Hotel/IMG20241204150237.jpg" 
-              alt="Panoramic Coastal View"
-              fill
-              priority
-              sizes="100vw"
-              className="object-cover animate-slow-pan"
-            />
-            <div className="absolute inset-0 bg-gradient-to-b from-slate-900/60 via-slate-900/20 to-coastal-white" />
-          </div>
-
-          <div className="relative z-10 text-center px-6 max-w-5xl mx-auto">
-            <Waves className="w-16 h-16 text-white/80 mx-auto mb-8 animate-pulse" />
-            <h1 className="font-playfair text-6xl md:text-8xl text-white mb-8 leading-tight tracking-tight drop-shadow-2xl">
-              Where Silence <br className="hidden md:block" /> Meets the Sea
-            </h1>
-            <p className="text-white/90 font-light tracking-[0.3em] uppercase text-sm mb-12 max-w-2xl mx-auto leading-loose">
-              Experience the art of coastal minimalism. <br /> A sanctuary for the soul, a rhythm for the heart.
-            </p>
-            <div className="flex flex-col md:flex-row gap-6 justify-center items-center">
-              <button 
-                onClick={() => setIsBookingOpen(true)}
-                className="px-12 py-5 bg-coastal-seafoam text-slate-900 rounded-full font-bold hover:bg-slate-900 hover:text-white transition-all shadow-2xl tracking-widest uppercase text-xs"
-              >
-                Reserve Your Stay
-              </button>
-              <button 
-                onClick={() => document.getElementById('philosophy')?.scrollIntoView({ behavior: 'smooth' })}
-                className="px-12 py-5 bg-transparent border border-white/30 text-white rounded-full font-medium hover:bg-white/10 transition-all backdrop-blur-md tracking-widest uppercase text-xs"
-              >
-                Our Philosophy
-              </button>
-            </div>
-          </div>
-
-          {/* Scroll Indicator */}
-          <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-4">
-             <span className="text-white/40 text-[10px] uppercase tracking-[0.5em] font-bold rotate-90 mb-8">Scroll</span>
-             <div className="w-[1px] h-20 bg-gradient-to-b from-white/60 to-transparent" />
-          </div>
-        </section>
-
-        {/* Philosophy Section */}
-        <section id="philosophy" className="py-32 px-6 bg-coastal-white">
-          <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-             <div className="space-y-10">
-                <span className="text-coastal-seafoam font-bold tracking-[0.3em] uppercase text-[10px] block">The Essence</span>
-                <h2 className="font-playfair text-5xl md:text-6xl text-slate-900 leading-tight">
-                  A sanctuary built on <br /> the beauty of less.
-                </h2>
-                <p className="text-slate-700 font-light leading-relaxed text-lg max-w-lg">
-                  At Namita Beach House, we believe that true luxury isn't found in excess, but in the clarity of space and the rhythm of nature. Our architecture breathes with the ocean, our interiors mirror the dunes.
-                </p>
-                <div className="grid grid-cols-2 gap-10 pt-8">
-                   <div className="space-y-4">
-                      <h4 className="font-playfair text-3xl text-slate-900">98%</h4>
-                      <p className="text-[10px] uppercase tracking-widest text-slate-600 font-bold">Natural Materials</p>
-                   </div>
-                   <div className="space-y-4">
-                      <h4 className="font-playfair text-3xl text-slate-900">Zero</h4>
-                      <p className="text-[10px] uppercase tracking-widest text-slate-600 font-bold">Digital Noise</p>
-                   </div>
-                </div>
-             </div>
-             <div 
-              id="philosophy-image"
-              className={`relative aspect-[4/5] rounded-[3rem] overflow-hidden shadow-2xl transition-all duration-1000 ${
-                philosophyRevealed ? 'opacity-100' : 'opacity-0'
-              }`}
-             >
-                <Image 
-                  src="/images/resort/Hotel/IMG_20260327_172419.jpg" 
-                  alt="Coastal Essence" 
-                  fill
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                  className={`object-cover ${
-                    philosophyRevealed ? 'animate-reveal-majestic' : ''
-                  }`}
-                />
-                <div className="absolute inset-0 bg-slate-900/10" />
-             </div>
-          </div>
-        </section>
-
-        {/* Featured Sanctuaries */}
-        <section className="py-32 px-6 bg-coastal-beige/30">
-           <div className="max-w-7xl mx-auto">
-              <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-8">
-                 <div className="space-y-6">
-                    <span className="text-coastal-seafoam font-bold tracking-[0.3em] uppercase text-[10px] block">Our Rooms</span>
-                    <h2 className="font-playfair text-5xl text-slate-900">Featured Sanctuaries</h2>
-                 </div>
-                 <a href="/rooms" className="group flex items-center gap-4 text-slate-900 font-medium tracking-widest uppercase text-xs">
-                    Explore All Rooms <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                 </a>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                 {options?.room_types.slice(0, 2).map((room: any) => (
-                    <div 
-                      key={room.name}
-                      onClick={() => setIsBookingOpen(true)}
-                      className="group cursor-pointer"
-                    >
-                      <div className="relative aspect-video rounded-[2.5rem] overflow-hidden mb-8 shadow-xl bg-slate-100">
-                        {room.image_url ? (
-                          <Image 
-                            src={room.image_url.startsWith('http') ? room.image_url : encodeURI(room.image_url)} 
-                            alt={room.name} 
-                            fill 
-                            sizes="(max-width: 768px) 100vw, 50vw" 
-                            className="object-cover group-hover:scale-110 transition-transform duration-1000" 
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-slate-300">No Image Available</div>
-                        )}
-                        <div className="absolute top-6 right-6 bg-white/90 backdrop-blur-md px-6 py-2 rounded-full text-[10px] font-bold tracking-widest uppercase text-slate-900 shadow-sm">
-                            From ${room.price}
-                        </div>
-                      </div>
-                      <h3 className="font-playfair text-3xl text-slate-900 mb-3">{room.name}</h3>
-                      <p className="text-slate-700 font-light mb-6 line-clamp-2 italic">"{room.description}"</p>
-                    </div>
-                 ))}
-                 {(!options || options.room_types.length === 0) && !loading && (
-                   <p className="text-slate-600 font-light italic">No featured sanctuaries available.</p>
-                 )}
-                 {loading && (
-                   <div className="col-span-2 py-20 flex justify-center">
-                     <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-coastal-seafoam"></div>
-                   </div>
-                 )}
-              </div>
-           </div>
-        </section>
-
-        {/* Reservation Drawer Overlay */}
-        <div 
-          className={`fixed inset-0 z-[100] transition-all duration-500 ${
-            isBookingOpen ? 'visible pointer-events-auto' : 'invisible pointer-events-none'
-          }`}
-        >
-           {/* Backdrop */}
-           <div 
-            className={`absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity duration-500 ${
-              isBookingOpen ? 'opacity-100' : 'opacity-0'
-            }`}
-            onClick={() => setIsBookingOpen(false)}
-           />
-           
-           {/* Drawer Content */}
-           <div 
-            className={`absolute top-0 right-0 h-full w-full md:w-[600px] lg:w-[800px] bg-coastal-beige shadow-2xl transition-transform duration-700 ease-out transform ${
-              isBookingOpen ? 'translate-x-0' : 'translate-x-full'
-            } overflow-y-auto`}
-           >
-              <div className="p-8 md:p-12">
-                 <div className="flex justify-between items-center mb-12">
-                    <div className="flex items-center gap-3">
-                       <Waves className="w-8 h-8 text-coastal-seafoam" />
-                       <h2 className="font-playfair text-3xl text-slate-900">Reserve Your Sanctuary</h2>
-                    </div>
-                    <button 
-                      onClick={() => setIsBookingOpen(false)}
-                      className="w-12 h-12 rounded-full border border-slate-200 flex items-center justify-center hover:bg-white transition-colors"
-                    >
-                       <ChevronRight className="w-6 h-6 text-slate-600" />
-                    </button>
-                 </div>
-                 
-                 <div className="animate-in fade-in slide-in-from-right-10 duration-700 delay-300">
-                    <BookingFlow options={options} loading={loading} />
-                 </div>
-              </div>
-           </div>
-        </div>
-
-        {/* Footer Teaser */}
-        <section className="py-20 text-center bg-white border-t border-coastal-beige">
-           <p className="text-slate-600 text-[10px] font-bold tracking-[0.5em] uppercase mb-8 italic">Stay in the rhythm of the tides</p>
-           <button 
-             onClick={() => setIsBookingOpen(true)}
-             className="text-slate-900 font-playfair text-4xl hover:text-coastal-seafoam transition-colors underline underline-offset-8"
-           >
-              Begin Your Journey
-           </button>
-        </section>
-      </main>
+      <HomeContent />
     </Suspense>
   );
 }
