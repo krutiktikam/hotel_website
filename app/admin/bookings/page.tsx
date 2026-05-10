@@ -324,7 +324,10 @@ export default function BookingsManagement() {
                 <label className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold ml-1">Room Type</label>
                 <select 
                   value={blockData.room_type}
-                  onChange={(e) => setBlockData({...blockData, room_type: e.target.value})}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setBlockData(prev => ({ ...prev, room_type: value }));
+                  }}
                   className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 sm:py-4 sm:px-6 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none appearance-none text-slate-900 font-medium"
                 >
                   <option value="Luxury">Ocean Front Luxury</option>
@@ -340,7 +343,10 @@ export default function BookingsManagement() {
                     type="date" 
                     required
                     value={blockData.check_in}
-                    onChange={(e) => setBlockData({...blockData, check_in: e.target.value})}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setBlockData(prev => ({ ...prev, check_in: value }));
+                    }}
                     className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 sm:py-4 sm:px-6 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none text-slate-900 font-medium"
                   />
                 </div>
@@ -350,7 +356,10 @@ export default function BookingsManagement() {
                     type="date" 
                     required
                     value={blockData.check_out}
-                    onChange={(e) => setBlockData({...blockData, check_out: e.target.value})}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setBlockData(prev => ({ ...prev, check_out: value }));
+                    }}
                     className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 sm:py-4 sm:px-6 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none text-slate-900 font-medium"
                   />
                 </div>
@@ -362,7 +371,10 @@ export default function BookingsManagement() {
                   type="text" 
                   placeholder="Maintenance, Personal Use, etc."
                   value={blockData.customer_name === 'MAINTENANCE' ? '' : blockData.customer_name}
-                  onChange={(e) => setBlockData({...blockData, customer_name: e.target.value || 'MAINTENANCE'})}
+                  onChange={(e) => {
+                    const value = e.target.value || 'MAINTENANCE';
+                    setBlockData(prev => ({ ...prev, customer_name: value }));
+                  }}
                   className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 sm:py-4 sm:px-6 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none text-slate-900 font-medium"
                 />
               </div>
