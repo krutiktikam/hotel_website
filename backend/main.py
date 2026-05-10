@@ -487,21 +487,15 @@ def cleanup_bookings(current_user: models.User = Depends(get_current_user), db: 
 @app.post("/api/v1/admin/upload")
 async def upload_file(request: Request, file: UploadFile = File(...), current_user: models.User = Depends(get_current_user)):
     # Generate unique filename
-    file_extension = os.path.splitext(file.filename)[1]
+    file_extension = os.path.splitext(file.filename)[1].lower()
     unique_filename = f"{uuid.uuid4()}{file_extension}"
     file_path = os.path.join(UPLOAD_DIR, unique_filename)
     
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
         
-    base_url = os.getenv("BACKEND_URL")
-    if not base_url:
-        # Determine base URL from request if not explicitly set
-        scheme = request.headers.get("x-forwarded-proto", request.url.scheme)
-        host = request.headers.get("x-forwarded-host", request.url.netloc)
-        base_url = f"{scheme}://{host}"
-        
-    return {"url": f"{base_url}/uploads/{unique_filename}"}
+    # Return relative path for better portability
+    return {"url": f"/uploads/{unique_filename}"}
 
 # --- STRIPE ENDPOINTS ---
 
