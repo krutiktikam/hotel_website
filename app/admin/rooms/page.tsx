@@ -177,6 +177,14 @@ export default function RoomsManagement() {
     }
   };
 
+  const getImageUrl = (url: string) => {
+    if (!url) return '';
+    if (url.startsWith('http')) return url;
+    // For Railway, if the backend doesn't return the full URL, prepend it
+    const baseUrl = API_BASE_URL.replace('/api/v1', '');
+    return `${baseUrl}${url.startsWith('/') ? '' : '/'}${url}`;
+  };
+
   return (
     <div className="space-y-8">
       <div className="flex justify-between items-end">
@@ -202,7 +210,7 @@ export default function RoomsManagement() {
             <div className="flex flex-col md:flex-row h-full">
               <div className="md:w-2/5 relative overflow-hidden h-64 md:h-auto">
                 <img 
-                  src={room.image_url} 
+                  src={getImageUrl(room.image_url)} 
                   alt={room.name} 
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
@@ -365,7 +373,7 @@ export default function RoomsManagement() {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {(formData.gallery_images || []).map((url, idx) => (
                     <div key={idx} className="relative aspect-square rounded-xl overflow-hidden group border border-slate-100 shadow-sm">
-                      <img src={url} alt="Gallery" className="w-full h-full object-cover" />
+                      <img src={getImageUrl(url)} alt="Gallery" className="w-full h-full object-cover" />
                       <button
                         type="button"
                         onClick={() => {
