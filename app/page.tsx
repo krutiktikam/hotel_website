@@ -650,7 +650,7 @@ function HomeContent() {
               onClick={() => setIsBookingOpen(true)}
               className="px-12 py-5 bg-coastal-seafoam text-slate-900 rounded-full font-bold hover:bg-slate-900 hover:text-white transition-all shadow-2xl tracking-widest uppercase text-xs"
             >
-              Reserve Your Stay
+              Reserve Your Room
             </button>
             <button 
               onClick={() => document.getElementById('philosophy')?.scrollIntoView({ behavior: 'smooth' })}
@@ -710,57 +710,6 @@ function HomeContent() {
         </div>
       </section>
 
-      {/* Featured Sanctuaries */}
-      <section className="py-32 px-6 bg-coastal-beige/30">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-8">
-                <div className="space-y-6">
-                  <span className="text-coastal-seafoam font-bold tracking-[0.3em] uppercase text-[10px] block">Our Rooms</span>
-                  <h2 className="font-playfair text-5xl text-slate-900">Featured Sanctuaries</h2>
-                </div>
-                <a href="/rooms" className="group flex items-center gap-4 text-slate-900 font-medium tracking-widest uppercase text-xs">
-                  Explore All Rooms <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </a>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                {options?.room_types.slice(0, 2).map((room: any) => (
-                  <div 
-                    key={room.name}
-                    onClick={() => setIsBookingOpen(true)}
-                    className="group cursor-pointer"
-                  >
-                    <div className="relative aspect-video rounded-[2.5rem] overflow-hidden mb-8 shadow-xl bg-slate-100">
-                      {room.image_url ? (
-                        <Image 
-                          src={getImageUrl(room.image_url)} 
-                          alt={room.name} 
-                          fill 
-                          sizes="(max-width: 768px) 100vw, 50vw" 
-                          className="object-cover group-hover:scale-110 transition-transform duration-1000" 
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-slate-300">No Image Available</div>
-                      )}
-                      <div className="absolute top-6 right-6 bg-white/90 backdrop-blur-md px-6 py-2 rounded-full text-[10px] font-bold tracking-widest uppercase text-slate-900 shadow-sm">
-                            From ₹{room.price}
-                        </div>                    </div>
-                    <h3 className="font-playfair text-3xl text-slate-900 mb-3">{room.name}</h3>
-                    <p className="text-slate-700 font-light mb-6 line-clamp-2 italic">"{room.description}"</p>
-                  </div>
-                ))}
-                {(!options || options.room_types.length === 0) && !loading && (
-                  <p className="text-slate-600 font-light italic">No featured sanctuaries available.</p>
-                )}
-                {loading && (
-                  <div className="col-span-2 py-20 flex justify-center">
-                    <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-coastal-seafoam"></div>
-                  </div>
-                )}
-            </div>
-          </div>
-      </section>
-
       {/* Reservation Drawer Overlay */}
       <div 
         className={`fixed inset-0 z-[100] transition-all duration-500 ${
@@ -785,7 +734,7 @@ function HomeContent() {
                 <div className="flex justify-between items-center mb-12">
                   <div className="flex items-center gap-3">
                       <Waves className="w-8 h-8 text-coastal-seafoam" />
-                      <h2 className="font-playfair text-3xl text-slate-900">Reserve Your Sanctuary</h2>
+                      <h2 className="font-playfair text-3xl text-slate-900">Reserve Your Room</h2>
                   </div>
                   <button 
                     onClick={() => setIsBookingOpen(false)}

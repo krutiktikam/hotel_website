@@ -6,10 +6,10 @@ import { ArrowRight } from 'lucide-react';
 import { API_BASE_URL, getImageUrl } from '@/lib/api';
 
 export const metadata: Metadata = {
-  title: 'Our Sanctuaries | Namita Beach House',
+  title: 'Our Rooms | Namita Beach House',
   description: 'Explore our minimalist, coastal-inspired suites and villas in Tarkarli. Each room is a canvas of calm designed for the minimalist soul.',
   openGraph: {
-    title: 'Our Sanctuaries | Namita Beach House',
+    title: 'Our Rooms | Namita Beach House',
     description: 'Minimalist luxury rooms in Tarkarli.',
     images: ['/images/resort/Hotel/WhatsApp Image 2026-05-08 at 8.43.20 PM.jpeg'],
   }
@@ -28,7 +28,7 @@ export default async function RoomsPage() {
     <main className="pt-32 pb-20 px-6">
       <div className="max-w-7xl mx-auto">
         <header className="mb-20 text-center">
-          <h1 className="font-playfair text-5xl md:text-6xl text-slate-900 mb-6">Our Sanctuaries</h1>
+          <h1 className="font-playfair text-5xl md:text-6xl text-slate-900 mb-6">Our Rooms</h1>
           <p className="text-slate-500 max-w-2xl mx-auto font-light leading-relaxed">
             Each room is a canvas of calm, designed with natural textures and a palette that echoes the shore.
           </p>

@@ -189,7 +189,7 @@ export default function RoomsManagement() {
     <div className="space-y-8">
       <div className="flex justify-between items-end">
         <div>
-          <h1 className="font-playfair text-4xl text-slate-900 mb-2">Sanctuaries</h1>
+          <h1 className="font-playfair text-4xl text-slate-900 mb-2">Rooms</h1>
           <p className="text-slate-500 font-light">Manage room types, pricing, and availability.</p>
         </div>
         <button 
@@ -203,7 +203,7 @@ export default function RoomsManagement() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {loading ? (
           <p className="col-span-2 text-center py-20 text-slate-400 flex items-center justify-center gap-3">
-            <Loader2 className="w-6 h-6 animate-spin" /> Loading sanctuaries...
+            <Loader2 className="w-6 h-6 animate-spin" /> Loading rooms...
           </p>
         ) : rooms.map((room) => (
           <div key={room.id} className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden group">
@@ -266,7 +266,7 @@ export default function RoomsManagement() {
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-6 overflow-y-auto">
-          <div className="bg-white w-full max-w-2xl rounded-[3rem] p-10 relative shadow-2xl my-8">
+          <div className="bg-white w-full max-w-2xl rounded-[3rem] p-10 relative shadow-2xl my-8 text-slate-900">
             <button 
               onClick={() => setIsModalOpen(false)}
               className="absolute top-8 right-8 text-slate-400 hover:text-slate-900 transition-colors"
@@ -274,7 +274,7 @@ export default function RoomsManagement() {
               <XCircle className="w-6 h-6" />
             </button>
             
-            <h2 className="font-playfair text-3xl mb-8">{currentRoom ? 'Edit Sanctuary' : 'Add New Sanctuary'}</h2>
+            <h2 className="font-playfair text-3xl mb-8">{currentRoom ? 'Edit Room' : 'Add New Room'}</h2>
             
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -285,7 +285,7 @@ export default function RoomsManagement() {
                     type="text" 
                     value={formData.name}
                     onChange={(e) => setFormData({...formData, name: e.target.value})}
-                    className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all"
+                    className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all text-slate-900 font-medium"
                   />
                 </div>
                 <div className="space-y-2">
@@ -296,7 +296,7 @@ export default function RoomsManagement() {
                     value={formData.slug}
                     onChange={(e) => setFormData({...formData, slug: e.target.value})}
                     placeholder="e.g. ocean-suite"
-                    className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all"
+                    className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all text-slate-900 font-medium"
                   />
                 </div>
               </div>
@@ -308,7 +308,7 @@ export default function RoomsManagement() {
                   rows={3}
                   value={formData.description}
                   onChange={(e) => setFormData({...formData, description: e.target.value})}
-                  className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all resize-none"
+                  className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all resize-none text-slate-900 font-medium"
                 />
               </div>
 
@@ -320,7 +320,7 @@ export default function RoomsManagement() {
                     type="number" 
                     value={formData.price}
                     onChange={(e) => setFormData({...formData, price: parseInt(e.target.value)})}
-                    className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all"
+                    className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all text-slate-900 font-medium"
                   />
                 </div>
                 <div className="space-y-2">
@@ -330,7 +330,7 @@ export default function RoomsManagement() {
                     type="number" 
                     value={formData.total_inventory}
                     onChange={(e) => setFormData({...formData, total_inventory: parseInt(e.target.value)})}
-                    className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all"
+                    className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all text-slate-900 font-medium"
                   />
                 </div>
                 <div className="space-y-2">
@@ -340,13 +340,13 @@ export default function RoomsManagement() {
                     type="text" 
                     value={formData.guests}
                     onChange={(e) => setFormData({...formData, guests: e.target.value})}
-                    className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all"
+                    className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all text-slate-900 font-medium"
                   />
                 </div>
               </div>
 
               <div className="space-y-4">
-                <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Main Sanctuary Image</label>
+                <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Main Room Image</label>
                 <div className="flex gap-4">
                   <div className="flex-grow">
                     <input 
@@ -354,7 +354,7 @@ export default function RoomsManagement() {
                       placeholder="Paste image URL here (e.g. from ImgBB or Unsplash)"
                       value={formData.image_url}
                       onChange={(e) => setFormData({...formData, image_url: e.target.value})}
-                      className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all text-xs"
+                      className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all text-slate-900 text-xs font-medium"
                     />
                   </div>
                   <div className="relative group">
@@ -384,7 +384,7 @@ export default function RoomsManagement() {
                     value={formData.seo_title}
                     onChange={(e) => setFormData({...formData, seo_title: e.target.value})}
                     placeholder="Search engine title..."
-                    className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all"
+                    className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all text-slate-900 font-medium"
                   />
                 </div>
                 <div className="space-y-2">
@@ -394,13 +394,13 @@ export default function RoomsManagement() {
                     value={formData.seo_description}
                     onChange={(e) => setFormData({...formData, seo_description: e.target.value})}
                     placeholder="Search engine meta description..."
-                    className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all"
+                    className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all text-slate-900 font-medium"
                   />
                 </div>
               </div>
 
               <div className="space-y-4">
-                <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Sanctuary Gallery</label>
+                <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Room Gallery</label>
                 
                 {/* New: Add Gallery Image via URL */}
                 <div className="flex gap-4 mb-4">
@@ -409,7 +409,7 @@ export default function RoomsManagement() {
                       type="text" 
                       id="gallery-url-input"
                       placeholder="Paste gallery image URL here..."
-                      className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all text-xs"
+                      className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all text-slate-900 text-xs font-medium"
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
                           e.preventDefault();
@@ -506,7 +506,7 @@ export default function RoomsManagement() {
                   ) : (
                     <Save className="w-5 h-5" />
                   )}
-                  {currentRoom ? 'Update Sanctuary' : 'Create Sanctuary'}
+                  {currentRoom ? 'Update Room' : 'Create Room'}
                 </button>
               </div>
             </form>
