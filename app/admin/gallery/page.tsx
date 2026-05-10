@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { API_BASE_URL } from '@/lib/api';
-import { Plus, Trash2, Image as ImageIcon, XCircle, Grid, List as ListIcon } from 'lucide-react';
+import { API_BASE_URL, getImageUrl } from '@/lib/api';
+import { Plus, Trash2, Image as ImageIcon, XCircle, Grid, List as ListIcon, Loader2 } from 'lucide-react';
 
 export default function GalleryManagement() {
   const [images, setImages] = useState<any[]>([]);
@@ -98,27 +98,29 @@ export default function GalleryManagement() {
   };
 
   return (
-    <div className="space-y-8">
-      <div className="flex justify-between items-end">
+    <div className="space-y-6 sm:space-y-8">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4">
         <div>
-          <h1 className="font-playfair text-4xl text-slate-900 mb-2">Gallery</h1>
-          <p className="text-slate-500 font-light">Visual storytelling through curated seaside imagery.</p>
+          <h1 className="font-playfair text-3xl sm:text-4xl text-slate-900 mb-2">Gallery</h1>
+          <p className="text-slate-500 font-light text-sm sm:text-base">Visual storytelling through curated seaside imagery.</p>
         </div>
         <button 
           onClick={() => setIsModalOpen(true)}
-          className="flex items-center gap-2 bg-slate-900 text-white px-8 py-4 rounded-2xl text-sm font-medium hover:bg-slate-800 transition-all shadow-xl shadow-slate-900/10"
+          className="flex items-center justify-center gap-2 bg-slate-900 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-2xl text-sm font-medium hover:bg-slate-800 transition-all shadow-xl shadow-slate-900/10 w-full sm:w-auto"
         >
           <Plus className="w-4 h-4" /> Upload Image
         </button>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6">
         {loading ? (
-          <p className="col-span-full text-center py-20 text-slate-400">Loading gallery images...</p>
+          <p className="col-span-full text-center py-20 text-slate-400 flex items-center justify-center gap-3">
+            <Loader2 className="w-6 h-6 animate-spin" /> Loading gallery images...
+          </p>
         ) : images.map((img) => (
-          <div key={img.id} className="aspect-square relative rounded-3xl overflow-hidden group border border-slate-100 shadow-sm bg-white">
-            <img src={img.url} alt={img.category} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-            <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-4">
+          <div key={img.id} className="aspect-square relative rounded-[1.5rem] sm:rounded-3xl overflow-hidden group border border-slate-100 shadow-sm bg-white">
+            <img src={getImageUrl(img.url)} alt={img.category} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+            <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-3 sm:p-4">
               <div className="flex justify-end">
                 <button 
                   onClick={() => handleDelete(img.id)}
@@ -127,8 +129,8 @@ export default function GalleryManagement() {
                   <Trash2 className="w-4 h-4" />
                 </button>
               </div>
-              <div className="bg-white/90 backdrop-blur-md p-3 rounded-xl">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-900">{img.category}</p>
+              <div className="bg-white/90 backdrop-blur-md p-2 sm:p-3 rounded-xl">
+                <p className="text-[8px] sm:text-[10px] font-bold uppercase tracking-widest text-slate-900">{img.category}</p>
               </div>
             </div>
           </div>
@@ -136,12 +138,12 @@ export default function GalleryManagement() {
       </div>
 
       {isModalOpen && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-6">
-          <div className="bg-white w-full max-w-xl rounded-[3rem] p-12 relative shadow-2xl">
-            <button onClick={() => setIsModalOpen(false)} className="absolute top-8 right-8 text-slate-400 hover:text-slate-900 transition-colors">
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+          <div className="bg-white w-full max-w-xl rounded-[2rem] sm:rounded-[3rem] p-6 sm:p-12 relative shadow-2xl my-8 text-slate-900">
+            <button onClick={() => setIsModalOpen(false)} className="absolute top-6 right-6 sm:top-8 sm:right-8 text-slate-400 hover:text-slate-900 transition-colors">
               <XCircle className="w-6 h-6" />
             </button>
-            <h2 className="font-playfair text-3xl mb-8">Upload Imagery</h2>
+            <h2 className="font-playfair text-2xl sm:text-3xl mb-8">Upload Imagery</h2>
             
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
@@ -149,7 +151,7 @@ export default function GalleryManagement() {
                 <select 
                   value={formData.category}
                   onChange={(e) => setFormData({...formData, category: e.target.value})}
-                  className="w-full bg-slate-50 border-0 rounded-2xl py-4 px-6 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all"
+                  className="w-full bg-slate-50 border-0 rounded-2xl py-4 px-6 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all text-slate-900 font-medium appearance-none"
                 >
                   <option>Architecture</option>
                   <option>Interiors</option>
@@ -163,7 +165,7 @@ export default function GalleryManagement() {
                 <select 
                   value={formData.span_class}
                   onChange={(e) => setFormData({...formData, span_class: e.target.value})}
-                  className="w-full bg-slate-50 border-0 rounded-2xl py-4 px-6 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all"
+                  className="w-full bg-slate-50 border-0 rounded-2xl py-4 px-6 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all text-slate-900 font-medium appearance-none"
                 >
                   <option value="">Normal Square</option>
                   <option value="md:col-span-2 md:row-span-2">Large Feature (2x2)</option>
@@ -171,26 +173,33 @@ export default function GalleryManagement() {
                 </select>
               </div>
 
-              <div className="space-y-2">
-                <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Image Selection</label>
-                <div className="relative group">
-                   <input 
-                    type="file" 
-                    onChange={handleFileUpload}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                   />
-                   <div className="border-2 border-dashed border-slate-100 rounded-[2rem] p-12 text-center space-y-4 group-hover:border-coastal-seafoam transition-colors">
-                      <div className="w-12 h-12 bg-slate-50 text-slate-400 rounded-full flex items-center justify-center mx-auto">
-                        <ImageIcon className="w-6 h-6" />
-                      </div>
-                      <p className="text-sm text-slate-500 italic">
-                        {isUploading ? 'Preparing seaside capture...' : formData.url ? 'File Ready' : 'Drop coastal captures here'}
-                      </p>
-                   </div>
+              <div className="space-y-4">
+                <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Image URL / File</label>
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <div className="flex-grow">
+                    <input 
+                      type="text" 
+                      placeholder="Paste image URL here..."
+                      value={formData.url}
+                      onChange={(e) => setFormData({...formData, url: e.target.value})}
+                      className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all text-slate-900 font-medium text-xs"
+                    />
+                  </div>
+                  <div className="relative group">
+                    <button type="button" className="w-full sm:px-6 py-3 bg-slate-100 text-slate-600 rounded-2xl text-xs font-bold hover:bg-slate-200 transition-all">
+                      {isUploading ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : 'Upload'}
+                    </button>
+                    <input 
+                      type="file" 
+                      accept="image/*"
+                      className="absolute inset-0 opacity-0 cursor-pointer" 
+                      onChange={handleFileUpload} 
+                    />
+                  </div>
                 </div>
                 {formData.url && (
                   <div className="mt-4 aspect-video rounded-[2rem] overflow-hidden border border-slate-100 shadow-inner bg-slate-50">
-                    <img src={formData.url} alt="Preview" className="w-full h-full object-cover" />
+                    <img src={getImageUrl(formData.url)} alt="Preview" className="w-full h-full object-cover" />
                   </div>
                 )}
               </div>
@@ -198,7 +207,7 @@ export default function GalleryManagement() {
               <button 
                 type="submit" 
                 disabled={!formData.url || isUploading}
-                className="w-full bg-slate-900 text-white py-5 rounded-2xl font-medium hover:bg-slate-800 transition-all shadow-xl shadow-slate-900/10 disabled:bg-slate-100 disabled:text-slate-400"
+                className="w-full bg-slate-900 text-white py-4 sm:py-5 rounded-2xl font-medium hover:bg-slate-800 transition-all shadow-xl shadow-slate-900/10 disabled:bg-slate-100 disabled:text-slate-400"
               >
                 Publish to Gallery
               </button>
@@ -209,3 +218,4 @@ export default function GalleryManagement() {
     </div>
   );
 }
+

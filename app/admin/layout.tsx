@@ -12,13 +12,16 @@ import {
   Waves,
   CalendarCheck,
   Mail,
-  MapPin
+  MapPin,
+  Menu,
+  X
 } from 'lucide-react';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const [authorized, setAuthorized] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('admin_token');
@@ -28,6 +31,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       setAuthorized(true);
     }
   }, [pathname, router]);
+
+  // Close mobile menu on path change
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [pathname]);
 
   const handleLogout = () => {
     localStorage.removeItem('admin_token');
@@ -47,15 +55,34 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 flex">
-      {/* Sidebar */}
-      <aside className="w-64 bg-white border-r border-slate-200 flex flex-col fixed h-full">
-        <div className="p-8 flex items-center gap-3 border-b border-slate-50">
+    <div className="min-h-screen bg-slate-50 flex flex-col lg:flex-row">
+      {/* Mobile Header */}
+      <header className="lg:hidden bg-white border-b border-slate-200 p-4 flex justify-between items-center sticky top-0 z-[60]">
+        <div className="flex items-center gap-2">
+          <Waves className="w-6 h-6 text-coastal-seafoam" />
+          <span className="font-playfair text-lg tracking-tighter uppercase">Namita <span className="italic text-slate-400">Admin</span></span>
+        </div>
+        <button 
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          className="p-2 text-slate-600 hover:bg-slate-50 rounded-xl transition-colors"
+        >
+          {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+        </button>
+      </header>
+
+      {/* Sidebar (Desktop & Mobile Drawer) */}
+      <aside className={`
+        fixed lg:static inset-0 z-50 lg:z-auto
+        w-64 bg-white border-r border-slate-200 flex flex-col h-full
+        transition-transform duration-300 ease-in-out
+        ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+      `}>
+        <div className="p-8 hidden lg:flex items-center gap-3 border-b border-slate-50">
           <Waves className="w-8 h-8 text-coastal-seafoam" />
           <span className="font-playfair text-xl tracking-tighter uppercase">Namita <span className="italic text-slate-400">Admin</span></span>
         </div>
         
-        <nav className="flex-grow p-6 space-y-2">
+        <nav className="flex-grow p-6 space-y-2 overflow-y-auto mt-16 lg:mt-0">
           {menuItems.map((item) => (
             <Link 
               key={item.path}
@@ -88,16 +115,25 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             onClick={handleLogout}
             className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-red-500 hover:bg-red-50 transition-all w-full text-left"
           >
-            <LogOut className="w-4 h-4" />
+            <item.icon className="w-4 h-4" />
             Sign Out
           </button>
         </div>
       </aside>
 
+      {/* Backdrop for mobile menu */}
+      {isMobileMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 lg:hidden"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
       {/* Content */}
-      <main className="flex-grow ml-64 p-12">
+      <main className="flex-grow p-6 sm:p-8 lg:p-12 w-full max-w-full overflow-x-hidden">
         {children}
       </main>
     </div>
   );
 }
+
