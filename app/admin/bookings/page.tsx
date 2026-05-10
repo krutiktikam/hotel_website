@@ -362,7 +362,7 @@ export default function BookingsManagement() {
                   type="text" 
                   placeholder="Maintenance, Personal Use, etc."
                   value={blockData.customer_name === 'MAINTENANCE' ? '' : blockData.customer_name}
-                  onChange={(e) => setBlockData({...customer_name: e.target.value || 'MAINTENANCE'})}
+                  onChange={(e) => setBlockData({...blockData, customer_name: e.target.value || 'MAINTENANCE'})}
                   className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 sm:py-4 sm:px-6 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none text-slate-900 font-medium"
                 />
               </div>
