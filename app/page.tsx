@@ -18,14 +18,7 @@ import {
   CheckCircle2
 } from 'lucide-react';
 import PricingCalendar from '@/components/PricingCalendar';
-import { fetchOptions, API_BASE_URL } from '@/lib/api';
-
-const getImageUrl = (url: string) => {
-  if (!url) return '';
-  if (url.startsWith('http')) return url;
-  const baseUrl = API_BASE_URL.replace('/api/v1', '');
-  return `${baseUrl}${url.startsWith('/') ? '' : '/'}${url}`;
-};
+import { fetchOptions, API_BASE_URL, getImageUrl } from '@/lib/api';
 
 function BookingFlow({ options, loading: optionsLoading }: { options: any, loading: boolean }) {
   const searchParams = useSearchParams();

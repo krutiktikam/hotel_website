@@ -3,6 +3,7 @@ export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost
 export const getImageUrl = (url: string) => {
   if (!url) return '';
   if (url.startsWith('http')) return url;
+  if (url.startsWith('/images')) return url; // Serve from local public folder
   
   // Base URL for images is the API base URL without the /api/v1 part
   const baseUrl = API_BASE_URL.replace('/api/v1', '');

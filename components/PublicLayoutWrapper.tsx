@@ -3,7 +3,6 @@
 import { usePathname } from 'next/navigation';
 import Header from "@/components/Header";
 import ShoreClub from "@/components/ShoreClub";
-import DirectIncentiveBar from "@/components/DirectIncentiveBar";
 
 export default function PublicLayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -15,7 +14,6 @@ export default function PublicLayoutWrapper({ children }: { children: React.Reac
 
   return (
     <>
-      <DirectIncentiveBar />
       <Header />
       <main className="flex-grow">
         {children}
