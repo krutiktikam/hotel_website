@@ -35,8 +35,8 @@ export default function ContactPage() {
             </div>
             <div className="space-y-4 p-8 bg-coastal-beige/20 rounded-[2rem] border border-coastal-beige/50">
               <Clock className="w-6 h-6 text-slate-600" />
-              <h3 className="font-playfair text-xl text-slate-900">Check-in</h3>
-              <p className="text-sm text-slate-900 font-medium tracking-wide">3:00 PM / 11:00 AM</p>
+              <h3 className="font-playfair text-xl text-slate-900">Rituals</h3>
+              <p className="text-sm text-slate-900 font-medium tracking-wide">In: 10:00 AM / Out: 11:00 PM</p>
             </div>          </div>
 
           <a 

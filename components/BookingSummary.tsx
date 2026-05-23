@@ -163,8 +163,8 @@ const BookingSummary: React.FC<BookingSummaryProps> = ({ bookingData, imageUrl }
                 `Warm greetings ${bookingData.customerName},\n\n` +
                 `Your retreat is officially reserved. We are preparing the ${bookingData.roomType} for your arrival.\n\n` +
                 `📅 *Stay Details:*\n` +
-                `• Check-in: ${bookingData.checkIn}\n` +
-                `• Check-out: ${bookingData.checkOut}\n\n` +
+                `• Check-in: ${bookingData.checkIn} (10:00 AM)\n` +
+                `• Check-out: ${bookingData.checkOut} (11:00 PM)\n\n` +
                 `💳 *Investment Summary:*\n` +
                 `• Total Stay: ₹${(bookingResponse?.total_price || 0).toFixed(2)}\n` +
                 `• Required 10% Deposit: ₹${((bookingResponse?.total_price || 0) * 0.10).toFixed(2)}\n\n` +
