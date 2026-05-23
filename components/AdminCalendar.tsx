@@ -9,11 +9,9 @@ import {
   isSameDay, 
   parseISO, 
   differenceInDays,
-  addWeeks,
-  subWeeks,
   isWithinInterval
 } from 'date-fns';
-import { ChevronLeft, ChevronRight, User, Calendar as CalendarIcon, Clock, X, Phone, Trash2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, User, Calendar as CalendarIcon, Clock, X, Trash2 } from 'lucide-react';
 
 interface Booking {
   id: number;
@@ -41,15 +39,15 @@ const AdminCalendar: React.FC<AdminCalendarProps> = ({ bookings, onUpdateBooking
   const [showEditModal, setShowEditModal] = useState(false);
 
   const weekStart = startOfWeek(currentDate, { weekStartsOn: 1 }); // Monday
-  const weekDays = useMemo(() => {
+  const viewDays = useMemo(() => {
     return eachDayOfInterval({
       start: weekStart,
-      end: addDays(weekStart, 6)
+      end: addDays(weekStart, 29) // 30 days view
     });
   }, [weekStart]);
 
-  const nextWeek = () => setCurrentDate(addWeeks(currentDate, 1));
-  const prevWeek = () => setCurrentDate(subWeeks(currentDate, 1));
+  const nextWeek = () => setCurrentDate(addDays(currentDate, 7));
+  const prevWeek = () => setCurrentDate(addDays(currentDate, -7));
   const goToToday = () => setCurrentDate(new Date());
 
   // Handle Drag and Drop
@@ -134,7 +132,7 @@ const AdminCalendar: React.FC<AdminCalendarProps> = ({ bookings, onUpdateBooking
           <h2 className="font-playfair text-2xl text-slate-900 capitalize">
             {format(weekStart, 'MMMM yyyy')}
           </h2>
-          <p className="text-xs text-slate-400 uppercase tracking-widest mt-1 font-bold">Weekly Schedule</p>
+          <p className="text-xs text-slate-400 uppercase tracking-widest mt-1 font-bold">30-Day Schedule</p>
         </div>
         
         <div className="flex items-center gap-4">
@@ -162,20 +160,20 @@ const AdminCalendar: React.FC<AdminCalendarProps> = ({ bookings, onUpdateBooking
       </div>
 
       {/* Calendar Grid */}
-      <div className="flex-grow overflow-auto">
-        <div className="min-w-[1000px] h-full flex flex-col">
+      <div className="flex-grow overflow-auto scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent">
+        <div className="min-w-[3000px] h-full flex flex-col">
           {/* Day Headers */}
-          <div className="grid grid-cols-[150px_repeat(7,1fr)] border-b border-slate-100 bg-white sticky top-0 z-20">
-            <div className="p-6 border-r border-slate-100 flex items-center justify-center">
+          <div className="grid grid-cols-[150px_repeat(30,1fr)] border-b border-slate-100 bg-white sticky top-0 z-20">
+            <div className="p-6 border-r border-slate-100 flex items-center justify-center bg-white sticky left-0 z-30 shadow-[4px_0_10px_-2px_rgba(0,0,0,0.05)]">
               <CalendarIcon className="w-5 h-5 text-slate-300" />
             </div>
-            {weekDays.map(day => (
+            {viewDays.map(day => (
               <div 
                 key={day.toString()} 
                 className={`p-6 text-center border-r border-slate-100 last:border-r-0 ${isSameDay(day, new Date()) ? 'bg-coastal-seafoam/5' : ''}`}
               >
                 <p className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold mb-1">
-                  {format(day, 'EEEE')}
+                  {format(day, 'EEE')}
                 </p>
                 <p className={`text-2xl font-playfair ${isSameDay(day, new Date()) ? 'text-coastal-seafoam' : 'text-slate-900'}`}>
                   {format(day, 'd')}
@@ -187,15 +185,15 @@ const AdminCalendar: React.FC<AdminCalendarProps> = ({ bookings, onUpdateBooking
           {/* Room Rows */}
           <div className="flex-grow divide-y divide-slate-100">
             {ROOM_TYPES.map(room => (
-              <div key={room} className="grid grid-cols-[150px_repeat(7,1fr)] min-h-[120px]">
+              <div key={room} className="grid grid-cols-[150px_repeat(30,1fr)] min-h-[120px]">
                 {/* Room Label */}
-                <div className="p-6 border-r border-slate-100 bg-slate-50/20 flex flex-col justify-center">
+                <div className="p-6 border-r border-slate-100 bg-slate-50 sticky left-0 z-10 flex flex-col justify-center shadow-[4px_0_10px_-2px_rgba(0,0,0,0.05)]">
                   <p className="text-sm font-medium text-slate-900 capitalize">{room.toLowerCase()}</p>
                   <p className="text-[10px] text-slate-400 uppercase tracking-wider mt-1">Sanctuary</p>
                 </div>
 
                 {/* Day Cells */}
-                {weekDays.map(day => {
+                {viewDays.map(day => {
                   const booking = getBookingForCell(room, day);
                   const occupied = isOccupied(room, day);
                   
@@ -213,19 +211,20 @@ const AdminCalendar: React.FC<AdminCalendarProps> = ({ bookings, onUpdateBooking
                           draggable
                           onDragStart={(e) => handleDragStart(e, booking)}
                           onClick={() => handleEditBooking(booking)}
-                          className={`absolute inset-y-2 left-2 right-[-8px] z-10 p-3 rounded-2xl shadow-lg cursor-pointer transition-all hover:scale-[1.02] hover:shadow-xl group
+                          className={`absolute inset-y-2 left-2 z-10 p-3 rounded-2xl shadow-lg cursor-pointer transition-all hover:scale-[1.01] hover:shadow-xl group
                             ${booking.status === 'confirmed' ? 'bg-emerald-50 border border-emerald-100 text-emerald-900' : 
                               booking.status === 'pending' ? 'bg-orange-50 border border-orange-100 text-orange-900' :
                               'bg-slate-50 border border-slate-200 text-slate-900'}`}
                           style={{
                             width: `calc(${differenceInDays(parseISO(booking.check_out), parseISO(booking.check_in)) * 100}% + ${differenceInDays(parseISO(booking.check_out), parseISO(booking.check_in)) * 1}px - 16px)`,
+                            minWidth: '100px'
                           }}
                         >
                           <div className="flex justify-between items-start mb-2">
                             <p className="text-xs font-bold uppercase tracking-wider truncate">
                               {booking.customer_name}
                             </p>
-                            <span className="text-[8px] uppercase font-black bg-white/50 px-1.5 py-0.5 rounded-full">
+                            <span className="text-[8px] uppercase font-black bg-white/50 px-1.5 py-0.5 rounded-full whitespace-nowrap">
                               {booking.status}
                             </span>
                           </div>
@@ -233,12 +232,6 @@ const AdminCalendar: React.FC<AdminCalendarProps> = ({ bookings, onUpdateBooking
                           <div className="flex items-center gap-2 text-[10px] opacity-70">
                             <Clock className="w-3 h-3" />
                             <span>{differenceInDays(parseISO(booking.check_out), parseISO(booking.check_in))} Nights</span>
-                          </div>
-
-                          <div className="mt-2 flex -space-x-2">
-                            <div className="w-6 h-6 rounded-full bg-white/80 border border-current/10 flex items-center justify-center">
-                              <User className="w-3 h-3" />
-                            </div>
                           </div>
                         </div>
                       )}
