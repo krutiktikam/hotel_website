@@ -13,7 +13,7 @@ import {
   subWeeks,
   isWithinInterval
 } from 'date-fns';
-import { ChevronLeft, ChevronRight, User, Calendar as CalendarIcon, Clock } from 'lucide-react';
+import { ChevronLeft, ChevronRight, User, Calendar as CalendarIcon, Clock, X, Phone, Trash2 } from 'lucide-react';
 
 interface Booking {
   id: number;
@@ -29,13 +29,16 @@ interface Booking {
 interface AdminCalendarProps {
   bookings: Booking[];
   onUpdateBooking: (id: number, updates: Partial<Booking>) => Promise<void>;
+  onDeleteBooking?: (id: number) => Promise<void>;
 }
 
-const ROOM_TYPES = ['Luxury', 'Suite', 'Deluxe'];
+const ROOM_TYPES = ['LUXURY', 'SUITE', 'DELUXE'];
 
-const AdminCalendar: React.FC<AdminCalendarProps> = ({ bookings, onUpdateBooking }) => {
+const AdminCalendar: React.FC<AdminCalendarProps> = ({ bookings, onUpdateBooking, onDeleteBooking }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [draggingBooking, setDraggingBooking] = useState<Booking | null>(null);
+  const [editingBooking, setEditingBooking] = useState<Booking | null>(null);
+  const [showEditModal, setShowEditModal] = useState(false);
 
   const weekStart = startOfWeek(currentDate, { weekStartsOn: 1 }); // Monday
   const weekDays = useMemo(() => {
@@ -54,8 +57,6 @@ const AdminCalendar: React.FC<AdminCalendarProps> = ({ bookings, onUpdateBooking
     setDraggingBooking(booking);
     e.dataTransfer.setData('bookingId', booking.id.toString());
     e.dataTransfer.effectAllowed = 'move';
-    
-    // Create a ghost image if needed, or just let default happen
   };
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -93,7 +94,7 @@ const AdminCalendar: React.FC<AdminCalendarProps> = ({ bookings, onUpdateBooking
   // Helper to find bookings for a specific room and day
   const getBookingForCell = (room: string, day: Date) => {
     return bookings.find(b => {
-      if (b.room_type !== room) return false;
+      if (b.room_type.toUpperCase() !== room.toUpperCase()) return false;
       const start = parseISO(b.check_in);
       return isSameDay(start, day);
     });
@@ -102,12 +103,27 @@ const AdminCalendar: React.FC<AdminCalendarProps> = ({ bookings, onUpdateBooking
   // Helper to check if a day is part of a booking's stay (but not the start)
   const isOccupied = (room: string, day: Date) => {
     return bookings.some(b => {
-      if (b.room_type !== room) return false;
+      if (b.room_type.toUpperCase() !== room.toUpperCase()) return false;
       const start = parseISO(b.check_in);
       const end = parseISO(b.check_out);
-      // isWithinInterval is inclusive, but usually check_out is the day they leave
       return isWithinInterval(day, { start, end }) && !isSameDay(start, day);
     });
+  };
+
+  const handleEditBooking = (booking: Booking) => {
+    setEditingBooking(booking);
+    setShowEditModal(true);
+  };
+
+  const handleSaveEdit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingBooking) return;
+    try {
+      await onUpdateBooking(editingBooking.id, editingBooking);
+      setShowEditModal(false);
+    } catch (err) {
+      alert('Failed to update booking');
+    }
   };
 
   return (
@@ -174,7 +190,7 @@ const AdminCalendar: React.FC<AdminCalendarProps> = ({ bookings, onUpdateBooking
               <div key={room} className="grid grid-cols-[150px_repeat(7,1fr)] min-h-[120px]">
                 {/* Room Label */}
                 <div className="p-6 border-r border-slate-100 bg-slate-50/20 flex flex-col justify-center">
-                  <p className="text-sm font-medium text-slate-900">{room}</p>
+                  <p className="text-sm font-medium text-slate-900 capitalize">{room.toLowerCase()}</p>
                   <p className="text-[10px] text-slate-400 uppercase tracking-wider mt-1">Sanctuary</p>
                 </div>
 
@@ -196,7 +212,8 @@ const AdminCalendar: React.FC<AdminCalendarProps> = ({ bookings, onUpdateBooking
                         <div
                           draggable
                           onDragStart={(e) => handleDragStart(e, booking)}
-                          className={`absolute inset-y-2 left-2 right-[-8px] z-10 p-3 rounded-2xl shadow-lg cursor-move transition-all hover:scale-[1.02] hover:shadow-xl group
+                          onClick={() => handleEditBooking(booking)}
+                          className={`absolute inset-y-2 left-2 right-[-8px] z-10 p-3 rounded-2xl shadow-lg cursor-pointer transition-all hover:scale-[1.02] hover:shadow-xl group
                             ${booking.status === 'confirmed' ? 'bg-emerald-50 border border-emerald-100 text-emerald-900' : 
                               booking.status === 'pending' ? 'bg-orange-50 border border-orange-100 text-orange-900' :
                               'bg-slate-50 border border-slate-200 text-slate-900'}`}
@@ -237,6 +254,94 @@ const AdminCalendar: React.FC<AdminCalendarProps> = ({ bookings, onUpdateBooking
           </div>
         </div>
       </div>
+
+      {/* Edit Modal */}
+      {showEditModal && editingBooking && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="bg-white w-full max-w-lg rounded-[2.5rem] p-10 shadow-2xl animate-in zoom-in-95 duration-300 text-slate-900">
+            <div className="flex justify-between items-center mb-8">
+              <h2 className="font-playfair text-2xl text-slate-900">Edit Reservation</h2>
+              <button onClick={() => setShowEditModal(false)} className="p-2 hover:bg-slate-100 rounded-full transition-colors">
+                <X className="w-6 h-6 text-slate-400" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveEdit} className="space-y-6">
+              <div className="space-y-2">
+                <label className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold ml-1 flex items-center gap-2">
+                  <User className="w-3 h-3" /> Guest Name
+                </label>
+                <input 
+                  required
+                  type="text" 
+                  value={editingBooking.customer_name}
+                  onChange={(e) => setEditingBooking({...editingBooking, customer_name: e.target.value})}
+                  className="w-full bg-slate-50 border-0 rounded-2xl py-4 px-6 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none text-slate-900 font-medium"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold ml-1">From</label>
+                  <input 
+                    type="date" 
+                    required
+                    value={editingBooking.check_in}
+                    onChange={(e) => setEditingBooking({...editingBooking, check_in: e.target.value})}
+                    className="w-full bg-slate-50 border-0 rounded-2xl py-4 px-6 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none text-slate-900 font-medium"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold ml-1">To</label>
+                  <input 
+                    type="date" 
+                    required
+                    value={editingBooking.check_out}
+                    onChange={(e) => setEditingBooking({...editingBooking, check_out: e.target.value})}
+                    className="w-full bg-slate-50 border-0 rounded-2xl py-4 px-6 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none text-slate-900 font-medium"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold ml-1">Status</label>
+                <select 
+                  value={editingBooking.status}
+                  onChange={(e) => setEditingBooking({...editingBooking, status: e.target.value})}
+                  className="w-full bg-slate-50 border-0 rounded-2xl py-4 px-6 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none text-slate-900 font-medium appearance-none"
+                >
+                  <option value="pending">Pending</option>
+                  <option value="confirmed">Confirmed</option>
+                  <option value="checked_in">Checked In</option>
+                  <option value="completed">Completed</option>
+                  <option value="cancelled">Cancelled</option>
+                </select>
+              </div>
+
+              <div className="pt-4 flex gap-4">
+                <button 
+                  type="button"
+                  onClick={async () => {
+                    if (onDeleteBooking && confirm('Are you sure?')) {
+                      await onDeleteBooking(editingBooking.id);
+                      setShowEditModal(false);
+                    }
+                  }}
+                  className="p-4 text-red-500 hover:bg-red-50 rounded-2xl transition-colors"
+                >
+                  <Trash2 className="w-6 h-6" />
+                </button>
+                <button 
+                  type="submit"
+                  className="flex-grow bg-slate-900 text-white px-10 py-4 rounded-2xl font-medium hover:bg-slate-800 transition-all shadow-xl shadow-slate-900/10"
+                >
+                  Save Changes
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Calendar Legend */}
       <div className="p-4 bg-slate-50 border-t border-slate-100 flex gap-6 justify-center">

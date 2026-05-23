@@ -360,7 +360,11 @@ export default function BookingsManagement() {
           </div>
         </div>
       ) : (
-        <AdminCalendar bookings={bookings} onUpdateBooking={updateBooking} />
+        <AdminCalendar 
+          bookings={bookings} 
+          onUpdateBooking={updateBooking} 
+          onDeleteBooking={deleteBooking}
+        />
       )}
 
       {/* Block Dates Modal */}
