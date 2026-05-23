@@ -40,6 +40,13 @@ export default function BookingsManagement() {
       const response = await fetch(`${API_BASE_URL}/admin/bookings`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
+      
+      if (response.status === 401) {
+        localStorage.removeItem('admin_token');
+        window.location.href = '/admin/login';
+        return;
+      }
+
       if (response.ok) {
         const data = await response.json();
         setBookings(data);
@@ -67,6 +74,13 @@ export default function BookingsManagement() {
         },
         body: JSON.stringify(blockData)
       });
+      
+      if (response.status === 401) {
+        localStorage.removeItem('admin_token');
+        window.location.href = '/admin/login';
+        return;
+      }
+
       if (response.ok) {
         setShowBlockModal(false);
         fetchBookings();
@@ -90,6 +104,13 @@ export default function BookingsManagement() {
         },
         body: JSON.stringify(updates)
       });
+
+      if (response.status === 401) {
+        localStorage.removeItem('admin_token');
+        window.location.href = '/admin/login';
+        return;
+      }
+
       if (response.ok) {
         setBookings(bookings.map(b => b.id === id ? { ...b, ...updates } : b));
       } else {
@@ -143,6 +164,13 @@ export default function BookingsManagement() {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
+
+      if (response.status === 401) {
+        localStorage.removeItem('admin_token');
+        window.location.href = '/admin/login';
+        return;
+      }
+
       if (response.ok) {
         setBookings(bookings.filter(b => b.id !== id));
       }
@@ -153,8 +181,8 @@ export default function BookingsManagement() {
 
   const filteredBookings = bookings.filter(b => {
     const matchesFilter = filter === 'all' || b.status === filter;
-    const matchesSearch = b.customer_name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          b.customer_phone.includes(searchTerm);
+    const matchesSearch = (b.customer_name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) || 
+                          (b.customer_phone?.includes(searchTerm) || false);
     return matchesFilter && matchesSearch;
   });
 
