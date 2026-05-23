@@ -50,7 +50,7 @@ const CoastalPulse = () => {
   }, []);
 
   return (
-    <div className="flex items-center gap-6 text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold">
+    <div className="flex items-center gap-3 sm:gap-6 text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold">
       <div className="flex items-center gap-2 text-slate-600">
         <span className={`w-1.5 h-1.5 bg-coastal-seafoam rounded-full ${data.loading ? 'animate-pulse' : ''}`} />
         <span>Tarkarli, MH</span>

@@ -419,11 +419,15 @@ def get_all_bookings(current_user: models.User = Depends(get_current_user), db: 
     return results
 
 @app.patch("/api/v1/admin/bookings/{booking_id}", response_model=schemas.BookingResponse)
-def update_booking_status(booking_id: int, status: str = Body(..., embed=True), current_user: models.User = Depends(get_current_user), db: Session = Depends(get_db)):
+def update_booking(booking_id: int, booking_update: schemas.BookingUpdate, current_user: models.User = Depends(get_current_user), db: Session = Depends(get_db)):
     booking = db.query(models.Booking).filter(models.Booking.id == booking_id).first()
     if not booking:
         raise HTTPException(status_code=404, detail="Booking not found")
-    booking.status = status
+    
+    update_data = booking_update.dict(exclude_unset=True)
+    for key, value in update_data.items():
+        setattr(booking, key, value)
+        
     db.commit()
     db.refresh(booking)
     res = schemas.BookingResponse.from_orm(booking)

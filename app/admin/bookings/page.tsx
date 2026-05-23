@@ -2,22 +2,19 @@
 
 import React, { useEffect, useState } from 'react';
 import { API_BASE_URL } from '@/lib/api';
+import AdminCalendar from '@/components/AdminCalendar';
 import { 
   Search, 
-  Filter, 
-  MoreVertical, 
-  CheckCircle2, 
-  Clock, 
   XCircle, 
   Phone, 
-  Mail,
   Trash2,
   ChevronLeft,
   ChevronRight,
   Download,
   UserCheck,
   Flag,
-  Calendar
+  Calendar,
+  List
 } from 'lucide-react';
 
 export default function BookingsManagement() {
@@ -25,6 +22,7 @@ export default function BookingsManagement() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const [view, setView] = useState<'list' | 'calendar'>('list');
   const [showBlockModal, setShowBlockModal] = useState(false);
   const [blockData, setBlockData] = useState({
     customer_name: 'MAINTENANCE',
@@ -81,7 +79,7 @@ export default function BookingsManagement() {
     }
   };
 
-  const updateStatus = async (id: number, newStatus: string) => {
+  const updateBooking = async (id: number, updates: Partial<any>) => {
     try {
       const token = localStorage.getItem('admin_token');
       const response = await fetch(`${API_BASE_URL}/admin/bookings/${id}`, {
@@ -90,14 +88,21 @@ export default function BookingsManagement() {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ status: newStatus })
+        body: JSON.stringify(updates)
       });
       if (response.ok) {
-        setBookings(bookings.map(b => b.id === id ? { ...b, status: newStatus } : b));
+        setBookings(bookings.map(b => b.id === id ? { ...b, ...updates } : b));
+      } else {
+        throw new Error('Failed to update booking');
       }
     } catch (err) {
       console.error(err);
+      throw err;
     }
+  };
+
+  const updateStatus = async (id: number, newStatus: string) => {
+    await updateBooking(id, { status: newStatus });
   };
 
   const exportToCSV = () => {
@@ -161,6 +166,24 @@ export default function BookingsManagement() {
           <p className="text-slate-500 font-light text-sm sm:text-base">Manage and track all guest reservations.</p>
         </div>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+          <div className="flex bg-white rounded-2xl border border-slate-200 p-1 shadow-sm shrink-0">
+            <button 
+              onClick={() => setView('list')}
+              className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${
+                view === 'list' ? 'bg-slate-900 text-white' : 'text-slate-400 hover:text-slate-600'
+              }`}
+            >
+              <List className="w-3.5 h-3.5" /> List
+            </button>
+            <button 
+              onClick={() => setView('calendar')}
+              className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${
+                view === 'calendar' ? 'bg-slate-900 text-white' : 'text-slate-400 hover:text-slate-600'
+              }`}
+            >
+              <Calendar className="w-3.5 h-3.5" /> Calendar
+            </button>
+          </div>
           <div className="flex gap-2">
             <button 
               onClick={() => setShowBlockModal(true)}
@@ -200,113 +223,117 @@ export default function BookingsManagement() {
         </div>
       </div>
 
-      <div className="bg-white rounded-[2rem] sm:rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left min-w-[800px]">
-            <thead>
-              <tr className="bg-slate-50/50 text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold border-b border-slate-100">
-                <th className="px-6 sm:px-8 py-5">Guest Information</th>
-                <th className="px-6 sm:px-8 py-5">Stay Details</th>
-                <th className="px-6 sm:px-8 py-5">Total Price</th>
-                <th className="px-6 sm:px-8 py-5">Status</th>
-                <th className="px-6 sm:px-8 py-5 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-50">
-              {loading ? (
-                <tr><td colSpan={5} className="p-20 text-center text-slate-400">Loading reservations...</td></tr>
-              ) : filteredBookings.length === 0 ? (
-                <tr><td colSpan={5} className="p-20 text-center text-slate-400">No reservations found matching your criteria.</td></tr>
-              ) : filteredBookings.map((booking) => (
-                <tr key={booking.id} className="hover:bg-slate-50/30 transition-colors group">
-                  <td className="px-6 sm:px-8 py-6">
-                    <p className="font-medium text-slate-900 mb-1">{booking.customer_name}</p>
-                    <div className="flex items-center gap-2 text-xs text-slate-400">
-                      <Phone className="w-3 h-3" />
-                      {booking.customer_phone}
-                    </div>
-                  </td>
-                  <td className="px-6 sm:px-8 py-6">
-                    <p className="text-sm text-slate-700 font-medium mb-1">{booking.room_type}</p>
-                    <p className="text-[10px] text-slate-400 uppercase tracking-wider">
-                      {booking.check_in} — {booking.check_out}
-                    </p>
-                  </td>
-                  <td className="px-6 sm:px-8 py-6">
-                    <p className="font-medium text-slate-900">₹{booking.total_price.toLocaleString()}</p>
-                    <p className="text-[10px] text-slate-400 uppercase tracking-widest">{booking.meal_plan}</p>
-                  </td>
-                  <td className="px-6 sm:px-8 py-6">
-                    <div className="flex items-center gap-3">
-                      <select 
-                        value={booking.status}
-                        onChange={(e) => updateStatus(booking.id, e.target.value)}
-                        className={`text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full border-0 focus:ring-2 focus:ring-coastal-seafoam cursor-pointer
-                          ${booking.status === 'confirmed' ? 'bg-green-50 text-green-600' : 
-                            booking.status === 'pending' ? 'bg-orange-50 text-orange-600' : 
-                            booking.status === 'checked_in' ? 'bg-blue-50 text-blue-600' :
-                            booking.status === 'completed' ? 'bg-slate-100 text-slate-600' :
-                            'bg-red-50 text-red-600'}`}
-                      >
-                        <option value="pending">Pending</option>
-                        <option value="confirmed">Confirmed</option>
-                        <option value="checked_in">Checked In</option>
-                        <option value="completed">Completed</option>
-                        <option value="cancelled">Cancelled</option>
-                      </select>
-                      
-                      <div className="flex gap-1 xl:opacity-0 group-hover:opacity-100 transition-opacity">
-                        {booking.status === 'confirmed' && (
-                          <button 
-                            onClick={() => updateStatus(booking.id, 'checked_in')}
-                            className="p-1.5 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors"
-                            title="Quick Check-In"
-                          >
-                            <UserCheck className="w-3.5 h-3.5" />
-                          </button>
-                        )}
-                        {booking.status === 'checked_in' && (
-                          <button 
-                            onClick={() => updateStatus(booking.id, 'completed')}
-                            className="p-1.5 bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-200 transition-colors"
-                            title="Quick Complete"
-                          >
-                            <Flag className="w-3.5 h-3.5" />
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 sm:px-8 py-6 text-right">
-                    <div className="flex justify-end gap-2 xl:opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button 
-                        onClick={() => deleteBooking(booking.id)}
-                        className="p-2 hover:bg-red-50 text-slate-400 hover:text-red-500 rounded-lg transition-colors"
-                        title="Delete Reservation"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
+      {view === 'list' ? (
+        <div className="bg-white rounded-[2rem] sm:rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left min-w-[800px]">
+              <thead>
+                <tr className="bg-slate-50/50 text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold border-b border-slate-100">
+                  <th className="px-6 sm:px-8 py-5">Guest Information</th>
+                  <th className="px-6 sm:px-8 py-5">Stay Details</th>
+                  <th className="px-6 sm:px-8 py-5">Total Price</th>
+                  <th className="px-6 sm:px-8 py-5">Status</th>
+                  <th className="px-6 sm:px-8 py-5 text-right">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        
-        {/* Pagination Placeholder */}
-        <div className="p-6 bg-slate-50/50 border-t border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p className="text-xs text-slate-400 font-medium">Showing {filteredBookings.length} of {bookings.length} reservations</p>
-          <div className="flex gap-2">
-            <button className="p-2 border border-slate-200 rounded-lg text-slate-400 hover:bg-white transition-all disabled:opacity-50" disabled>
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-            <button className="p-2 border border-slate-200 rounded-lg text-slate-400 hover:bg-white transition-all disabled:opacity-50" disabled>
-              <ChevronRight className="w-4 h-4" />
-            </button>
+              </thead>
+              <tbody className="divide-y divide-slate-50">
+                {loading ? (
+                  <tr><td colSpan={5} className="p-20 text-center text-slate-400">Loading reservations...</td></tr>
+                ) : filteredBookings.length === 0 ? (
+                  <tr><td colSpan={5} className="p-20 text-center text-slate-400">No reservations found matching your criteria.</td></tr>
+                ) : filteredBookings.map((booking) => (
+                  <tr key={booking.id} className="hover:bg-slate-50/30 transition-colors group">
+                    <td className="px-6 sm:px-8 py-6">
+                      <p className="font-medium text-slate-900 mb-1">{booking.customer_name}</p>
+                      <div className="flex items-center gap-2 text-xs text-slate-400">
+                        <Phone className="w-3 h-3" />
+                        {booking.customer_phone}
+                      </div>
+                    </td>
+                    <td className="px-6 sm:px-8 py-6">
+                      <p className="text-sm text-slate-700 font-medium mb-1">{booking.room_type}</p>
+                      <p className="text-[10px] text-slate-400 uppercase tracking-wider">
+                        {booking.check_in} — {booking.check_out}
+                      </p>
+                    </td>
+                    <td className="px-6 sm:px-8 py-6">
+                      <p className="font-medium text-slate-900">₹{booking.total_price.toLocaleString()}</p>
+                      <p className="text-[10px] text-slate-400 uppercase tracking-widest">{booking.meal_plan}</p>
+                    </td>
+                    <td className="px-6 sm:px-8 py-6">
+                      <div className="flex items-center gap-3">
+                        <select 
+                          value={booking.status}
+                          onChange={(e) => updateStatus(booking.id, e.target.value)}
+                          className={`text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full border-0 focus:ring-2 focus:ring-coastal-seafoam cursor-pointer
+                            ${booking.status === 'confirmed' ? 'bg-green-50 text-green-600' : 
+                              booking.status === 'pending' ? 'bg-orange-50 text-orange-600' : 
+                              booking.status === 'checked_in' ? 'bg-blue-50 text-blue-600' :
+                              booking.status === 'completed' ? 'bg-slate-100 text-slate-600' :
+                              'bg-red-50 text-red-600'}`}
+                        >
+                          <option value="pending">Pending</option>
+                          <option value="confirmed">Confirmed</option>
+                          <option value="checked_in">Checked In</option>
+                          <option value="completed">Completed</option>
+                          <option value="cancelled">Cancelled</option>
+                        </select>
+                        
+                        <div className="flex gap-1 xl:opacity-0 group-hover:opacity-100 transition-opacity">
+                          {booking.status === 'confirmed' && (
+                            <button 
+                              onClick={() => updateStatus(booking.id, 'checked_in')}
+                              className="p-1.5 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors"
+                              title="Quick Check-In"
+                            >
+                              <UserCheck className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+                          {booking.status === 'checked_in' && (
+                            <button 
+                              onClick={() => updateStatus(booking.id, 'completed')}
+                              className="p-1.5 bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-200 transition-colors"
+                              title="Quick Complete"
+                            >
+                              <Flag className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 sm:px-8 py-6 text-right">
+                      <div className="flex justify-end gap-2 xl:opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button 
+                          onClick={() => deleteBooking(booking.id)}
+                          className="p-2 hover:bg-red-50 text-slate-400 hover:text-red-500 rounded-lg transition-colors"
+                          title="Delete Reservation"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          
+          {/* Pagination Placeholder */}
+          <div className="p-6 bg-slate-50/50 border-t border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <p className="text-xs text-slate-400 font-medium">Showing {filteredBookings.length} of {bookings.length} reservations</p>
+            <div className="flex gap-2">
+              <button className="p-2 border border-slate-200 rounded-lg text-slate-400 hover:bg-white transition-all disabled:opacity-50" disabled>
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <button className="p-2 border border-slate-200 rounded-lg text-slate-400 hover:bg-white transition-all disabled:opacity-50" disabled>
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      ) : (
+        <AdminCalendar bookings={bookings} onUpdateBooking={updateBooking} />
+      )}
 
       {/* Block Dates Modal */}
       {showBlockModal && (

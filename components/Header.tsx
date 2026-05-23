@@ -25,7 +25,7 @@ const Header = () => {
     >
       <div className="max-w-7xl mx-auto px-6">
         {/* Top Utility Bar - Hidden on scroll */}
-        <div className={`transition-all duration-500 overflow-hidden ${isScrolled ? 'max-h-0 opacity-0 mb-0' : 'max-h-10 opacity-100 mt-6 mb-6'}`}>
+        <div className={`transition-all duration-500 overflow-hidden ${isScrolled ? 'max-h-0 opacity-0 mb-0' : 'max-h-10 opacity-100 mt-3 mb-3 sm:mt-6 sm:mb-6'}`}>
           <div className="flex justify-between items-center">
             <CoastalPulse />
           </div>

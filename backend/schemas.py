@@ -17,6 +17,12 @@ class BookingBase(BaseModel):
 class BookingCreate(BookingBase):
     pass
 
+class BookingUpdate(BaseModel):
+    status: Optional[str] = None
+    check_in: Optional[str] = None
+    check_out: Optional[str] = None
+    room_type: Optional[str] = None
+
 class BookingResponse(BookingBase):
     id: int
     total_price: float
