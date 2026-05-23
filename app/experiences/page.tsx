@@ -127,71 +127,93 @@ export default function ExperiencesPage() {
           ))}
         </div>
 
-        {/* Local Geography Map */}
+        {/* Local Geography Map & Mobile List */}
         <div className="mt-40 space-y-20">
           <div className="text-center space-y-4">
             <span className="text-coastal-seafoam font-bold tracking-[0.3em] uppercase text-[10px]">Geography</span>
             <h2 className="font-playfair text-5xl text-slate-900 italic">Between Shore & Sky</h2>
-            <p className="max-w-xl mx-auto text-slate-700 font-light">
+            <p className="max-w-xl mx-auto text-slate-700 font-light px-4">
               Explore the curated locale surrounding our sanctuary. All points are easily accessible by foot or via our house bicycle rituals.
             </p>
           </div>
 
-          <div className="relative aspect-[21/9] rounded-[4rem] bg-coastal-white overflow-hidden border border-coastal-beige/50 group shadow-xl">
-            {/* Minimalist SVG Map */}
+          {/* Desktop Interactive SVG Map (Hidden on Mobile) */}
+          <div className="hidden lg:block relative aspect-[21/9] rounded-[4rem] bg-coastal-white overflow-hidden border border-coastal-beige/50 group shadow-xl transition-all hover:shadow-2xl">
             <svg viewBox="0 0 1200 500" className="w-full h-full opacity-80">
               <path d="M0,420 Q300,380 600,450 T1200,410 L1200,500 L0,500 Z" fill="#9FE2BF" opacity="0.1" />
               <circle cx="600" cy="250" r="150" fill="none" stroke="#9FE2BF" strokeWidth="0.5" strokeDasharray="10 10" className="animate-spin-slow" />
               
               {/* Hotel Hub */}
-              <circle cx="600" cy="250" r="4" fill="#0f172a" />
-              <text x="615" y="255" className="text-[12px] font-bold uppercase tracking-widest fill-slate-900">Namita Beach House</text>
+              <circle cx="600" cy="250" r="6" fill="#0f172a" />
+              <text x="615" y="255" className="text-[12px] font-bold uppercase tracking-widest fill-slate-900 drop-shadow-sm">Namita Beach House</text>
               
               {/* Activity Points */}
-              {spots.map((point: any, i: number) => (
+              {spots.map((point: any) => (
                 <a 
                   key={point.id} 
                   href={point.google_maps_url || '#'} 
                   target={point.google_maps_url ? "_blank" : "_self"}
                   rel="noopener noreferrer"
-                  className="group/point cursor-pointer"
+                  className="group/point cursor-pointer outline-none"
                 >
-                  <circle cx={point.x_pos} cy={point.y_pos} r="3" fill="#9FE2BF" className="transition-all group-hover/point:r-5" />
-                  <text x={point.x_pos + 10} y={point.y_pos + 5} className="text-[10px] uppercase tracking-widest fill-slate-400 group-hover/point:fill-slate-900 transition-colors">
-                    {point.name} <tspan className="fill-coastal-seafoam font-bold ml-2">({point.distance})</tspan>
+                  <circle cx={point.x_pos} cy={point.y_pos} r="4" fill="#9FE2BF" className="transition-all duration-300 group-hover/point:fill-coastal-seafoam group-hover/point:r-6" />
+                  <text x={point.x_pos + 12} y={point.y_pos + 4} className="text-[10px] font-medium uppercase tracking-widest fill-slate-500 group-hover/point:fill-slate-900 transition-colors">
+                    {point.name} <tspan className="fill-coastal-seafoam font-bold opacity-0 group-hover/point:opacity-100 transition-opacity ml-2">({point.distance})</tspan>
                   </text>
-                  <line x1="600" y1="250" x2={point.x_pos} y2={point.y_pos} stroke="#9FE2BF" strokeWidth="0.5" strokeDasharray="5 5" className="opacity-0 group-hover/point:opacity-40 transition-opacity" />
-                  {point.google_maps_url && (
-                    <g className="opacity-0 group-hover/point:opacity-100 transition-opacity">
-                       <rect x={point.x_pos + 10} y={point.y_pos + 10} width="90" height="20" rx="10" fill="white" filter="drop-shadow(0 2px 4px rgb(0 0 0 / 0.1))" />
-                       <text x={point.x_pos + 18} y={point.y_pos + 23} className="text-[8px] fill-coastal-seafoam font-bold">VIEW ON GOOGLE MAPS</text>
-                    </g>
-                  )}
+                  <line x1="600" y1="250" x2={point.x_pos} y2={point.y_pos} stroke="#9FE2BF" strokeWidth="0.5" strokeDasharray="5 5" className="opacity-0 group-hover/point:opacity-40 transition-opacity duration-500" />
+                  
+                  {/* Tooltip on hover */}
+                  <g className="opacity-0 group-hover/point:opacity-100 transition-opacity pointer-events-none">
+                     <rect x={point.x_pos + 12} y={point.y_pos + 10} width="110" height="24" rx="12" fill="white" filter="drop-shadow(0 4px 6px rgb(0 0 0 / 0.1))" />
+                     <text x={point.x_pos + 22} y={point.y_pos + 26} className="text-[8px] fill-slate-900 font-bold uppercase tracking-widest">MAPS PREVIEW →</text>
+                  </g>
                 </a>
               ))}
             </svg>
 
             {/* Floating Distance Legend */}
-            <div className="absolute top-8 right-8 bg-white/60 backdrop-blur-md px-6 py-4 rounded-3xl border border-white/40">
+            <div className="absolute top-8 right-8 bg-white/60 backdrop-blur-md px-6 py-4 rounded-3xl border border-white/40 shadow-sm">
               <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-slate-600 mb-3">House Rituals</p>
               <div className="space-y-2">
                 <div className="flex items-center gap-3">
                   <div className="w-1.5 h-1.5 rounded-full bg-coastal-seafoam" />
-                  <span className="text-[10px] text-slate-600 tracking-wider">Walking Distance (&lt;1km)</span>
+                  <span className="text-[10px] text-slate-600 tracking-wider font-medium">Walking distance (&lt;1km)</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-1.5 h-1.5 rounded-full bg-slate-200" />
-                  <span className="text-[10px] text-slate-600 tracking-wider">Bicycle Journey (&gt;1km)</span>
+                  <div className="w-1.5 h-1.5 rounded-full bg-slate-300" />
+                  <span className="text-[10px] text-slate-600 tracking-wider font-medium">Bicycle journey (&gt;1km)</span>
                 </div>
               </div>
             </div>
+          </div>
 
-            {/* Bottom Info Bar */}
-            <div className="absolute bottom-0 left-0 w-full bg-slate-900/5 backdrop-blur-sm p-6 flex justify-center gap-12 border-t border-white/20">
-              <div className="flex items-center gap-2">
-                <Compass className="w-4 h-4 text-coastal-seafoam" />
-                <span className="text-[10px] uppercase tracking-widest text-slate-600 font-bold">Coordinates: 16.0352° N, 73.4682° E</span>
-              </div>
+          {/* Mobile Local Spot List (Visible on Mobile/Tablet) */}
+          <div className="lg:hidden px-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {spots.map((point: any) => (
+                <a 
+                  key={point.id}
+                  href={point.google_maps_url || '#'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-white p-6 rounded-[2rem] border border-coastal-beige/40 flex items-center justify-between group active:scale-[0.98] transition-all"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-full bg-coastal-seafoam/10 flex items-center justify-center text-coastal-seafoam transition-colors group-hover:bg-coastal-seafoam group-hover:text-white">
+                      <Compass className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h4 className="font-playfair text-lg text-slate-900">{point.name}</h4>
+                      <p className="text-[10px] uppercase tracking-widest text-slate-400 font-bold">{point.distance} from Shore</p>
+                    </div>
+                  </div>
+                  <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-coastal-seafoam group-hover:translate-x-1 transition-all" />
+                </a>
+              ))}
+            </div>
+            <div className="mt-8 flex items-center justify-center gap-2 text-[10px] uppercase tracking-widest text-slate-400 font-bold">
+              <Compass className="w-3.5 h-3.5" />
+              <span>Scroll for more discoveries</span>
             </div>
           </div>
         </div>

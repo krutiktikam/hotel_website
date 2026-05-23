@@ -74,30 +74,41 @@ def seed_database():
     if db.query(models.Experience).count() == 0:
         experiences = [
             models.Experience(
-                title='Sunrise Shore Yoga', 
-                category='Wellness', 
-                description='Begin your day in harmony with the tides.', 
-                price=45, 
-                duration='90 Minutes', 
-                image_url='https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&q=80&w=1000', 
-                icon_name='Sunrise',
-                seo_title="Sunrise Shore Yoga | Wellness at Namita Beach House",
-                seo_description="Join our morning yoga session on the beach to find your rhythm with the sea."
+                title='Private Scuba Exploration',
+                category='Adventure',
+                description='Discover the vibrant coral reefs of Malvan Marine Sanctuary with a private guide and HD underwater cinematography.',
+                price=4500,
+                duration='Half Day',
+                image_url='https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&q=80&w=1000',
+                icon_name='Anchor',
+                seo_title="Private Scuba Diving Malvan | Namita Beach House",
+                seo_description="Explore the crystal clear waters of Malvan with our premium private scuba experience."  
             ),
             models.Experience(
-                title='Minimalist Beach Picnic', 
-                category='Dining', 
-                description='A curated basket of local, organic delicacies.', 
-                price=120, 
-                duration='Flexible', 
-                image_url='https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?auto=format&fit=crop&q=80&w=1000', 
+                title='Devbag Sangam Sunset Cruise',
+                category='Culture',
+                description='A private wooden boat journey to the confluence of the Karli River and Arabian Sea, served with local refreshments.',
+                price=3500,
+                duration='3 Hours',
+                image_url='https://images.unsplash.com/photo-1559128010-7c1ad6e1b6a5?auto=format&fit=crop&q=80&w=1000',
+                icon_name='Sunrise',
+                seo_title="Devbag Sangam Sunset Cruise | Tarkarli Experiences",
+                seo_description="Witness the breathtaking meeting of river and sea on our exclusive sunset cruise."
+            ),
+            models.Experience(
+                title='Malvani Culinary Ritual',
+                category='Dining',
+                description='A private masterclass in authentic Malvani seafood preparation, followed by a beachfront candlelit dinner.',
+                price=5500,
+                duration='Evening',
+                image_url='https://images.unsplash.com/photo-1559841644-08984562005a?auto=format&fit=crop&q=80&w=1000',
                 icon_name='Palmtree',
-                seo_title="Minimalist Beach Picnic | Curated Dining Experience",
-                seo_description="Enjoy a curated selection of local delicacies in a private beach picnic setting."
+                seo_title="Authentic Malvani Dining | Luxury Food Experience",
+                seo_description="Indulge in the spices of the Konkan coast with our curated culinary journey."
             ),
         ]
         db.add_all(experiences)
-        
+
     # Seed Gallery
     if db.query(models.GalleryImage).count() == 0:
         gallery = [
@@ -105,17 +116,17 @@ def seed_database():
             models.GalleryImage(url='https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&q=80&w=800', category='Interiors'),
         ]
         db.add_all(gallery)
-    
+
     # Seed Local Spots
     if db.query(models.LocalSpot).count() == 0:
         spots = [
-            models.LocalSpot(name='Sunrise Yoga Shore', distance='0.4km', x_pos=450, y_pos=320, google_maps_url="https://maps.google.com"),
-            models.LocalSpot(name='Hidden Dune Path', distance='1.2km', x_pos=800, y_pos=180, google_maps_url="https://maps.google.com"),
-            models.LocalSpot(name='Crystal Cove', distance='2.5km', x_pos=300, y_pos=220, google_maps_url="https://maps.google.com"),
-            models.LocalSpot(name='Local Fisherman Port', distance='0.8km', x_pos=750, y_pos=350, google_maps_url="https://maps.google.com"),
+            models.LocalSpot(name='Sindhudurg Fort', distance='4.5km', x_pos=250, y_pos=150, google_maps_url="https://maps.app.goo.gl/uX3L3n3N3n3N3n3N3"),
+            models.LocalSpot(name='Devbag Sangam', distance='6.2km', x_pos=950, y_pos=420, google_maps_url="https://maps.app.goo.gl/uX3L3n3N3n3N3n3N3"),
+            models.LocalSpot(name='Rock Garden Malvan', distance='3.8km', x_pos=350, y_pos=100, google_maps_url="https://maps.app.goo.gl/uX3L3n3N3n3N3n3N3"),
+            models.LocalSpot(name='Tarkarli Beach Shore', distance='0.1km', x_pos=600, y_pos=250, google_maps_url="https://maps.app.goo.gl/uX3L3n3N3n3N3n3N3"),
+            models.LocalSpot(name='Malvan Jetty', distance='4.0km', x_pos=300, y_pos=200, google_maps_url="https://maps.app.goo.gl/uX3L3n3N3n3N3n3N3"),
         ]
         db.add_all(spots)
-
     # Seed Admin User
     if db.query(models.User).count() == 0:
         admin_user = models.User(
