@@ -41,10 +41,10 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <main className="min-h-screen bg-coastal-beige flex items-center justify-center px-6">
-      <div className="max-w-md w-full bg-white p-12 rounded-[3rem] shadow-2xl shadow-slate-200/50 border border-coastal-beige/30">
+    <main className="min-h-screen bg-neutral flex items-center justify-center px-6">
+      <div className="max-w-md w-full bg-surface p-12 rounded-majestic shadow-2xl shadow-slate-200/50 border border-neutral/30">
         <div className="text-center mb-10">
-          <Waves className="w-12 h-12 text-coastal-seafoam mx-auto mb-4" />
+          <Waves className="w-12 h-12 text-primary mx-auto mb-4" />
           <h1 className="font-playfair text-3xl text-slate-900">Admin Portal</h1>
           <p className="text-slate-400 text-sm font-light mt-2 uppercase tracking-widest">Namita Beach House Management</p>
         </div>
@@ -59,7 +59,7 @@ export default function AdminLoginPage() {
               type="text" 
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full bg-slate-50 border-0 rounded-2xl py-4 px-6 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all"
+              className="w-full bg-neutral/10 border-0 rounded-elegant py-4 px-6 focus:ring-2 focus:ring-primary focus:outline-none transition-all"
             />
           </div>
           <div className="space-y-2">
@@ -71,7 +71,7 @@ export default function AdminLoginPage() {
               type="password" 
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-slate-50 border-0 rounded-2xl py-4 px-6 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all"
+              className="w-full bg-neutral/10 border-0 rounded-elegant py-4 px-6 focus:ring-2 focus:ring-primary focus:outline-none transition-all"
             />
           </div>
 
@@ -80,7 +80,7 @@ export default function AdminLoginPage() {
           <button 
             type="submit"
             disabled={loading}
-            className="w-full bg-slate-900 text-white font-medium py-5 rounded-2xl transition-all hover:bg-slate-800 shadow-xl shadow-slate-900/10 flex items-center justify-center gap-2"
+            className="w-full bg-accent text-white font-medium py-5 rounded-elegant transition-all hover:bg-slate-800 shadow-xl shadow-accent/10 flex items-center justify-center gap-2"
           >
             {loading ? 'Authenticating...' : 'Sign In'} <ArrowRight className="w-4 h-4" />
           </button>

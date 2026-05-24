@@ -55,16 +55,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col lg:flex-row">
+    <div className="min-h-screen bg-neutral/30 flex flex-col lg:flex-row font-sans">
       {/* Mobile Header */}
-      <header className="lg:hidden bg-white border-b border-slate-200 p-4 flex justify-between items-center sticky top-0 z-[60]">
+      <header className="lg:hidden bg-surface border-b border-neutral/50 p-4 flex justify-between items-center sticky top-0 z-[60]">
         <div className="flex items-center gap-2">
-          <Waves className="w-6 h-6 text-coastal-seafoam" />
+          <Waves className="w-6 h-6 text-primary" />
           <span className="font-playfair text-lg tracking-tighter uppercase">Namita <span className="italic text-slate-400">Admin</span></span>
         </div>
         <button 
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="p-2 text-slate-600 hover:bg-slate-50 rounded-xl transition-colors"
+          className="p-2 text-slate-600 hover:bg-neutral/10 rounded-elegant transition-colors"
         >
           {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
@@ -73,12 +73,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* Sidebar (Desktop & Mobile Drawer) */}
       <aside className={`
         fixed lg:static inset-0 z-50 lg:z-auto
-        w-64 bg-white border-r border-slate-200 flex flex-col h-full
+        w-64 bg-surface border-r border-neutral/50 flex flex-col h-full
         transition-transform duration-300 ease-in-out
         ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
       `}>
-        <div className="p-8 hidden lg:flex items-center gap-3 border-b border-slate-50">
-          <Waves className="w-8 h-8 text-coastal-seafoam" />
+        <div className="p-8 hidden lg:flex items-center gap-3 border-b border-neutral/20">
+          <Waves className="w-8 h-8 text-primary" />
           <span className="font-playfair text-xl tracking-tighter uppercase">Namita <span className="italic text-slate-400">Admin</span></span>
         </div>
         
@@ -89,10 +89,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <Link 
                 key={item.path}
                 href={item.path}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+                className={`flex items-center gap-3 px-4 py-3 rounded-elegant text-sm font-medium transition-all ${
                   pathname === item.path 
-                    ? 'bg-slate-900 text-white shadow-lg shadow-slate-900/10' 
-                    : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
+                    ? 'bg-accent text-white shadow-lg shadow-accent/10' 
+                    : 'text-slate-500 hover:bg-neutral/10 hover:text-accent'
                 }`}
               >
                 <Icon className="w-4 h-4" />
@@ -102,10 +102,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           })}
           <Link 
             href="/admin/subscribers"
-            className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+            className={`flex items-center gap-3 px-4 py-3 rounded-elegant text-sm font-medium transition-all ${
               pathname === '/admin/subscribers' 
-                ? 'bg-slate-900 text-white shadow-lg shadow-slate-900/10' 
-                : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
+                ? 'bg-accent text-white shadow-lg shadow-accent/10' 
+                : 'text-slate-500 hover:bg-neutral/10 hover:text-accent'
             }`}
           >
             <Mail className="w-4 h-4" />
@@ -113,10 +113,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </Link>
         </nav>
 
-        <div className="p-6 border-t border-slate-50">
+        <div className="p-6 border-t border-neutral/20">
           <button 
             onClick={handleLogout}
-            className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-red-500 hover:bg-red-50 transition-all w-full text-left"
+            className="flex items-center gap-3 px-4 py-3 rounded-elegant text-sm font-medium text-red-500 hover:bg-red-50 transition-all w-full text-left"
           >
             <LogOut className="w-4 h-4" />
             Sign Out
@@ -139,4 +139,3 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     </div>
   );
 }
-
