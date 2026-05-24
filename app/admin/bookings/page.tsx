@@ -509,7 +509,8 @@ export default function BookingsManagement() {
             </form>
           </div>
         </div>
-      )}
+      </div>
+    )}
     </div>
   );
 }
