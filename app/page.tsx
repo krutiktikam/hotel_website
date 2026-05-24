@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { fetchOptions } from '@/lib/api';
 
 // Modular Components
@@ -12,6 +12,7 @@ import ReservationDrawer from '@/components/home/ReservationDrawer';
 
 function HomeContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [philosophyRevealed, setPhilosophyRevealed] = useState(false);
@@ -59,12 +60,18 @@ function HomeContent() {
     window.addEventListener('scroll', handleScroll);
     return () => {
       window.removeEventListener('scroll', handleScroll);
-      observer.disconnect();
+      if (observer) observer.disconnect();
     };
   }, []);
 
   const openBooking = () => setIsBookingOpen(true);
-  const closeBooking = () => setIsBookingOpen(false);
+  const closeBooking = () => {
+    setIsBookingOpen(false);
+    // Clear the query param if it exists so clicking 'Book Now' works again
+    if (searchParams.get('book') === 'true') {
+      router.replace('/', { scroll: false });
+    }
+  };
   const scrollToPhilosophy = () => document.getElementById('philosophy')?.scrollIntoView({ behavior: 'smooth' });
 
   return (
