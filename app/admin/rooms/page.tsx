@@ -26,6 +26,8 @@ export default function RoomsManagement() {
   const [currentRoom, setCurrentRoom] = useState<any>(null);
   const [formData, setFormData] = useState({
     name: '',
+    category: 'DELUXE',
+    unit_name: '',
     slug: '',
     description: '',
     price: 0,
@@ -62,6 +64,8 @@ export default function RoomsManagement() {
     if (currentRoom) {
       setFormData({
         name: currentRoom.name,
+        category: currentRoom.category || 'DELUXE',
+        unit_name: currentRoom.unit_name || '',
         slug: currentRoom.slug,
         description: currentRoom.description,
         price: currentRoom.price,
@@ -77,6 +81,8 @@ export default function RoomsManagement() {
     } else {
       setFormData({
         name: '',
+        category: 'DELUXE',
+        unit_name: '',
         slug: '',
         description: '',
         price: 0,
