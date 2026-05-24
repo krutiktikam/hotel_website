@@ -26,6 +26,13 @@ if not os.path.exists(UPLOAD_DIR):
 # Create database tables
 models.Base.metadata.create_all(bind=engine)
 
+# Database Migration (Railway/Postgres)
+try:
+    from .migrate_db import migrate
+    migrate()
+except Exception as e:
+    print(f"Post-creation migration nudge: {e}")
+
 def seed_database():
     db = next(database.get_db())
     # Seed Rooms
