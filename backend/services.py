@@ -75,30 +75,39 @@ def calculate_total_price(db: Session, booking: BookingCreate) -> float:
 
     return float(total)
 
-def check_availability(db: Session, room_type: str, check_in_str: str, check_out_str: str) -> bool:
+def check_availability(db: Session, room_type: str, check_in_str: str, check_out_str: str) -> tuple[bool, int]:
     """
     Checks if a room type is available for the given dates.
-    Logic: A room is unavailable if the number of confirmed/pending bookings
-    overlaps with the requested dates and meets or exceeds the room's total inventory.
+    Returns (is_available, remaining_inventory)
     """
-    # Get room inventory
+    # 1. Check for Hard Maintenance Block
+    maintenance_block = db.query(Booking).filter(
+        func.lower(Booking.room_type) == func.lower(room_type),
+        Booking.status == "maintenance",
+        Booking.check_in < check_out_str,
+        Booking.check_out > check_in_str
+    ).first()
+    
+    if maintenance_block:
+        return False, 0
+
+    # 2. Get room inventory
     db_room = db.query(Room).filter(func.lower(Room.name) == func.lower(room_type)).first()
     if not db_room:
         db_room = db.query(Room).filter(func.lower(Room.slug) == func.lower(room_type)).first()
     
     inventory = db_room.total_inventory if db_room else 1
 
-    # Check for overlapping bookings
-    # We only count 'confirmed' or 'pending' bookings
-    # Using case-insensitive match for room_type
-    overlapping_bookings = db.query(Booking).filter(
+    # 3. Check for overlapping occupied units
+    occupied_units = db.query(Booking).filter(
         func.lower(Booking.room_type) == func.lower(room_type),
-        Booking.status != "cancelled",
+        Booking.status.in_(["confirmed", "pending", "checked_in"]),
         Booking.check_in < check_out_str,
         Booking.check_out > check_in_str
     ).count()
 
-    return overlapping_bookings < inventory
+    remaining = max(0, inventory - occupied_units)
+    return remaining > 0, remaining
 
 def get_pricing(db: Session, room_type: str, month: int, year: int):
     import calendar
@@ -123,8 +132,7 @@ def get_pricing(db: Session, room_type: str, month: int, year: int):
         if current_date.weekday() in [4, 5]:
             price = base_price * 1.2
             
-        is_available = check_availability(db, room_type, date_str, (date(year, month, day + 1) if day < num_days else date(year, month, day)).isoformat())
-        # The check_availability above is slightly flawed for the last day of month but good enough for a mock/start
+        is_available, _ = check_availability(db, room_type, date_str, (date(year, month, day + 1) if day < num_days else date(year, month, day)).isoformat())
         
         daily_prices.append({
             "date": date_str,

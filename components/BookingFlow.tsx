@@ -43,7 +43,7 @@ export default function BookingFlow({ options, loading: optionsLoading }: Bookin
   });
   const [viewers, setViewers] = useState(3);
   const [error, setError] = useState<string | null>(null);
-  const [availability, setAvailability] = useState<Record<string, boolean>>({});
+  const [availability, setAvailability] = useState<Record<string, {is_available: boolean, remaining: number}>>({});
   const [checkingAvailability, setCheckingAvailability] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
@@ -57,7 +57,7 @@ export default function BookingFlow({ options, loading: optionsLoading }: Bookin
 
   useEffect(() => {
     if (roomParam) {
-      setFormData(prev => ({ ...prev, roomType: roomParam }));
+      setFormData(prev => ({ ...prev, roomType: roomParam.toUpperCase() }));
     }
   }, [roomParam]);
 
@@ -67,7 +67,7 @@ export default function BookingFlow({ options, loading: optionsLoading }: Bookin
         setCheckingAvailability(true);
         try {
           const { checkAvailability } = await import('@/lib/api');
-          const results: Record<string, boolean> = {};
+          const results: Record<string, {is_available: boolean, remaining: number}> = {};
           
           if (options?.room_types) {
             await Promise.all(options.room_types.map(async (room: any) => {
@@ -76,7 +76,10 @@ export default function BookingFlow({ options, loading: optionsLoading }: Bookin
                 check_in: formData.checkIn,
                 check_out: formData.checkOut
               });
-              results[room.name] = res.is_available;
+              results[room.name] = {
+                is_available: res.is_available,
+                remaining: res.remaining_inventory
+              };
             }));
             setAvailability(results);
           }
@@ -247,8 +250,11 @@ export default function BookingFlow({ options, loading: optionsLoading }: Bookin
                   </label>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {options?.room_types.map((room: any) => {
-                      const isLowStock = room.name === 'LUXURY' || room.name === 'SUITE';
-                      const isAvailable = availability[room.name] !== false;
+                      const availInfo = availability[room.name];
+                      const isAvailable = availInfo ? availInfo.is_available : true;
+                      const remaining = availInfo ? availInfo.remaining : 5;
+                      const isLowStock = remaining > 0 && remaining <= 2;
+
                       return (
                         <button
                           key={room.name}
@@ -282,7 +288,7 @@ export default function BookingFlow({ options, loading: optionsLoading }: Bookin
                             )}
                             {isLowStock && isAvailable && (
                               <span className="absolute top-2 right-2 bg-red-50 text-red-500 text-[8px] uppercase tracking-widest px-2 py-1 rounded-full font-bold border border-red-100 animate-pulse z-10">
-                                Only 2 Left
+                                Only {remaining} Left
                               </span>
                             )}
                             <p className="font-medium text-slate-900">{room.name}</p>

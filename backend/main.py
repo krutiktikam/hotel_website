@@ -240,12 +240,13 @@ def get_local_spots(db: Session = Depends(get_db)):
 
 @app.get("/api/v1/availability", response_model=schemas.AvailabilityResponse)
 def check_room_availability(room_type: str, check_in: str, check_out: str, db: Session = Depends(get_db)):
-    is_available = services.check_availability(db, room_type, check_in, check_out)
-    return {"is_available": is_available}
+    is_available, remaining = services.check_availability(db, room_type, check_in, check_out)
+    return {"is_available": is_available, "remaining_inventory": remaining}
 
 @app.post("/api/v1/bookings", response_model=schemas.BookingResponse)
 async def create_booking(booking: schemas.BookingCreate, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
-    if not services.check_availability(db, booking.room_type, booking.check_in, booking.check_out):
+    is_available, _ = services.check_availability(db, booking.room_type, booking.check_in, booking.check_out)
+    if not is_available:
         raise HTTPException(status_code=409, detail="Room not available for selected dates")
     total_price = services.calculate_total_price(db, booking)
     db_booking = models.Booking(

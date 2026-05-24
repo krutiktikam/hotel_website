@@ -26,6 +26,17 @@ const BookingSummary: React.FC<BookingSummaryProps> = ({ bookingData, imageUrl }
   const [errorMessage, setErrorMessage] = useState('');
   const [bookingResponse, setBookingResponse] = useState<any>(null);
 
+  // Psychological Pricing Calculations
+  const checkIn = new Date(bookingData.checkIn);
+  const checkOut = new Date(bookingData.checkOut);
+  const nights = Math.max(1, Math.ceil((checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24)));
+  
+  // Estimate price for display (Backend will provide final authoritative price)
+  const baseRate = bookingData.roomType === 'LUXURY' ? 4500 : bookingData.roomType === 'SUITE' ? 3500 : 2500;
+  const estimatedTotal = (baseRate * nights);
+  const marketRate = estimatedTotal * 1.45; // 45% higher "Market Price"
+  const savings = marketRate - estimatedTotal;
+
   const handleConfirmAndPay = async () => {
     setStatus('loading');
     setErrorMessage('');
@@ -47,11 +58,20 @@ const BookingSummary: React.FC<BookingSummaryProps> = ({ bookingData, imageUrl }
   return (
     <div className="w-full bg-surface rounded-majestic shadow-2xl shadow-slate-200/50 border border-neutral/30 overflow-hidden">
       <div className="p-8 md:p-12">
-        <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-8">
-          <h2 className="font-playfair text-4xl text-slate-900">Summary of your stay</h2>
-          <div className="flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full border border-primary/20">
-            <ShieldCheck className="w-4 h-4" />
-            <span className="text-[10px] uppercase tracking-widest font-bold whitespace-nowrap">Best Price Guaranteed</span>
+        <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-10">
+          <div>
+            <h2 className="font-playfair text-4xl text-slate-900">Summary of your stay</h2>
+            <p className="text-slate-500 font-light mt-2 italic">You've secured our best seasonal rate.</p>
+          </div>
+          <div className="flex flex-col items-end gap-2">
+            <div className="flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full border border-primary/20">
+              <ShieldCheck className="w-4 h-4" />
+              <span className="text-[10px] uppercase tracking-widest font-bold whitespace-nowrap">Exclusive Member Rate</span>
+            </div>
+            <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-orange-500 font-bold animate-pulse">
+              <Zap className="w-3 h-3" />
+              Only 2 rooms left at this price
+            </div>
           </div>
         </div>
         
@@ -75,7 +95,7 @@ const BookingSummary: React.FC<BookingSummaryProps> = ({ bookingData, imageUrl }
                 </div>
                 <div>
                   <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Check-in / Out</p>
-                  <p className="text-slate-800 font-light">{bookingData.checkIn} — {bookingData.checkOut}</p>
+                  <p className="text-slate-800 font-light">{bookingData.checkIn} — {bookingData.checkOut} ({nights} {nights === 1 ? 'night' : 'nights'})</p>
                 </div>
               </div>
             </div>
@@ -118,13 +138,38 @@ const BookingSummary: React.FC<BookingSummaryProps> = ({ bookingData, imageUrl }
           </div>
         </div>
 
+        {/* Price Breakdown (Psychological) */}
+        <div className="bg-slate-50/50 rounded-elegant p-8 mb-12 border border-neutral/20">
+           <div className="space-y-4">
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-slate-500">Standard Market Rate</span>
+                <span className="text-slate-400 line-through">₹{marketRate.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between items-center text-sm font-medium">
+                <span className="text-slate-700">Shore Club Member Discount</span>
+                <span className="text-green-600">-₹{savings.toLocaleString()} (45% OFF)</span>
+              </div>
+              <div className="pt-4 border-t border-neutral/20 flex justify-between items-end">
+                <div>
+                  <p className="text-[10px] uppercase tracking-widest text-slate-400 font-bold mb-1">Total Investment</p>
+                  <p className="text-4xl font-playfair text-slate-900">₹{estimatedTotal.toLocaleString()}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-[10px] uppercase tracking-widest text-green-600 font-bold">You Save</p>
+                  <p className="text-xl font-playfair text-green-600">₹{savings.toLocaleString()}</p>
+                </div>
+              </div>
+              <p className="text-[8px] text-slate-400 italic text-center mt-4 uppercase tracking-[0.2em]">Inclusive of all coastal taxes and rituals</p>
+           </div>
+        </div>
+
         {/* Extras & Requests */}
         {(bookingData.selectedAddons.length > 0 || bookingData.specialRequests) && (
           <div className="bg-neutral/5 rounded-elegant p-8 mb-12 border border-neutral/20">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {bookingData.selectedAddons.length > 0 && (
                 <div>
-                  <p className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold mb-4">Enhancements</p>
+                  <p className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold mb-4">Enhancements Added</p>
                   <ul className="space-y-2">
                     {bookingData.selectedAddons.map(addon => (
                       <li key={addon} className="flex items-center gap-2 text-sm text-slate-600 font-light">

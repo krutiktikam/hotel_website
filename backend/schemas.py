@@ -39,6 +39,7 @@ class AvailabilityRequest(BaseModel):
 
 class AvailabilityResponse(BaseModel):
     is_available: bool
+    remaining_inventory: int
 
 class OptionItem(BaseModel):
     name: str
