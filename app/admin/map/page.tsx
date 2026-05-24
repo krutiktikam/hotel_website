@@ -249,7 +249,8 @@ export default function AdminLocalSpots() {
             </form>
           </div>
         </div>
-      )}
+      </div>
+    )}
     </div>
   );
 }

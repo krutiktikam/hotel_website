@@ -300,7 +300,8 @@ export default function ExperiencesManagement() {
             </form>
           </div>
         </div>
-      )}
+      </div>
+    )}
     </div>
   );
 }

@@ -515,7 +515,8 @@ export default function RoomsManagement() {
             </form>
           </div>
         </div>
-      )}
+      </div>
+    )}
     </div>
   );
 }

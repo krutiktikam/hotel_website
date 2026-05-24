@@ -215,7 +215,8 @@ export default function GalleryManagement() {
             </form>
           </div>
         </div>
-      )}
+      </div>
+    )}
     </div>
   );
 }
