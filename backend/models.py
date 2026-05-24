@@ -38,7 +38,9 @@ class User(Base):
 class Room(Base):
     __tablename__ = "rooms"
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, unique=True, index=True)
+    name = Column(String, index=True) # Public name (e.g. Ocean Front Luxury)
+    category = Column(String, index=True) # Internal category (LUXURY, SUITE, DELUXE)
+    unit_name = Column(String, unique=True, index=True) # Unique identifier (Room 101)
     slug = Column(String, unique=True, index=True)
     description = Column(Text)
     price = Column(Float)
@@ -46,7 +48,7 @@ class Room(Base):
     features = Column(Text) # JSON string
     image_url = Column(String)
     gallery_images = Column(Text, nullable=True) # JSON string list of images
-    total_inventory = Column(Integer, default=1) # Number of rooms available of this type
+    total_inventory = Column(Integer, default=1) # Keeping this for type-based availability fallback
     is_active = Column(Boolean, default=True)
     
     # SEO Fields

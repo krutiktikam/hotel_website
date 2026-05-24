@@ -30,13 +30,29 @@ interface AdminCalendarProps {
   onDeleteBooking?: (id: number) => Promise<void>;
 }
 
-const ROOM_TYPES = ['LUXURY', 'SUITE', 'DELUXE'];
-
 const AdminCalendar: React.FC<AdminCalendarProps> = ({ bookings, onUpdateBooking, onDeleteBooking }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [draggingBooking, setDraggingBooking] = useState<Booking | null>(null);
   const [editingBooking, setEditingBooking] = useState<Booking | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [rooms, setRooms] = useState<any[]>([]);
+  const [loadingRooms, setLoadingRooms] = useState(true);
+
+  // Fetch rooms dynamically
+  useEffect(() => {
+    async function loadRooms() {
+      try {
+        const { fetchOptions } = await import('@/lib/api');
+        const options = await fetchOptions();
+        setRooms(options.room_types || []);
+      } catch (err) {
+        console.error('Failed to load rooms for calendar:', err);
+      } finally {
+        setLoadingRooms(false);
+      }
+    }
+    loadRooms();
+  }, []);
 
   const weekStart = startOfWeek(currentDate, { weekStartsOn: 1 }); // Monday
   const viewDays = useMemo(() => {
@@ -184,24 +200,27 @@ const AdminCalendar: React.FC<AdminCalendarProps> = ({ bookings, onUpdateBooking
 
           {/* Room Rows */}
           <div className="flex-grow divide-y divide-slate-100">
-            {ROOM_TYPES.map(room => (
-              <div key={room} className="grid grid-cols-[150px_repeat(30,1fr)] min-h-[120px]">
+            {loadingRooms ? (
+               <div className="p-20 text-center text-slate-400 italic">Synchronizing room units...</div>
+            ) : rooms.map(room => (
+              <div key={room.id || room.unit_name} className="grid grid-cols-[150px_repeat(30,1fr)] min-h-[120px]">
                 {/* Room Label */}
                 <div className="p-6 border-r border-slate-100 bg-slate-50 sticky left-0 z-10 flex flex-col justify-center shadow-[4px_0_10px_-2px_rgba(0,0,0,0.05)]">
-                  <p className="text-sm font-medium text-slate-900 capitalize">{room.toLowerCase()}</p>
-                  <p className="text-[10px] text-slate-400 uppercase tracking-wider mt-1">Sanctuary</p>
+                  <p className="text-sm font-bold text-slate-900 truncate" title={room.unit_name}>{room.unit_name || room.name}</p>
+                  <p className="text-[10px] text-coastal-seafoam uppercase tracking-widest mt-1 font-black">{room.category || room.name}</p>
                 </div>
 
                 {/* Day Cells */}
                 {viewDays.map(day => {
-                  const booking = getBookingForCell(room, day);
-                  const occupied = isOccupied(room, day);
+                  const roomKey = room.unit_name || room.name;
+                  const booking = getBookingForCell(roomKey, day);
+                  const occupied = isOccupied(roomKey, day);
                   
                   return (
                     <div 
                       key={day.toString()}
                       onDragOver={handleDragOver}
-                      onDrop={(e) => handleDrop(e, day, room)}
+                      onDrop={(e) => handleDrop(e, day, roomKey)}
                       className={`relative border-r border-slate-100 last:border-r-0 p-2 transition-colors ${
                         isSameDay(day, new Date()) ? 'bg-coastal-seafoam/[0.02]' : ''
                       } ${draggingBooking ? 'hover:bg-slate-50' : ''}`}

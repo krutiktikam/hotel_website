@@ -74,6 +74,8 @@ class TokenData(BaseModel):
 
 class RoomBase(BaseModel):
     name: str
+    category: str
+    unit_name: str
     slug: str
     description: str
     price: float

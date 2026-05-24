@@ -280,12 +280,39 @@ export default function RoomsManagement() {
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Room Name</label>
+                    <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Display Name (For Guests)</label>
                     <input 
                       required
                       type="text" 
                       value={formData.name}
                       onChange={(e) => setFormData({...formData, name: e.target.value})}
+                      placeholder="e.g. Ocean Front Luxury"
+                      className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all text-slate-900 font-medium"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Internal Category</label>
+                    <select 
+                      value={formData.category}
+                      onChange={(e) => setFormData({...formData, category: e.target.value})}
+                      className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all text-slate-900 font-medium appearance-none"
+                    >
+                      <option value="LUXURY">LUXURY</option>
+                      <option value="SUITE">SUITE</option>
+                      <option value="DELUXE">DELUXE</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Unit Name (Unique ID)</label>
+                    <input 
+                      required
+                      type="text" 
+                      value={formData.unit_name}
+                      onChange={(e) => setFormData({...formData, unit_name: e.target.value})}
+                      placeholder="e.g. Shore 101"
                       className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all text-slate-900 font-medium"
                     />
                   </div>
@@ -296,7 +323,7 @@ export default function RoomsManagement() {
                       type="text" 
                       value={formData.slug}
                       onChange={(e) => setFormData({...formData, slug: e.target.value})}
-                      placeholder="e.g. ocean-suite"
+                      placeholder="e.g. ocean-suite-101"
                       className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all text-slate-900 font-medium"
                     />
                   </div>

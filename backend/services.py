@@ -77,10 +77,10 @@ def calculate_total_price(db: Session, booking: BookingCreate) -> float:
 
 def check_availability(db: Session, room_type: str, check_in_str: str, check_out_str: str) -> tuple[bool, int]:
     """
-    Checks if a room type is available for the given dates.
-    Returns (is_available, remaining_inventory)
+    Checks if a room category is available for the given dates.
+    room_type here refers to the CATEGORY (e.g., 'LUXURY')
     """
-    # 1. Check for Hard Maintenance Block
+    # 1. Check for Hard Maintenance Block on the CATEGORY
     maintenance_block = db.query(Booking).filter(
         func.lower(Booking.room_type) == func.lower(room_type),
         Booking.status == "maintenance",
@@ -91,14 +91,19 @@ def check_availability(db: Session, room_type: str, check_in_str: str, check_out
     if maintenance_block:
         return False, 0
 
-    # 2. Get room inventory
-    db_room = db.query(Room).filter(func.lower(Room.name) == func.lower(room_type)).first()
-    if not db_room:
-        db_room = db.query(Room).filter(func.lower(Room.slug) == func.lower(room_type)).first()
-    
-    inventory = db_room.total_inventory if db_room else 1
+    # 2. Get total inventory for this category across all units
+    # Fallback logic: check name or category field
+    total_inventory = db.query(func.sum(Room.total_inventory)).filter(
+        (func.lower(Room.category) == func.lower(room_type)) | 
+        (func.lower(Room.name) == func.lower(room_type))
+    ).scalar() or 0
 
-    # 3. Check for overlapping occupied units
+    if total_inventory == 0:
+        # Final fallback for legacy data or slugs
+        db_room = db.query(Room).filter(func.lower(Room.slug) == func.lower(room_type)).first()
+        total_inventory = db_room.total_inventory if db_room else 1
+
+    # 3. Check for overlapping occupied units in this category
     occupied_units = db.query(Booking).filter(
         func.lower(Booking.room_type) == func.lower(room_type),
         Booking.status.in_(["confirmed", "pending", "checked_in"]),
@@ -106,7 +111,7 @@ def check_availability(db: Session, room_type: str, check_in_str: str, check_out
         Booking.check_out > check_in_str
     ).count()
 
-    remaining = max(0, inventory - occupied_units)
+    remaining = max(0, int(total_inventory) - occupied_units)
     return remaining > 0, remaining
 
 def get_pricing(db: Session, room_type: str, month: int, year: int):
