@@ -166,48 +166,49 @@ export default function AdminLocalSpots() {
 
       {/* Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-900/40 backdrop-blur-sm overflow-y-auto">
-          <div className="bg-white w-full max-w-xl rounded-[2rem] sm:rounded-[3rem] shadow-2xl overflow-hidden border border-coastal-beige/50 animate-in zoom-in duration-300 my-8 text-slate-900">
-            <div className="p-6 sm:p-8 border-b border-coastal-beige flex justify-between items-center bg-coastal-beige/10">
-              <h3 className="font-playfair text-xl sm:text-2xl text-slate-900">{currentSpot ? 'Edit Spot' : 'New Local Spot'}</h3>
-              <button onClick={() => setIsModalOpen(false)} className="p-2 text-slate-400 hover:text-slate-900"><X className="w-6 h-6" /></button>
-            </div>
-            
-            <form onSubmit={handleSubmit} className="p-6 sm:p-10 space-y-6">
-              <div className="space-y-2">
-                <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Spot Name</label>
-                <input 
-                  required
-                  type="text" 
-                  value={formData.name}
-                  onChange={(e) => setFormData({...formData, name: e.target.value})}
-                  className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 sm:py-4 sm:px-6 focus:ring-2 focus:ring-coastal-seafoam transition-all text-slate-900 font-medium"
-                  placeholder="e.g. Crystal Cove"
-                />
+        <div className="fixed inset-0 z-[100] overflow-y-auto bg-slate-900/40 backdrop-blur-sm">
+          <div className="flex min-h-full justify-center p-4 sm:p-6">
+            <div className="bg-white w-full max-w-xl rounded-[2rem] sm:rounded-[3rem] shadow-2xl overflow-hidden border border-coastal-beige/50 animate-in zoom-in duration-300 my-auto text-slate-900">
+              <div className="p-6 sm:p-8 border-b border-coastal-beige flex justify-between items-center bg-coastal-beige/10">
+                <h3 className="font-playfair text-xl sm:text-2xl text-slate-900">{currentSpot ? 'Edit Spot' : 'New Local Spot'}</h3>
+                <button onClick={() => setIsModalOpen(false)} className="p-2 text-slate-400 hover:text-slate-900"><X className="w-6 h-6" /></button>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              
+              <form onSubmit={handleSubmit} className="p-6 sm:p-10 space-y-6">
                 <div className="space-y-2">
-                  <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Distance</label>
+                  <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Spot Name</label>
                   <input 
                     required
                     type="text" 
-                    value={formData.distance}
-                    onChange={(e) => setFormData({...formData, distance: e.target.value})}
+                    value={formData.name}
+                    onChange={(e) => setFormData({...formData, name: e.target.value})}
                     className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 sm:py-4 sm:px-6 focus:ring-2 focus:ring-coastal-seafoam transition-all text-slate-900 font-medium"
-                    placeholder="e.g. 0.8km"
+                    placeholder="e.g. Crystal Cove"
                   />
                 </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Google Maps Link</label>
-                  <input 
-                    type="url" 
-                    value={formData.google_maps_url}
-                    onChange={(e) => setFormData({...formData, google_maps_url: e.target.value})}
-                    className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 sm:py-4 sm:px-6 focus:ring-2 focus:ring-coastal-seafoam transition-all text-slate-900 font-medium"
-                    placeholder="https://goo.gl/maps/..."
-                  />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Distance</label>
+                    <input 
+                      required
+                      type="text" 
+                      value={formData.distance}
+                      onChange={(e) => setFormData({...formData, distance: e.target.value})}
+                      className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 sm:py-4 sm:px-6 focus:ring-2 focus:ring-coastal-seafoam transition-all text-slate-900 font-medium"
+                      placeholder="e.g. 0.8km"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Google Maps Link</label>
+                    <input 
+                      type="url" 
+                      value={formData.google_maps_url}
+                      onChange={(e) => setFormData({...formData, google_maps_url: e.target.value})}
+                      className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 sm:py-4 sm:px-6 focus:ring-2 focus:ring-coastal-seafoam transition-all text-slate-900 font-medium"
+                      placeholder="https://goo.gl/maps/..."
+                    />
+                  </div>
                 </div>
-              </div>
 
               <div className="p-5 sm:p-6 bg-slate-50 rounded-[1.5rem] sm:rounded-[2rem] space-y-4">
                 <p className="text-[10px] uppercase tracking-widest text-slate-400 font-bold text-center">SVG Placement Coordinates</p>

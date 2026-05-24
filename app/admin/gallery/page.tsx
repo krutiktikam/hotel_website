@@ -138,40 +138,41 @@ export default function GalleryManagement() {
       </div>
 
       {isModalOpen && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
-          <div className="bg-white w-full max-w-xl rounded-[2rem] sm:rounded-[3rem] p-6 sm:p-12 relative shadow-2xl my-8 text-slate-900">
-            <button onClick={() => setIsModalOpen(false)} className="absolute top-6 right-6 sm:top-8 sm:right-8 text-slate-400 hover:text-slate-900 transition-colors">
-              <XCircle className="w-6 h-6" />
-            </button>
-            <h2 className="font-playfair text-2xl sm:text-3xl mb-8">Upload Imagery</h2>
-            
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="space-y-2">
-                <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Coastal Category</label>
-                <select 
-                  value={formData.category}
-                  onChange={(e) => setFormData({...formData, category: e.target.value})}
-                  className="w-full bg-slate-50 border-0 rounded-2xl py-4 px-6 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all text-slate-900 font-medium appearance-none"
-                >
-                  <option>Architecture</option>
-                  <option>Interiors</option>
-                  <option>Nature</option>
-                  <option>Moments</option>
-                </select>
-              </div>
+        <div className="fixed inset-0 z-[100] overflow-y-auto bg-slate-900/40 backdrop-blur-sm">
+          <div className="flex min-h-full justify-center p-4 sm:p-6">
+            <div className="bg-white w-full max-w-xl rounded-[2rem] sm:rounded-[3rem] p-6 sm:p-12 relative shadow-2xl my-auto text-slate-900">
+              <button onClick={() => setIsModalOpen(false)} className="absolute top-6 right-6 sm:top-8 sm:right-8 text-slate-400 hover:text-slate-900 transition-colors">
+                <XCircle className="w-6 h-6" />
+              </button>
+              <h2 className="font-playfair text-2xl sm:text-3xl mb-8">Upload Imagery</h2>
+              
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="space-y-2">
+                  <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Coastal Category</label>
+                  <select 
+                    value={formData.category}
+                    onChange={(e) => setFormData({...formData, category: e.target.value})}
+                    className="w-full bg-slate-50 border-0 rounded-2xl py-4 px-6 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all text-slate-900 font-medium appearance-none"
+                  >
+                    <option>Architecture</option>
+                    <option>Interiors</option>
+                    <option>Nature</option>
+                    <option>Moments</option>
+                  </select>
+                </div>
 
-              <div className="space-y-2">
-                <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Grid Span (Layout)</label>
-                <select 
-                  value={formData.span_class}
-                  onChange={(e) => setFormData({...formData, span_class: e.target.value})}
-                  className="w-full bg-slate-50 border-0 rounded-2xl py-4 px-6 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all text-slate-900 font-medium appearance-none"
-                >
-                  <option value="">Normal Square</option>
-                  <option value="md:col-span-2 md:row-span-2">Large Feature (2x2)</option>
-                  <option value="md:col-span-2">Wide Horizontal (2x1)</option>
-                </select>
-              </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Grid Span (Layout)</label>
+                  <select 
+                    value={formData.span_class}
+                    onChange={(e) => setFormData({...formData, span_class: e.target.value})}
+                    className="w-full bg-slate-50 border-0 rounded-2xl py-4 px-6 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all text-slate-900 font-medium appearance-none"
+                  >
+                    <option value="">Normal Square</option>
+                    <option value="md:col-span-2 md:row-span-2">Large Feature (2x2)</option>
+                    <option value="md:col-span-2">Wide Horizontal (2x1)</option>
+                  </select>
+                </div>
 
               <div className="space-y-4">
                 <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Image URL / File</label>

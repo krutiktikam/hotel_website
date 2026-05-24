@@ -194,73 +194,74 @@ export default function ExperiencesManagement() {
       </div>
 
       {isModalOpen && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
-          <div className="bg-white w-full max-w-2xl rounded-[2rem] sm:rounded-[3rem] p-6 sm:p-12 relative shadow-2xl my-8 text-slate-900">
-            <button onClick={() => setIsModalOpen(false)} className="absolute top-6 right-6 sm:top-8 sm:right-8 text-slate-400 hover:text-slate-900 transition-colors">
-              <XCircle className="w-6 h-6" />
-            </button>
-            <h2 className="font-playfair text-2xl sm:text-3xl mb-8">{editingExp ? 'Edit Experience' : 'New Experience'}</h2>
-            
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Title</label>
-                  <input 
-                    type="text" 
-                    value={formData.title}
-                    onChange={(e) => setFormData({...formData, title: e.target.value})}
-                    className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all text-slate-900 font-medium"
-                    required
-                  />
+        <div className="fixed inset-0 z-[100] overflow-y-auto bg-slate-900/40 backdrop-blur-sm">
+          <div className="flex min-h-full justify-center p-4 sm:p-6">
+            <div className="bg-white w-full max-w-2xl rounded-[2rem] sm:rounded-[3rem] p-6 sm:p-12 relative shadow-2xl my-auto text-slate-900">
+              <button onClick={() => setIsModalOpen(false)} className="absolute top-6 right-6 sm:top-8 sm:right-8 text-slate-400 hover:text-slate-900 transition-colors">
+                <XCircle className="w-6 h-6" />
+              </button>
+              <h2 className="font-playfair text-2xl sm:text-3xl mb-8">{editingExp ? 'Edit Experience' : 'New Experience'}</h2>
+              
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Title</label>
+                    <input 
+                      type="text" 
+                      value={formData.title}
+                      onChange={(e) => setFormData({...formData, title: e.target.value})}
+                      className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all text-slate-900 font-medium"
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Category</label>
+                    <select 
+                      value={formData.category}
+                      onChange={(e) => setFormData({...formData, category: e.target.value})}
+                      className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all text-slate-900 font-medium appearance-none"
+                    >
+                      <option>Wellness</option>
+                      <option>Dining</option>
+                      <option>Adventure</option>
+                      <option>Culture</option>
+                    </select>
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Category</label>
-                  <select 
-                    value={formData.category}
-                    onChange={(e) => setFormData({...formData, category: e.target.value})}
-                    className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all text-slate-900 font-medium appearance-none"
-                  >
-                    <option>Wellness</option>
-                    <option>Dining</option>
-                    <option>Adventure</option>
-                    <option>Culture</option>
-                  </select>
-                </div>
-              </div>
 
-              <div className="space-y-2">
-                <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Description</label>
-                <textarea 
-                  value={formData.description}
-                  onChange={(e) => setFormData({...formData, description: e.target.value})}
-                  className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all min-h-[100px] text-slate-900 font-medium"
-                  required
-                />
-              </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Description</label>
+                  <textarea 
+                    value={formData.description}
+                    onChange={(e) => setFormData({...formData, description: e.target.value})}
+                    className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all min-h-[100px] text-slate-900 font-medium"
+                    required
+                  />
+                </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Price (₹)</label>
-                  <input 
-                    type="number" 
-                    value={formData.price}
-                    onChange={(e) => setFormData({...formData, price: Number(e.target.value)})}
-                    className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all text-slate-900 font-medium"
-                    required
-                  />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Price (₹)</label>
+                    <input 
+                      type="number" 
+                      value={formData.price}
+                      onChange={(e) => setFormData({...formData, price: Number(e.target.value)})}
+                      className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all text-slate-900 font-medium"
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Duration</label>
+                    <input 
+                      type="text" 
+                      placeholder="e.g. 90 Minutes"
+                      value={formData.duration}
+                      onChange={(e) => setFormData({...formData, duration: e.target.value})}
+                      className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all text-slate-900 font-medium"
+                      required
+                    />
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Duration</label>
-                  <input 
-                    type="text" 
-                    placeholder="e.g. 90 Minutes"
-                    value={formData.duration}
-                    onChange={(e) => setFormData({...formData, duration: e.target.value})}
-                    className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all text-slate-900 font-medium"
-                    required
-                  />
-                </div>
-              </div>
 
               <div className="space-y-4">
                 <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Experience Image</label>

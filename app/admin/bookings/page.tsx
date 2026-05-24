@@ -428,33 +428,34 @@ export default function BookingsManagement() {
 
       {/* Block Dates Modal (Themed) */}
       {showBlockModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-300 overflow-y-auto">
-          <div className="bg-surface w-full max-w-lg rounded-majestic p-8 sm:p-12 shadow-2xl animate-in zoom-in-95 duration-300 my-8">
-            <div className="flex justify-between items-center mb-10">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-accent/5 flex items-center justify-center text-accent">
-                  <Calendar className="w-6 h-6" />
+        <div className="fixed inset-0 z-[100] overflow-y-auto bg-slate-900/40 backdrop-blur-sm">
+          <div className="flex min-h-full justify-center p-4 sm:p-6">
+            <div className="bg-surface w-full max-w-lg rounded-majestic p-8 sm:p-12 shadow-2xl animate-in zoom-in-95 duration-300 my-auto text-slate-900">
+              <div className="flex justify-between items-center mb-10">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-full bg-accent/5 flex items-center justify-center text-accent">
+                    <Calendar className="w-6 h-6" />
+                  </div>
+                  <h2 className="font-playfair text-3xl text-slate-900">Block Room Dates</h2>
                 </div>
-                <h2 className="font-playfair text-3xl text-slate-900">Block Room Dates</h2>
+                <button onClick={() => setShowBlockModal(false)} className="p-2 hover:bg-neutral/10 rounded-full transition-colors">
+                  <XCircle className="w-8 h-8 text-slate-300 hover:text-red-500" />
+                </button>
               </div>
-              <button onClick={() => setShowBlockModal(false)} className="p-2 hover:bg-neutral/10 rounded-full transition-colors">
-                <XCircle className="w-8 h-8 text-slate-300 hover:text-red-500" />
-              </button>
-            </div>
 
-            <form onSubmit={createBlockOut} className="space-y-8">
-              <div className="space-y-3">
-                <label className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold ml-1">Room Category</label>
-                <select 
-                  value={blockData.room_type}
-                  onChange={(e) => setBlockData(prev => ({ ...prev, room_type: e.target.value }))}
-                  className="w-full bg-neutral/5 border border-neutral/20 rounded-elegant py-4 px-6 focus:ring-2 focus:ring-primary focus:outline-none appearance-none text-slate-900 font-medium"
-                >
-                  <option value="Luxury">Ocean Front Luxury</option>
-                  <option value="Suite">Coastal Garden Villa</option>
-                  <option value="Deluxe">Sand Dune Studio</option>
-                </select>
-              </div>
+              <form onSubmit={createBlockOut} className="space-y-8">
+                <div className="space-y-3">
+                  <label className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold ml-1">Room Category</label>
+                  <select 
+                    value={blockData.room_type}
+                    onChange={(e) => setBlockData(prev => ({ ...prev, room_type: e.target.value }))}
+                    className="w-full bg-neutral/5 border border-neutral/20 rounded-elegant py-4 px-6 focus:ring-2 focus:ring-primary focus:outline-none appearance-none text-slate-900 font-medium"
+                  >
+                    <option value="Luxury">Ocean Front Luxury</option>
+                    <option value="Suite">Coastal Garden Villa</option>
+                    <option value="Deluxe">Sand Dune Studio</option>
+                  </select>
+                </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div className="space-y-3">

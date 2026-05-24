@@ -265,85 +265,88 @@ export default function RoomsManagement() {
       </div>
 
       {isModalOpen && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
-          <div className="bg-white w-full max-w-2xl rounded-[2rem] sm:rounded-[3rem] p-6 sm:p-10 relative shadow-2xl my-8 text-slate-900">
-            <button 
-              onClick={() => setIsModalOpen(false)}
-              className="absolute top-6 right-6 sm:top-8 sm:right-8 text-slate-400 hover:text-slate-900 transition-colors"
-            >
-              <XCircle className="w-6 h-6" />
-            </button>
-            
-            <h2 className="font-playfair text-2xl sm:text-3xl mb-8">{currentRoom ? 'Edit Room' : 'Add New Room'}</h2>
-            
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Room Name</label>
-                  <input 
-                    required
-                    type="text" 
-                    value={formData.name}
-                    onChange={(e) => setFormData({...formData, name: e.target.value})}
-                    className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all text-slate-900 font-medium"
-                  />
+        <div className="fixed inset-0 z-[100] overflow-y-auto bg-slate-900/40 backdrop-blur-sm">
+          <div className="flex min-h-full justify-center p-4 sm:p-6">
+            <div className="bg-white w-full max-w-2xl rounded-[2rem] sm:rounded-[3rem] p-6 sm:p-10 relative shadow-2xl my-auto text-slate-900">
+              <button 
+                onClick={() => setIsModalOpen(false)}
+                className="absolute top-6 right-6 sm:top-8 sm:right-8 text-slate-400 hover:text-slate-900 transition-colors"
+              >
+                <XCircle className="w-6 h-6" />
+              </button>
+              
+              <h2 className="font-playfair text-2xl sm:text-3xl mb-8">{currentRoom ? 'Edit Room' : 'Add New Room'}</h2>
+              
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Room Name</label>
+                    <input 
+                      required
+                      type="text" 
+                      value={formData.name}
+                      onChange={(e) => setFormData({...formData, name: e.target.value})}
+                      className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all text-slate-900 font-medium"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Slug</label>
+                    <input 
+                      required
+                      type="text" 
+                      value={formData.slug}
+                      onChange={(e) => setFormData({...formData, slug: e.target.value})}
+                      placeholder="e.g. ocean-suite"
+                      className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all text-slate-900 font-medium"
+                    />
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Slug</label>
-                  <input 
-                    required
-                    type="text" 
-                    value={formData.slug}
-                    onChange={(e) => setFormData({...formData, slug: e.target.value})}
-                    placeholder="e.g. ocean-suite"
-                    className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all text-slate-900 font-medium"
-                  />
-                </div>
-              </div>
 
-              <div className="space-y-2">
-                <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Description</label>
-                <textarea 
-                  required
-                  rows={3}
-                  value={formData.description}
-                  onChange={(e) => setFormData({...formData, description: e.target.value})}
-                  className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all resize-none text-slate-900 font-medium"
-                />
-              </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Description</label>
+                  <textarea 
+                    required
+                    rows={3}
+                    value={formData.description}
+                    onChange={(e) => setFormData({...formData, description: e.target.value})}
+                    className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all resize-none text-slate-900 font-medium"
+                  />
+                </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                <div className="space-y-2">
-                  <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Price/Night (₹)</label>
-                  <input 
-                    required
-                    type="number" 
-                    value={formData.price}
-                    onChange={(e) => setFormData({...formData, price: parseInt(e.target.value)})}
-                    className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all text-slate-900 font-medium"
-                  />
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Price/Night (₹)</label>
+                    <input 
+                      required
+                      type="number" 
+                      min="0"
+                      value={formData.price}
+                      onChange={(e) => setFormData({...formData, price: parseInt(e.target.value)})}
+                      className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all text-slate-900 font-medium"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Total Inventory</label>
+                    <input 
+                      required
+                      type="number" 
+                      min="0"
+                      value={formData.total_inventory}
+                      onChange={(e) => setFormData({...formData, total_inventory: parseInt(e.target.value)})}
+                      className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all text-slate-900 font-medium"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Guests</label>
+                    <input 
+                      required
+                      type="text" 
+                      value={formData.guests}
+                      onChange={(e) => setFormData({...formData, guests: e.target.value})}
+                      className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all text-slate-900 font-medium"
+                    />
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Total Inventory</label>
-                  <input 
-                    required
-                    type="number" 
-                    value={formData.total_inventory}
-                    onChange={(e) => setFormData({...formData, total_inventory: parseInt(e.target.value)})}
-                    className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all text-slate-900 font-medium"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Guests</label>
-                  <input 
-                    required
-                    type="text" 
-                    value={formData.guests}
-                    onChange={(e) => setFormData({...formData, guests: e.target.value})}
-                    className="w-full bg-slate-50 border-0 rounded-2xl py-3 px-5 focus:ring-2 focus:ring-coastal-seafoam focus:outline-none transition-all text-slate-900 font-medium"
-                  />
-                </div>
-              </div>
 
               <div className="space-y-4">
                 <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-1">Main Room Image</label>
